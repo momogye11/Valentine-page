@@ -23,9 +23,14 @@
             </div>
         </div>
     </div>
-    <!-- Lecteur Spotify en bas à droite -->
-    <div style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;">
-        <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/6MWtB6iiXyIwun0YzU6DFP?utm_source=generator&autoplay=1" width="300" height="80" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+    <!-- YouTube invisible en arrière-plan -->
+    <div id="youtube-audio" style="position: fixed; bottom: -100px; left: -100px; width: 1px; height: 1px; opacity: 0; pointer-events: none;">
+        <iframe width="1" height="1"
+                src="https://www.youtube.com/embed/kGRaCSlJQfw?autoplay=1&loop=1&playlist=kGRaCSlJQfw&controls=0&showinfo=0&modestbranding=1&fs=0&rel=0"
+                frameborder="0"
+                allow="autoplay; encrypted-media"
+                allowfullscreen>
+        </iframe>
     </div>
     <script src="script.js"></script>
 </body>
