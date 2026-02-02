@@ -11,6 +11,7 @@ const buttonsContainer = document.getElementById('buttonsContainer');
 const hintText = document.getElementById('hintText');
 const successGif = document.getElementById('successGif');
 const gifImage = document.getElementById('gifImage');
+const card = document.querySelector('.card');
 
 // Set initial text and gif
 questionText.textContent = `${personName} veux-tu être ma Valentine ?`;
@@ -31,19 +32,19 @@ function moveNoButton(mouseX, mouseY) {
         Math.pow(mouseY - btnCenterY, 2)
     );
 
-    const threshold = 150; // Distance seuil en pixels - le bouton fuit avant que la souris soit proche
+    const threshold = 200; // Distance seuil en pixels - le bouton fuit TRÈS tôt
 
     if (distance < threshold) {
         // Mettre le bouton en mode "fleeing" (position absolute)
         noBtn.classList.add('fleeing');
 
-        const containerRect = buttonsContainer.getBoundingClientRect();
-        const maxX = containerRect.width - btnRect.width;
-        const maxY = containerRect.height - btnRect.height;
+        const cardRect = card.getBoundingClientRect();
+        const maxX = cardRect.width - btnRect.width - 40; // 40px de marge
+        const maxY = cardRect.height - btnRect.height - 40;
 
-        // Nouvelle position aléatoire (verticale ET horizontale)
-        const newX = Math.max(0, Math.min(Math.random() * maxX, maxX));
-        const newY = Math.max(0, Math.min(Math.random() * maxY, maxY));
+        // Nouvelle position aléatoire partout dans la carte
+        const newX = Math.max(20, Math.random() * maxX);
+        const newY = Math.max(20, Math.random() * maxY);
 
         noBtn.style.left = `${newX}px`;
         noBtn.style.top = `${newY}px`;
@@ -62,13 +63,13 @@ noBtn.addEventListener('touchstart', (e) => {
 
     noBtn.classList.add('fleeing');
 
-    const containerRect = buttonsContainer.getBoundingClientRect();
+    const cardRect = card.getBoundingClientRect();
     const btnRect = noBtn.getBoundingClientRect();
-    const maxX = containerRect.width - btnRect.width;
-    const maxY = containerRect.height - btnRect.height;
+    const maxX = cardRect.width - btnRect.width - 40;
+    const maxY = cardRect.height - btnRect.height - 40;
 
-    const newX = Math.max(0, Math.min(Math.random() * maxX, maxX));
-    const newY = Math.max(0, Math.min(Math.random() * maxY, maxY));
+    const newX = Math.max(20, Math.random() * maxX);
+    const newY = Math.max(20, Math.random() * maxY);
 
     noBtn.style.left = `${newX}px`;
     noBtn.style.top = `${newY}px`;
@@ -81,13 +82,13 @@ noBtn.addEventListener('click', (e) => {
 
     noBtn.classList.add('fleeing');
 
-    const containerRect = buttonsContainer.getBoundingClientRect();
+    const cardRect = card.getBoundingClientRect();
     const btnRect = noBtn.getBoundingClientRect();
-    const maxX = containerRect.width - btnRect.width;
-    const maxY = containerRect.height - btnRect.height;
+    const maxX = cardRect.width - btnRect.width - 40;
+    const maxY = cardRect.height - btnRect.height - 40;
 
-    const newX = Math.max(0, Math.min(Math.random() * maxX, maxX));
-    const newY = Math.max(0, Math.min(Math.random() * maxY, maxY));
+    const newX = Math.max(20, Math.random() * maxX);
+    const newY = Math.max(20, Math.random() * maxY);
 
     noBtn.style.left = `${newX}px`;
     noBtn.style.top = `${newY}px`;
