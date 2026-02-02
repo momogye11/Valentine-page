@@ -50,11 +50,12 @@ body {
 .buttons {
     position: relative;
     display: flex;
-    gap: 20px;
+    gap: 30px;
     justify-content: center;
     align-items: center;
     min-height: 60px;
     margin-bottom: 15px;
+    flex-direction: row-reverse;
 }
 
 .btn-yes {
