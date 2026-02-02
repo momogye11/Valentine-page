@@ -1,6 +1,6 @@
 // PERSONNALISATION
 const personName = "Fatou"; // Change le prénom ici
-const gifUrl = "https://media.tenor.com/EqA5O6fE_fQAAAAC/gitapro3-gitagita.gif"; // GIF romantique couple Tenor
+const gifUrl = "https://media.giphy.com/media/l0HlSz7PJDUJylhcI/giphy.gif"; // GIF romantique coeurs
 // Change l'URL du gif ici (trouve ton gif sur giphy.com ou tenor.com)
 
 // Elements
@@ -177,38 +177,4 @@ yesBtn.addEventListener('click', () => {
 
     // Show gif
     successGif.classList.add('show');
-
-    // Lance les confettis
-    launchConfetti();
 });
-
-// Fonction confettis
-function launchConfetti() {
-    const duration = 3 * 1000;
-    const animationEnd = Date.now() + duration;
-    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 10000 };
-
-    function randomInRange(min, max) {
-        return Math.random() * (max - min) + min;
-    }
-
-    const interval = setInterval(function() {
-        const timeLeft = animationEnd - Date.now();
-
-        if (timeLeft <= 0) {
-            return clearInterval(interval);
-        }
-
-        const particleCount = 50 * (timeLeft / duration);
-
-        // Lance confettis depuis 2 positions
-        confetti(Object.assign({}, defaults, {
-            particleCount,
-            origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
-        }));
-        confetti(Object.assign({}, defaults, {
-            particleCount,
-            origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
-        }));
-    }, 250);
-}
