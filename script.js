@@ -1,6 +1,6 @@
 // PERSONNALISATION
 const personName = "Fatou"; // Change le prénom ici
-const gifUrl = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcDV5dGE5ZzJ6OHg5MnZ6dGE5ZzJ6OHg5MnZ6dGE5ZzJ6OHg5MnZ6dGEwaSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/g5R9dok94mrIvplmZd/giphy.gif";
+const gifUrl = "https://media.giphy.com/media/l0HlSz7PJDUJylhcI/giphy.gif"; // GIF romantique coeurs
 // Change l'URL du gif ici (trouve ton gif sur giphy.com ou tenor.com)
 
 // Elements
