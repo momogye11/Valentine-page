@@ -24,14 +24,18 @@
         </div>
     </div>
     <!-- YouTube invisible en arrière-plan -->
-    <div id="youtube-audio" style="position: fixed; bottom: -100px; left: -100px; width: 1px; height: 1px; opacity: 0; pointer-events: none;">
-        <iframe width="1" height="1"
-                src="https://www.youtube.com/embed/kGRaCSlJQfw?autoplay=1&loop=1&playlist=kGRaCSlJQfw&controls=0&showinfo=0&modestbranding=1&fs=0&rel=0"
+    <div id="youtube-audio" style="position: fixed; bottom: -100px; left: -100px; width: 1px; height: 1px; opacity: 0; pointer-events: none; display: none;">
+        <iframe id="youtube-iframe" width="1" height="1"
+                src=""
                 frameborder="0"
                 allow="autoplay; encrypted-media"
                 allowfullscreen>
         </iframe>
     </div>
+    <!-- Audio element pour la musique -->
+    <audio id="background-music" loop style="display: none;">
+        <source src="Rue de St-Gobain 4.m4a" type="audio/mp4">
+    </audio>
     <script src="script.js"></script>
 </body>
 </html>
