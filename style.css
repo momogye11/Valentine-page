@@ -1,0 +1,176 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background: #f7c6d0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 500px;
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 50px 40px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    position: relative;
+}
+
+.emoji {
+    font-size: 80px;
+    margin-bottom: 20px;
+    position: relative;
+    display: inline-block;
+}
+
+.heart {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 40px;
+    animation: heartbeat 1.2s ease-in-out infinite;
+}
+
+@keyframes heartbeat {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.15);
+    }
+}
+
+.question {
+    font-size: 32px;
+    font-weight: 800;
+    color: #1a1a1a;
+    margin-bottom: 40px;
+    line-height: 1.3;
+}
+
+.buttons {
+    position: relative;
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+    min-height: 60px;
+    margin-bottom: 15px;
+}
+
+.btn-yes {
+    background: linear-gradient(135deg, #ff3b7a 0%, #ff1654 100%);
+    color: white;
+    border: none;
+    padding: 18px 60px;
+    border-radius: 999px;
+    font-size: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(255, 59, 122, 0.4);
+    transition: all 0.3s ease;
+}
+
+.btn-yes:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 59, 122, 0.5);
+}
+
+.btn-yes:active {
+    transform: translateY(0);
+}
+
+.btn-no {
+    background: transparent;
+    color: #1a1a1a;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    position: absolute;
+    transition: all 0.15s ease;
+}
+
+.btn-no:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.hint {
+    color: #666;
+    font-size: 14px;
+    font-style: italic;
+    margin-top: 10px;
+}
+
+.success {
+    display: none;
+    margin-top: 30px;
+}
+
+.success.show {
+    display: block;
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.success img {
+    max-width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.buttons.hide,
+.hint.hide {
+    display: none;
+}
+
+@media (max-width: 600px) {
+    .card {
+        padding: 40px 30px;
+    }
+
+    .question {
+        font-size: 26px;
+    }
+
+    .emoji {
+        font-size: 60px;
+    }
+
+    .heart {
+        font-size: 30px;
+    }
+
+    .btn-yes {
+        padding: 16px 50px;
+        font-size: 18px;
+    }
+
+    .btn-no {
+        font-size: 14px;
+    }
+}
