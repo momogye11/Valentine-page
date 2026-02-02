@@ -31,7 +31,7 @@ function moveNoButton(mouseX, mouseY) {
         Math.pow(mouseY - btnCenterY, 2)
     );
 
-    const threshold = 100; // Distance seuil en pixels
+    const threshold = 150; // Distance seuil en pixels - le bouton fuit avant que la souris soit proche
 
     if (distance < threshold) {
         // Mettre le bouton en mode "fleeing" (position absolute)
