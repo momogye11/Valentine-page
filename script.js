@@ -34,13 +34,16 @@ function moveNoButton(mouseX, mouseY) {
     const threshold = 100; // Distance seuil en pixels
 
     if (distance < threshold) {
+        // Mettre le bouton en mode "fleeing" (position absolute)
+        noBtn.classList.add('fleeing');
+
         const containerRect = buttonsContainer.getBoundingClientRect();
         const maxX = containerRect.width - btnRect.width;
         const maxY = containerRect.height - btnRect.height;
 
-        // Nouvelle position aléatoire
-        const newX = Math.random() * maxX;
-        const newY = Math.random() * maxY;
+        // Nouvelle position aléatoire (verticale ET horizontale)
+        const newX = Math.max(0, Math.min(Math.random() * maxX, maxX));
+        const newY = Math.max(0, Math.min(Math.random() * maxY, maxY));
 
         noBtn.style.left = `${newX}px`;
         noBtn.style.top = `${newY}px`;
@@ -57,13 +60,15 @@ noBtn.addEventListener('touchstart', (e) => {
     e.preventDefault();
     if (!isNoBtnActive) return;
 
+    noBtn.classList.add('fleeing');
+
     const containerRect = buttonsContainer.getBoundingClientRect();
     const btnRect = noBtn.getBoundingClientRect();
     const maxX = containerRect.width - btnRect.width;
     const maxY = containerRect.height - btnRect.height;
 
-    const newX = Math.random() * maxX;
-    const newY = Math.random() * maxY;
+    const newX = Math.max(0, Math.min(Math.random() * maxX, maxX));
+    const newY = Math.max(0, Math.min(Math.random() * maxY, maxY));
 
     noBtn.style.left = `${newX}px`;
     noBtn.style.top = `${newY}px`;
@@ -72,13 +77,17 @@ noBtn.addEventListener('touchstart', (e) => {
 // Click event for "No" button (just in case they catch it)
 noBtn.addEventListener('click', (e) => {
     e.preventDefault();
+    if (!isNoBtnActive) return;
+
+    noBtn.classList.add('fleeing');
+
     const containerRect = buttonsContainer.getBoundingClientRect();
     const btnRect = noBtn.getBoundingClientRect();
     const maxX = containerRect.width - btnRect.width;
     const maxY = containerRect.height - btnRect.height;
 
-    const newX = Math.random() * maxX;
-    const newY = Math.random() * maxY;
+    const newX = Math.max(0, Math.min(Math.random() * maxX, maxX));
+    const newY = Math.max(0, Math.min(Math.random() * maxY, maxY));
 
     noBtn.style.left = `${newX}px`;
     noBtn.style.top = `${newY}px`;
