@@ -17,27 +17,53 @@ const card = document.querySelector('.card');
 questionText.textContent = `${personName} veux-tu être ma Valentine ?`;
 gifImage.src = gifUrl;
 
-// Audio MP3 avec démarrage à 20 secondes
+// YouTube Player API
 let audioStarted = false;
-const backgroundMusic = document.getElementById('background-music');
+let player;
 const soundBtn = document.getElementById('sound-btn');
+
+// Charge l'API YouTube
+var tag = document.createElement('script');
+tag.src = "https://www.youtube.com/iframe_api";
+var firstScriptTag = document.getElementsByTagName('script')[0];
+firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+// Callback quand l'API est prête
+function onYouTubeIframeAPIReady() {
+    player = new YT.Player('youtube-player', {
+        height: '0',
+        width: '0',
+        videoId: '2Vv-BfVoq4g', // Perfect - Ed Sheeran
+        playerVars: {
+            'autoplay': 0,
+            'controls': 0,
+            'start': 20, // Démarre à 20 secondes
+            'loop': 1,
+            'playlist': '2Vv-BfVoq4g'
+        },
+        events: {
+            'onReady': onPlayerReady
+        }
+    });
+}
+
+function onPlayerReady(event) {
+    console.log('YouTube player prêt');
+}
 
 function startAudio() {
     if (audioStarted) return;
     audioStarted = true;
 
-    if (backgroundMusic) {
-        backgroundMusic.currentTime = 20; // Démarre à 20 secondes
-        backgroundMusic.volume = 0.5;
-        backgroundMusic.play().then(() => {
-            console.log('Musique démarrée à 20 secondes');
-            // Cache le bouton après démarrage
-            if (soundBtn) {
-                soundBtn.style.display = 'none';
-            }
-        }).catch(err => {
-            console.log('Erreur lecture audio:', err);
-        });
+    if (player && player.playVideo) {
+        player.setVolume(50);
+        player.playVideo();
+        console.log('Musique YouTube démarrée à 20 secondes');
+
+        // Cache le bouton après démarrage
+        if (soundBtn) {
+            soundBtn.style.display = 'none';
+        }
     }
 }
 
@@ -45,10 +71,6 @@ function startAudio() {
 if (soundBtn) {
     soundBtn.addEventListener('click', startAudio);
 }
-
-// Tente aussi de démarrer à la première interaction
-document.addEventListener('click', startAudio, { once: true });
-document.addEventListener('mousemove', startAudio, { once: true });
 
 // Button "No" fleeing behavior
 let isNoBtnActive = true;
