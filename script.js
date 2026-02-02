@@ -17,7 +17,27 @@ const card = document.querySelector('.card');
 questionText.textContent = `${personName} veux-tu être ma Valentine ?`;
 gifImage.src = gifUrl;
 
-// Le lecteur Apple Music est maintenant toujours visible en bas à droite
+// Audio MP3 avec démarrage à 20 secondes
+let audioStarted = false;
+const backgroundMusic = document.getElementById('background-music');
+
+function startAudio() {
+    if (audioStarted) return;
+    audioStarted = true;
+
+    if (backgroundMusic) {
+        backgroundMusic.currentTime = 20; // Démarre à 20 secondes
+        backgroundMusic.volume = 0.5;
+        backgroundMusic.play().catch(err => {
+            console.log('Autoplay bloqué:', err);
+        });
+    }
+}
+
+// Démarre l'audio à la première interaction
+document.addEventListener('click', startAudio, { once: true });
+document.addEventListener('mousemove', startAudio, { once: true });
+document.addEventListener('touchstart', startAudio, { once: true });
 
 // Button "No" fleeing behavior
 let isNoBtnActive = true;
