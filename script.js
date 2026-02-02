@@ -1,5 +1,5 @@
 // PERSONNALISATION
-const personName = "Sarah"; // Change le prénom ici
+const personName = "Fatou Gueye"; // Change le prénom ici
 const gifUrl = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcDV5dGE5ZzJ6OHg5MnZ6dGE5ZzJ6OHg5MnZ6dGE5ZzJ6OHg5MnZ6dGEwaSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/g5R9dok94mrIvplmZd/giphy.gif";
 // Change l'URL du gif ici (trouve ton gif sur giphy.com ou tenor.com)
 
@@ -13,7 +13,7 @@ const successGif = document.getElementById('successGif');
 const gifImage = document.getElementById('gifImage');
 
 // Set initial text and gif
-questionText.textContent = `${personName} will you be my valentine?`;
+questionText.textContent = `${personName} veux-tu être ma Valentine ?`;
 gifImage.src = gifUrl;
 
 // Button "No" fleeing behavior
@@ -89,7 +89,7 @@ yesBtn.addEventListener('click', () => {
     isNoBtnActive = false;
 
     // Change text
-    questionText.textContent = 'YAY! 🎉';
+    questionText.textContent = 'OUAIS ! 🎉';
 
     // Hide buttons and hint
     buttonsContainer.classList.add('hide');
