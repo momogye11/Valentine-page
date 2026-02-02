@@ -115,25 +115,22 @@ function moveNoButton(mouseX, mouseY) {
         let newX = currentX + (normalizedX * moveDistance);
         let newY = currentY + (normalizedY * moveDistance);
 
-        // Grande marge de sécurité pour éviter d'être coincé
-        const marginX = 80; // Marge horizontale
-        const marginY = 80; // Marge verticale
+        // TRES grande marge de sécurité (presque 1/4 du cadre)
+        const margin = 120;
 
-        // Limite dans tout le cadre blanc (carte) avec marges
-        newX = Math.max(marginX, Math.min(newX, cardRect.width - btnRect.width - marginX));
-        newY = Math.max(marginY, Math.min(newY, cardRect.height - btnRect.height - marginY));
+        // Si trop proche des bords, téléporte au centre ou position sûre
+        const safeZoneMinX = margin;
+        const safeZoneMaxX = cardRect.width - btnRect.width - margin;
+        const safeZoneMinY = margin;
+        const safeZoneMaxY = cardRect.height - btnRect.height - margin;
 
-        // Si trop proche des bords, téléporte de l'autre côté
-        if (newX < marginX + 20) {
-            newX = cardRect.width - btnRect.width - marginX - 20;
-        } else if (newX > cardRect.width - btnRect.width - marginX - 20) {
-            newX = marginX + 20;
-        }
-
-        if (newY < marginY + 20) {
-            newY = cardRect.height - btnRect.height - marginY - 20;
-        } else if (newY > cardRect.height - btnRect.height - marginY - 20) {
-            newY = marginY + 20;
+        // Vérifie si la nouvelle position est dans la zone de danger
+        if (newX < safeZoneMinX || newX > safeZoneMaxX || newY < safeZoneMinY || newY > safeZoneMaxY) {
+            // Téléporte vers une position aléatoire au centre de la carte
+            const centerZoneWidth = cardRect.width * 0.5;
+            const centerZoneHeight = cardRect.height * 0.5;
+            newX = (cardRect.width - btnRect.width - centerZoneWidth) / 2 + Math.random() * (centerZoneWidth - btnRect.width);
+            newY = (cardRect.height - btnRect.height - centerZoneHeight) / 2 + Math.random() * (centerZoneHeight - btnRect.height);
         }
 
         noBtn.style.left = `${newX}px`;
@@ -160,13 +157,18 @@ noBtn.addEventListener('touchstart', (e) => {
     const cardRect = card.getBoundingClientRect();
     const btnRect = noBtn.getBoundingClientRect();
 
-    // Grande marge pour éviter les bords
-    const marginX = 80;
-    const marginY = 80;
+    // TRES grande marge pour éviter les bords (120px minimum)
+    const margin = 120;
 
-    // Déplace vers une position aléatoire avec marges de sécurité
-    const newX = Math.random() * (cardRect.width - btnRect.width - marginX * 2) + marginX;
-    const newY = Math.random() * (cardRect.height - btnRect.height - marginY * 2) + marginY;
+    // Zone centrale sûre (50% du cadre au centre)
+    const centerZoneWidth = cardRect.width * 0.5;
+    const centerZoneHeight = cardRect.height * 0.5;
+    const centerStartX = (cardRect.width - centerZoneWidth) / 2;
+    const centerStartY = (cardRect.height - centerZoneHeight) / 2;
+
+    // Déplace dans la zone centrale uniquement
+    const newX = centerStartX + Math.random() * (centerZoneWidth - btnRect.width);
+    const newY = centerStartY + Math.random() * (centerZoneHeight - btnRect.height);
 
     noBtn.style.left = `${newX}px`;
     noBtn.style.top = `${newY}px`;
