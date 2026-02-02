@@ -20,6 +20,7 @@ gifImage.src = gifUrl;
 // Audio MP3 avec démarrage à 20 secondes
 let audioStarted = false;
 const backgroundMusic = document.getElementById('background-music');
+const soundBtn = document.getElementById('sound-btn');
 
 function startAudio() {
     if (audioStarted) return;
@@ -28,16 +29,26 @@ function startAudio() {
     if (backgroundMusic) {
         backgroundMusic.currentTime = 20; // Démarre à 20 secondes
         backgroundMusic.volume = 0.5;
-        backgroundMusic.play().catch(err => {
-            console.log('Autoplay bloqué:', err);
+        backgroundMusic.play().then(() => {
+            console.log('Musique démarrée à 20 secondes');
+            // Cache le bouton après démarrage
+            if (soundBtn) {
+                soundBtn.style.display = 'none';
+            }
+        }).catch(err => {
+            console.log('Erreur lecture audio:', err);
         });
     }
 }
 
-// Démarre l'audio à la première interaction
+// Bouton pour activer le son
+if (soundBtn) {
+    soundBtn.addEventListener('click', startAudio);
+}
+
+// Tente aussi de démarrer à la première interaction
 document.addEventListener('click', startAudio, { once: true });
 document.addEventListener('mousemove', startAudio, { once: true });
-document.addEventListener('touchstart', startAudio, { once: true });
 
 // Button "No" fleeing behavior
 let isNoBtnActive = true;
