@@ -29,27 +29,14 @@ body {
 }
 
 .emoji {
-    font-size: 80px;
     margin-bottom: 20px;
-    position: relative;
     display: inline-block;
 }
 
-.heart {
-    position: absolute;
-    top: -10px;
-    right: -15px;
-    font-size: 40px;
-    animation: heartbeat 1.2s ease-in-out infinite;
-}
-
-@keyframes heartbeat {
-    0%, 100% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.15);
-    }
+.emoji img {
+    width: 200px;
+    height: auto;
+    display: block;
 }
 
 .question {
@@ -157,12 +144,8 @@ body {
         font-size: 26px;
     }
 
-    .emoji {
-        font-size: 60px;
-    }
-
-    .heart {
-        font-size: 30px;
+    .emoji img {
+        width: 150px;
     }
 
     .btn-yes {
