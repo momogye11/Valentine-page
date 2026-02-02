@@ -34,7 +34,7 @@ body {
 }
 
 .emoji img {
-    width: 200px;
+    width: 280px;
     height: auto;
     display: block;
 }
@@ -153,7 +153,7 @@ body {
     }
 
     .emoji img {
-        width: 150px;
+        width: 200px;
     }
 
     .btn-yes {
