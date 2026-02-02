@@ -1,6 +1,6 @@
 // PERSONNALISATION
 const personName = "Fatou"; // Change le prénom ici
-const gifUrl = "https://media.giphy.com/media/l0HlSz7PJDUJylhcI/giphy.gif"; // GIF romantique coeurs
+const gifUrl = "https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif"; // GIF romantique couple
 // Change l'URL du gif ici (trouve ton gif sur giphy.com ou tenor.com)
 
 // Elements
@@ -151,26 +151,17 @@ noBtn.addEventListener('touchstart', (e) => {
     noBtn.style.top = `${newY}px`;
 });
 
-// Click event for "No" button (just in case they catch it)
+// Click event for "No" button (affiche emoji triste)
 noBtn.addEventListener('click', (e) => {
     e.preventDefault();
-    if (!isNoBtnActive) return;
 
-    // Déplacer le bouton dans .card pour qu'il soit relatif à la carte entière
-    if (noBtn.parentElement !== card) {
-        noBtn.classList.add('fleeing');
-        card.appendChild(noBtn);
-    }
+    // Affiche l'emoji triste
+    questionText.textContent = '😢';
+    questionText.style.fontSize = '120px';
 
-    const cardRect = card.getBoundingClientRect();
-    const btnRect = noBtn.getBoundingClientRect();
-
-    // Déplace vers une position aléatoire partout dans le cadre blanc
-    const newX = Math.random() * (cardRect.width - btnRect.width - 40) + 20;
-    const newY = Math.random() * (cardRect.height - btnRect.height - 40) + 20;
-
-    noBtn.style.left = `${newX}px`;
-    noBtn.style.top = `${newY}px`;
+    // Cache les boutons et le hint
+    buttonsContainer.classList.add('hide');
+    hintText.classList.add('hide');
 });
 
 // Click event for "Yes" button
@@ -186,4 +177,38 @@ yesBtn.addEventListener('click', () => {
 
     // Show gif
     successGif.classList.add('show');
+
+    // Lance les confettis
+    launchConfetti();
 });
+
+// Fonction confettis
+function launchConfetti() {
+    const duration = 3 * 1000;
+    const animationEnd = Date.now() + duration;
+    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 10000 };
+
+    function randomInRange(min, max) {
+        return Math.random() * (max - min) + min;
+    }
+
+    const interval = setInterval(function() {
+        const timeLeft = animationEnd - Date.now();
+
+        if (timeLeft <= 0) {
+            return clearInterval(interval);
+        }
+
+        const particleCount = 50 * (timeLeft / duration);
+
+        // Lance confettis depuis 2 positions
+        confetti(Object.assign({}, defaults, {
+            particleCount,
+            origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+        }));
+        confetti(Object.assign({}, defaults, {
+            particleCount,
+            origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+        }));
+    }, 250);
+}
