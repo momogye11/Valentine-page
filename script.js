@@ -32,19 +32,30 @@ function moveNoButton(mouseX, mouseY) {
         Math.pow(mouseY - btnCenterY, 2)
     );
 
-    const threshold = 200; // Distance seuil en pixels - le bouton fuit TRÈS tôt
+    const threshold = 120; // Distance seuil en pixels - détection normale
 
     if (distance < threshold) {
         // Mettre le bouton en mode "fleeing" (position absolute)
         noBtn.classList.add('fleeing');
 
-        const cardRect = card.getBoundingClientRect();
-        const maxX = cardRect.width - btnRect.width - 40; // 40px de marge
-        const maxY = cardRect.height - btnRect.height - 40;
+        // Calcule une direction opposée à la souris
+        const directionX = btnCenterX - mouseX;
+        const directionY = btnCenterY - mouseY;
+        const moveDistance = 100; // Distance de déplacement à chaque fuite
 
-        // Nouvelle position aléatoire partout dans la carte
-        const newX = Math.max(20, Math.random() * maxX);
-        const newY = Math.max(20, Math.random() * maxY);
+        // Normalise la direction
+        const length = Math.sqrt(directionX * directionX + directionY * directionY);
+        const normalizedX = directionX / length;
+        const normalizedY = directionY / length;
+
+        // Nouvelle position en s'éloignant de la souris
+        let newX = btnRect.left - buttonsContainer.getBoundingClientRect().left + (normalizedX * moveDistance);
+        let newY = btnRect.top - buttonsContainer.getBoundingClientRect().top + (normalizedY * moveDistance);
+
+        // Limite dans la zone des boutons
+        const containerRect = buttonsContainer.getBoundingClientRect();
+        newX = Math.max(0, Math.min(newX, containerRect.width - btnRect.width));
+        newY = Math.max(-50, Math.min(newY, 50));
 
         noBtn.style.left = `${newX}px`;
         noBtn.style.top = `${newY}px`;
@@ -63,13 +74,15 @@ noBtn.addEventListener('touchstart', (e) => {
 
     noBtn.classList.add('fleeing');
 
-    const cardRect = card.getBoundingClientRect();
+    const containerRect = buttonsContainer.getBoundingClientRect();
     const btnRect = noBtn.getBoundingClientRect();
-    const maxX = cardRect.width - btnRect.width - 40;
-    const maxY = cardRect.height - btnRect.height - 40;
+    const maxX = containerRect.width - btnRect.width;
 
-    const newX = Math.max(20, Math.random() * maxX);
-    const newY = Math.max(20, Math.random() * maxY);
+    // Déplace vers une position aléatoire mais pas trop loin
+    const currentX = btnRect.left - containerRect.left;
+    const randomOffset = (Math.random() - 0.5) * 150; // Déplacement modéré
+    const newX = Math.max(0, Math.min(currentX + randomOffset, maxX));
+    const newY = (Math.random() - 0.5) * 60; // Petit mouvement vertical
 
     noBtn.style.left = `${newX}px`;
     noBtn.style.top = `${newY}px`;
@@ -82,13 +95,14 @@ noBtn.addEventListener('click', (e) => {
 
     noBtn.classList.add('fleeing');
 
-    const cardRect = card.getBoundingClientRect();
+    const containerRect = buttonsContainer.getBoundingClientRect();
     const btnRect = noBtn.getBoundingClientRect();
-    const maxX = cardRect.width - btnRect.width - 40;
-    const maxY = cardRect.height - btnRect.height - 40;
+    const maxX = containerRect.width - btnRect.width;
 
-    const newX = Math.max(20, Math.random() * maxX);
-    const newY = Math.max(20, Math.random() * maxY);
+    const currentX = btnRect.left - containerRect.left;
+    const randomOffset = (Math.random() - 0.5) * 150;
+    const newX = Math.max(0, Math.min(currentX + randomOffset, maxX));
+    const newY = (Math.random() - 0.5) * 60;
 
     noBtn.style.left = `${newX}px`;
     noBtn.style.top = `${newY}px`;
