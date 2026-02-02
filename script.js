@@ -1,6 +1,6 @@
 // PERSONNALISATION
 const personName = "Fatou"; // Change le prénom ici
-const gifUrl = "https://media1.tenor.com/m/EqA5O6fE_fQAAAAC/gitapro3-gitagita.gif"; // GIF romantique couple Tenor
+const gifUrl = "https://media.tenor.com/EqA5O6fE_fQAAAAC/gitapro3-gitagita.gif"; // GIF romantique couple Tenor
 // Change l'URL du gif ici (trouve ton gif sur giphy.com ou tenor.com)
 
 // Elements
