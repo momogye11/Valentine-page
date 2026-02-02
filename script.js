@@ -19,25 +19,15 @@ gifImage.src = gifUrl;
 
 // Audio autoplay avec interaction utilisateur
 let audioStarted = false;
-const backgroundMusic = document.getElementById('background-music');
 
 function startAudio() {
     if (audioStarted) return;
     audioStarted = true;
 
-    // Joue la musique de fond
-    if (backgroundMusic) {
-        backgroundMusic.volume = 0.4;
-        backgroundMusic.play().catch(err => {
-            console.log('Autoplay bloqué:', err);
-            // Fallback: utiliser YouTube
-            const youtubeFrame = document.getElementById('youtube-iframe');
-            const youtubeContainer = document.getElementById('youtube-audio');
-            if (youtubeFrame && youtubeContainer) {
-                youtubeFrame.src = 'https://www.youtube.com/embed/kGRaCSlJQfw?autoplay=1&loop=1&playlist=kGRaCSlJQfw&controls=0&showinfo=0&modestbranding=1&fs=0&rel=0';
-                youtubeContainer.style.display = 'block';
-            }
-        });
+    // Affiche le lecteur Apple Music invisible
+    const appleMusicPlayer = document.getElementById('apple-music-player');
+    if (appleMusicPlayer) {
+        appleMusicPlayer.style.display = 'block';
     }
 }
 

@@ -23,19 +23,10 @@
             </div>
         </div>
     </div>
-    <!-- YouTube invisible en arrière-plan -->
-    <div id="youtube-audio" style="position: fixed; bottom: -100px; left: -100px; width: 1px; height: 1px; opacity: 0; pointer-events: none; display: none;">
-        <iframe id="youtube-iframe" width="1" height="1"
-                src=""
-                frameborder="0"
-                allow="autoplay; encrypted-media"
-                allowfullscreen>
-        </iframe>
+    <!-- Apple Music Player invisible -->
+    <div id="apple-music-player" style="position: fixed; bottom: -200px; left: -200px; width: 1px; height: 1px; opacity: 0; pointer-events: none; display: none;">
+        <iframe allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write" frameborder="0" height="175" style="width:100%;max-width:660px;overflow:hidden;border-radius:10px;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/fr/song/perfect/1193701400?autoplay=1"></iframe>
     </div>
-    <!-- Audio element pour la musique -->
-    <audio id="background-music" loop style="display: none;">
-        <source src="Rue de St-Gobain 4.m4a" type="audio/mp4">
-    </audio>
     <script src="script.js"></script>
 </body>
 </html>
