@@ -1,5 +1,5 @@
 // PERSONNALISATION
-const personName = "Alida"; // Change le prénom ici
+const personName = "Diba"; // Change le prénom ici
 const gifUrl = "IMG_3151.jpg"; // Image célébration locale
 
 // Elements
