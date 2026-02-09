@@ -16,100 +16,68 @@ const card = document.querySelector('.card');
 questionText.textContent = `${personName} veux-tu être ma Valentine ?`;
 gifImage.src = gifUrl;
 
-// YouTube Player API
+// Audio Player (HTML5 - compatible mobile)
 let audioStarted = false;
-let player;
-let playerReady = false;
 const soundBtn = document.getElementById('sound-btn');
 
-// Charge l'API YouTube
-var tag = document.createElement('script');
-tag.src = "https://www.youtube.com/iframe_api";
-var firstScriptTag = document.getElementsByTagName('script')[0];
-firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+// Crée l'élément audio
+const audio = new Audio('ed-sheeran-perfect-official-music-video.mp3');
+audio.loop = true;
+audio.volume = 0.5;
 
-// Callback quand l'API est prête
-function onYouTubeIframeAPIReady() {
-    player = new YT.Player('youtube-player', {
-        height: '0',
-        width: '0',
-        videoId: '2Vv-BfVoq4g', // Perfect - Ed Sheeran
-        playerVars: {
-            'autoplay': 0,
-            'controls': 0,
-            'start': 20, // Démarre à 20 secondes
-            'loop': 1,
-            'playlist': '2Vv-BfVoq4g',
-            'playsinline': 1, // IMPORTANT pour iOS
-            'enablejsapi': 1
-        },
-        events: {
-            'onReady': onPlayerReady,
-            'onStateChange': onPlayerStateChange
-        }
-    });
-}
-
-function onPlayerReady(event) {
-    playerReady = true;
-    console.log('YouTube player prêt');
-}
-
-function onPlayerStateChange(event) {
-    console.log('État du player:', event.data);
-    // Si la vidéo s'arrête, la relance (fix pour mobile)
-    if (event.data === YT.PlayerState.PAUSED && audioStarted) {
-        setTimeout(() => {
-            if (player && player.playVideo) {
-                player.playVideo();
-            }
-        }, 100);
-    }
-}
+// Précharge l'audio
+audio.preload = 'auto';
 
 function startAudio() {
     if (audioStarted) return;
+    audioStarted = true;
 
-    console.log('Tentative de démarrage audio, player ready:', playerReady);
+    console.log('Démarrage de la musique...');
 
-    // Fonction pour démarrer la musique
-    const tryPlay = () => {
-        if (player && player.playVideo && playerReady) {
-            audioStarted = true;
-            player.setVolume(50);
-            player.playVideo();
-            console.log('Musique YouTube démarrée');
+    // Démarre à 20 secondes pour sauter l'intro
+    audio.currentTime = 20;
 
-            // Cache le bouton après démarrage
-            if (soundBtn) {
-                soundBtn.style.opacity = '0';
-                setTimeout(() => {
-                    soundBtn.style.display = 'none';
-                }, 300);
-            }
-        } else {
-            console.log('Player pas encore prêt, nouvelle tentative dans 500ms');
-            setTimeout(tryPlay, 500);
-        }
-    };
+    // Lance la lecture
+    const playPromise = audio.play();
 
-    tryPlay();
+    if (playPromise !== undefined) {
+        playPromise
+            .then(() => {
+                console.log('✅ Musique démarrée avec succès à 20 secondes');
+
+                // Cache le bouton avec animation
+                if (soundBtn) {
+                    soundBtn.style.opacity = '0';
+                    setTimeout(() => {
+                        soundBtn.style.display = 'none';
+                    }, 300);
+                }
+            })
+            .catch((error) => {
+                console.error('❌ Erreur de lecture audio:', error);
+                audioStarted = false; // Permet de réessayer
+                alert('Impossible de lire la musique. Réessaye !');
+            });
+    }
 }
 
-// Bouton pour activer le son - DOIT être un vrai click utilisateur
+// Gestion du bouton son
 if (soundBtn) {
+    // Click pour desktop
     soundBtn.addEventListener('click', (e) => {
         e.preventDefault();
-        console.log('Bouton son cliqué');
+        e.stopPropagation();
+        console.log('🖱️ Bouton cliqué');
         startAudio();
     });
 
-    // Support tactile pour mobile
-    soundBtn.addEventListener('touchend', (e) => {
+    // Touch pour mobile (plus fiable)
+    soundBtn.addEventListener('touchstart', (e) => {
         e.preventDefault();
-        console.log('Bouton son touché');
+        e.stopPropagation();
+        console.log('📱 Bouton touché');
         startAudio();
-    });
+    }, { passive: false });
 }
 
 // Button "No" fleeing behavior
