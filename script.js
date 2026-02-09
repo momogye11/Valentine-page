@@ -19,6 +19,7 @@ gifImage.src = gifUrl;
 // YouTube Player API
 let audioStarted = false;
 let player;
+let playerReady = false;
 const soundBtn = document.getElementById('sound-btn');
 
 // Charge l'API YouTube
@@ -38,37 +39,77 @@ function onYouTubeIframeAPIReady() {
             'controls': 0,
             'start': 20, // Démarre à 20 secondes
             'loop': 1,
-            'playlist': '2Vv-BfVoq4g'
+            'playlist': '2Vv-BfVoq4g',
+            'playsinline': 1, // IMPORTANT pour iOS
+            'enablejsapi': 1
         },
         events: {
-            'onReady': onPlayerReady
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
         }
     });
 }
 
 function onPlayerReady(event) {
+    playerReady = true;
     console.log('YouTube player prêt');
+}
+
+function onPlayerStateChange(event) {
+    console.log('État du player:', event.data);
+    // Si la vidéo s'arrête, la relance (fix pour mobile)
+    if (event.data === YT.PlayerState.PAUSED && audioStarted) {
+        setTimeout(() => {
+            if (player && player.playVideo) {
+                player.playVideo();
+            }
+        }, 100);
+    }
 }
 
 function startAudio() {
     if (audioStarted) return;
-    audioStarted = true;
 
-    if (player && player.playVideo) {
-        player.setVolume(50);
-        player.playVideo();
-        console.log('Musique YouTube démarrée à 20 secondes');
+    console.log('Tentative de démarrage audio, player ready:', playerReady);
 
-        // Cache le bouton après démarrage
-        if (soundBtn) {
-            soundBtn.style.display = 'none';
+    // Fonction pour démarrer la musique
+    const tryPlay = () => {
+        if (player && player.playVideo && playerReady) {
+            audioStarted = true;
+            player.setVolume(50);
+            player.playVideo();
+            console.log('Musique YouTube démarrée');
+
+            // Cache le bouton après démarrage
+            if (soundBtn) {
+                soundBtn.style.opacity = '0';
+                setTimeout(() => {
+                    soundBtn.style.display = 'none';
+                }, 300);
+            }
+        } else {
+            console.log('Player pas encore prêt, nouvelle tentative dans 500ms');
+            setTimeout(tryPlay, 500);
         }
-    }
+    };
+
+    tryPlay();
 }
 
-// Bouton pour activer le son
+// Bouton pour activer le son - DOIT être un vrai click utilisateur
 if (soundBtn) {
-    soundBtn.addEventListener('click', startAudio);
+    soundBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        console.log('Bouton son cliqué');
+        startAudio();
+    });
+
+    // Support tactile pour mobile
+    soundBtn.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        console.log('Bouton son touché');
+        startAudio();
+    });
 }
 
 // Button "No" fleeing behavior
