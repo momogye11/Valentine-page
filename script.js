@@ -1,5 +1,5 @@
 // PERSONNALISATION
-const personName = "Dalia"; // Change le prénom ici
+const personName = "Aisha"; // Change le prénom ici
 const gifUrl = "IMG_3151.jpg"; // Image célébration locale
 
 // Elements
@@ -13,7 +13,7 @@ const gifImage = document.getElementById('gifImage');
 const card = document.querySelector('.card');
 
 // Set initial text and gif
-questionText.textContent = `${personName} veux-tu être ma Valentine ?`;
+questionText.textContent = `Joyeux Anniversaire ${personName} ! 🎂🎉 Prête pour ta surprise ?`;
 gifImage.src = gifUrl;
 
 // Audio Player (HTML5 - compatible mobile)
@@ -182,12 +182,12 @@ noBtn.addEventListener('touchstart', (e) => {
     noBtn.style.top = `${newY}px`;
 });
 
-// Click event for "No" button (affiche emoji triste)
+// Click event for "No" button (affiche emoji impatient)
 noBtn.addEventListener('click', (e) => {
     e.preventDefault();
 
-    // Affiche l'emoji triste
-    questionText.textContent = '😢';
+    // Affiche l'emoji impatient
+    questionText.textContent = '😏🎈';
     questionText.style.fontSize = '120px';
 
     // Cache les boutons et le hint
@@ -200,7 +200,7 @@ yesBtn.addEventListener('click', () => {
     isNoBtnActive = false;
 
     // Change text
-    questionText.textContent = 'OUAIS ! 🎉';
+    questionText.textContent = `Joyeux Anniversaire ${personName} ! 🎂🎊🎁✨`;
 
     // Hide buttons and hint
     buttonsContainer.classList.add('hide');
