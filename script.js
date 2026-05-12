@@ -13,51 +13,60 @@ const gifImage = document.getElementById('gifImage');
 const card = document.querySelector('.card');
 
 // Set initial text and gif
-questionText.textContent = `Joyeux Anniversaire ${personName} ! 🎂🎉 Prête pour ta surprise ?`;
+questionText.textContent = `Hey ${personName} ! ✨ Prête pour une surprise ?`;
 gifImage.src = gifUrl;
 
-// Audio Player (HTML5 - compatible mobile)
+// YouTube Player (Je pense à toi - Gims ft. Alonzo)
 let audioStarted = false;
 const soundBtn = document.getElementById('sound-btn');
+let player;
 
-// Crée l'élément audio
-const audio = new Audio('je-pense-a-toi.mp3');
-audio.loop = true;
-audio.volume = 0.5;
+// Charge l'API YouTube
+const tag = document.createElement('script');
+tag.src = 'https://www.youtube.com/iframe_api';
+const firstScriptTag = document.getElementsByTagName('script')[0];
+firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-// Précharge l'audio
-audio.preload = 'auto';
+// Fonction appelée automatiquement quand l'API YouTube est prête
+window.onYouTubeIframeAPIReady = function() {
+    player = new YT.Player('youtube-player', {
+        events: {
+            'onReady': onPlayerReady
+        }
+    });
+};
+
+function onPlayerReady(event) {
+    console.log('YouTube player prêt');
+}
 
 function startAudio() {
     if (audioStarted) return;
-    audioStarted = true;
+    if (!player || !player.playVideo) {
+        alert('La musique se charge... Réessaye dans 1 seconde !');
+        return;
+    }
 
+    audioStarted = true;
     console.log('Démarrage de la musique...');
 
-    // Démarre au début de la chanson
-    audio.currentTime = 0;
+    try {
+        player.setVolume(50); // Volume à 50%
+        player.playVideo();
 
-    // Lance la lecture
-    const playPromise = audio.play();
+        console.log('✅ Musique démarrée avec succès');
 
-    if (playPromise !== undefined) {
-        playPromise
-            .then(() => {
-                console.log('✅ Musique démarrée avec succès à 20 secondes');
-
-                // Cache le bouton avec animation
-                if (soundBtn) {
-                    soundBtn.style.opacity = '0';
-                    setTimeout(() => {
-                        soundBtn.style.display = 'none';
-                    }, 300);
-                }
-            })
-            .catch((error) => {
-                console.error('❌ Erreur de lecture audio:', error);
-                audioStarted = false; // Permet de réessayer
-                alert('Impossible de lire la musique. Réessaye !');
-            });
+        // Cache le bouton avec animation
+        if (soundBtn) {
+            soundBtn.style.opacity = '0';
+            setTimeout(() => {
+                soundBtn.style.display = 'none';
+            }, 300);
+        }
+    } catch (error) {
+        console.error('❌ Erreur de lecture audio:', error);
+        audioStarted = false;
+        alert('Impossible de lire la musique. Réessaye !');
     }
 }
 
@@ -200,7 +209,7 @@ yesBtn.addEventListener('click', () => {
     isNoBtnActive = false;
 
     // Change text
-    questionText.textContent = `Joyeux Anniversaire ${personName} ! 🎂 Passe une merveilleuse journée, tu le mérites ✨`;
+    questionText.textContent = `Voilà ${personName} ! ✨💫 J'espère que ça te plaît`;
 
     // Hide buttons and hint
     buttonsContainer.classList.add('hide');
