@@ -46,7 +46,10 @@ introBtn.addEventListener('click', () => {
 
             // Les 5 dernières secondes en rouge intense
             if (timeLeft <= 5) {
-                loadingCountdown.style.background = 'linear-gradient(135deg, #FF6B6B 0%, #FF0000 100%)';
+                loadingCountdown.style.background = 'none';
+                loadingCountdown.style.webkitTextFillColor = '#FF0000';
+                loadingCountdown.style.color = '#FF0000';
+                loadingCountdown.style.textShadow = '0 0 50px rgba(255, 0, 0, 0.8)';
                 loadingCountdown.style.animation = 'countdownMegaPulse 0.5s ease-in-out infinite';
             }
 
