@@ -26,12 +26,12 @@ gifImage.src = gifUrl;
 
 // Gestion de l'intro et du loading screen
 introBtn.addEventListener('click', () => {
-    // Cache l'intro
-    introScreen.classList.add('hide');
+    // Affiche le loading screen IMMÉDIATEMENT (avant de cacher l'intro)
+    loadingScreen.classList.add('show');
 
-    // Affiche le loading screen
+    // Cache l'intro PAR-DESSUS
     setTimeout(() => {
-        loadingScreen.classList.add('show');
+        introScreen.classList.add('hide');
 
         // Démarre la musique AUTOMATIQUEMENT
         startAudio();
@@ -60,10 +60,13 @@ introBtn.addEventListener('click', () => {
                 setTimeout(() => {
                     loadingScreen.style.display = 'none';
                     introScreen.style.display = 'none';
+
+                    // Révèle le container de la page principale
+                    document.querySelector('.container').classList.add('show');
                 }, 800);
             }
         }, 1000);
-    }, 800);
+    }, 100);
 });
 
 // Empêche de skip avec ESC ou autres touches

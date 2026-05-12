@@ -193,6 +193,11 @@ body {
 .container {
     width: 100%;
     max-width: 500px;
+    display: none; /* Caché au début, révélé après le loading */
+}
+
+.container.show {
+    display: block;
 }
 
 .card {
