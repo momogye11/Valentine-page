@@ -142,6 +142,8 @@ body {
 .loading-content {
     text-align: center;
     color: white;
+    position: relative;
+    z-index: 100;
 }
 
 .loading-name {
@@ -170,6 +172,8 @@ body {
     animation: countdownMegaPulse 1s ease-in-out infinite;
     text-shadow: 0 0 50px rgba(255, 215, 0, 0.5);
     line-height: 1;
+    position: relative;
+    z-index: 1000;
 }
 
 @keyframes countdownMegaPulse {
