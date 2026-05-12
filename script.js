@@ -2,7 +2,13 @@
 const personName = "Rita"; // Change le prénom ici
 const gifUrl = "IMG_3151.jpg"; // Image célébration locale
 
-// Elements
+// Elements - Intro & Loading
+const introScreen = document.getElementById('introScreen');
+const introBtn = document.getElementById('introBtn');
+const loadingScreen = document.getElementById('loadingScreen');
+const loadingCountdown = document.getElementById('loadingCountdown');
+
+// Elements - Main page
 const questionText = document.getElementById('questionText');
 const yesBtn = document.getElementById('yesBtn');
 const noBtn = document.getElementById('noBtn');
@@ -17,6 +23,56 @@ const countdownNumber = document.getElementById('countdownNumber');
 // Set initial text and gif
 questionText.textContent = `${personName}... j'ai préparé quelque chose pour toi 💫`;
 gifImage.src = gifUrl;
+
+// Gestion de l'intro et du loading screen
+introBtn.addEventListener('click', () => {
+    // Cache l'intro
+    introScreen.classList.add('hide');
+
+    // Affiche le loading screen
+    setTimeout(() => {
+        loadingScreen.classList.add('show');
+
+        // Démarre la musique AUTOMATIQUEMENT
+        startAudio();
+
+        // Compte à rebours de 24 secondes BLOQUÉ
+        let timeLeft = 24;
+        loadingCountdown.textContent = timeLeft;
+
+        const loadingInterval = setInterval(() => {
+            timeLeft--;
+            loadingCountdown.textContent = timeLeft;
+
+            // Les 5 dernières secondes en rouge intense
+            if (timeLeft <= 5) {
+                loadingCountdown.style.background = 'linear-gradient(135deg, #FF6B6B 0%, #FF0000 100%)';
+                loadingCountdown.style.animation = 'countdownMegaPulse 0.5s ease-in-out infinite';
+            }
+
+            if (timeLeft === 0) {
+                clearInterval(loadingInterval);
+
+                // Cache le loading screen
+                loadingScreen.classList.add('hide');
+
+                // Affiche la page principale après 800ms
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                    introScreen.style.display = 'none';
+                }, 800);
+            }
+        }, 1000);
+    }, 800);
+});
+
+// Empêche de skip avec ESC ou autres touches
+document.addEventListener('keydown', (e) => {
+    if (loadingScreen.classList.contains('show')) {
+        e.preventDefault();
+        return false;
+    }
+});
 
 // Audio Player (HTML5 - compatible mobile)
 let audioStarted = false;

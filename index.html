@@ -7,8 +7,27 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Bouton activer son -->
-    <button id="sound-btn" style="position: fixed; top: 20px; right: 20px; z-index: 10000; background: linear-gradient(135deg, #FFD700, #FFA500); color: white; border: none; padding: 12px 24px; border-radius: 50px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(255,215,0,0.4);">
+    <!-- Page d'intro bloquée -->
+    <div class="intro-screen" id="introScreen">
+        <div class="intro-content">
+            <h1 class="intro-title">Rita...</h1>
+            <p class="intro-message">Quelque chose arrive... 💫</p>
+            <button class="intro-btn" id="introBtn">Clique pour commencer ✨</button>
+        </div>
+    </div>
+
+    <!-- Écran de compte à rebours bloqué -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-content">
+            <h1 class="loading-name">Rita... 💝</h1>
+            <p class="loading-message">Prépare-toi pour quelque chose de spécial...</p>
+            <div class="loading-countdown" id="loadingCountdown">24</div>
+            <p class="loading-subtext">Tu ne peux pas skip, il faut être patiente 🤭✨</p>
+        </div>
+    </div>
+
+    <!-- Bouton activer son (caché maintenant car auto) -->
+    <button id="sound-btn" style="display: none; position: fixed; top: 20px; right: 20px; z-index: 10000; background: linear-gradient(135deg, #FFD700, #FFA500); color: white; border: none; padding: 12px 24px; border-radius: 50px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(255,215,0,0.4);">
         🎵 Activer la musique
     </button>
     <div class="container">
