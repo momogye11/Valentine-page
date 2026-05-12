@@ -21,7 +21,7 @@ let audioStarted = false;
 const soundBtn = document.getElementById('sound-btn');
 
 // Crée l'élément audio
-const audio = new Audio('ed-sheeran-perfect-official-music-video.mp3');
+const audio = new Audio('je-pense-a-toi.mp3');
 audio.loop = true;
 audio.volume = 0.5;
 
@@ -34,8 +34,8 @@ function startAudio() {
 
     console.log('Démarrage de la musique...');
 
-    // Démarre à 20 secondes pour sauter l'intro
-    audio.currentTime = 20;
+    // Démarre au début de la chanson
+    audio.currentTime = 0;
 
     // Lance la lecture
     const playPromise = audio.play();
@@ -200,7 +200,7 @@ yesBtn.addEventListener('click', () => {
     isNoBtnActive = false;
 
     // Change text
-    questionText.textContent = `Joyeux Anniversaire ${personName} ! 🎂🎊🎁✨`;
+    questionText.textContent = `Joyeux Anniversaire ${personName} ! 🎂 Passe une merveilleuse journée, tu le mérites ✨`;
 
     // Hide buttons and hint
     buttonsContainer.classList.add('hide');
