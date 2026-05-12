@@ -16,57 +16,48 @@ const card = document.querySelector('.card');
 questionText.textContent = `Hey ${personName} ! ✨ Prête pour une surprise ?`;
 gifImage.src = gifUrl;
 
-// YouTube Player (Je pense à toi - Gims ft. Alonzo)
+// Audio Player (HTML5 - compatible mobile)
 let audioStarted = false;
 const soundBtn = document.getElementById('sound-btn');
-let player;
 
-// Charge l'API YouTube
-const tag = document.createElement('script');
-tag.src = 'https://www.youtube.com/iframe_api';
-const firstScriptTag = document.getElementsByTagName('script')[0];
-firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+// Crée l'élément audio
+const audio = new Audio('Guy2Bezbar - Je pense à toi (Paroles).mp3');
+audio.loop = true;
+audio.volume = 0.5;
 
-// Fonction appelée automatiquement quand l'API YouTube est prête
-window.onYouTubeIframeAPIReady = function() {
-    player = new YT.Player('youtube-player', {
-        events: {
-            'onReady': onPlayerReady
-        }
-    });
-};
-
-function onPlayerReady(event) {
-    console.log('YouTube player prêt');
-}
+// Précharge l'audio
+audio.preload = 'auto';
 
 function startAudio() {
     if (audioStarted) return;
-    if (!player || !player.playVideo) {
-        alert('La musique se charge... Réessaye dans 1 seconde !');
-        return;
-    }
-
     audioStarted = true;
+
     console.log('Démarrage de la musique...');
 
-    try {
-        player.setVolume(50); // Volume à 50%
-        player.playVideo();
+    // Démarre au début de la chanson
+    audio.currentTime = 0;
 
-        console.log('✅ Musique démarrée avec succès');
+    // Lance la lecture
+    const playPromise = audio.play();
 
-        // Cache le bouton avec animation
-        if (soundBtn) {
-            soundBtn.style.opacity = '0';
-            setTimeout(() => {
-                soundBtn.style.display = 'none';
-            }, 300);
-        }
-    } catch (error) {
-        console.error('❌ Erreur de lecture audio:', error);
-        audioStarted = false;
-        alert('Impossible de lire la musique. Réessaye !');
+    if (playPromise !== undefined) {
+        playPromise
+            .then(() => {
+                console.log('✅ Musique démarrée avec succès');
+
+                // Cache le bouton avec animation
+                if (soundBtn) {
+                    soundBtn.style.opacity = '0';
+                    setTimeout(() => {
+                        soundBtn.style.display = 'none';
+                    }, 300);
+                }
+            })
+            .catch((error) => {
+                console.error('❌ Erreur de lecture audio:', error);
+                audioStarted = false; // Permet de réessayer
+                alert('Impossible de lire la musique. Réessaye !');
+            });
     }
 }
 
