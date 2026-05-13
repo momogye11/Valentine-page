@@ -537,6 +537,56 @@ function showFinalMessage() {
             charIndex++;
         } else {
             clearInterval(typingInterval);
+
+            // Signature en 4 étapes
+            setTimeout(() => {
+                showSignature();
+            }, 2000);
+        }
+    }, 50);
+}
+
+// Signature en 4 étapes
+const signatureSteps = [
+    "Tu comptais vraiment pas skip tout ça hein? 😏",
+    "Non j'rigole 😂",
+    "Merci d'exister Rita.",
+    "Avec appréciation, Mohamed ✨"
+];
+
+let currentSignatureStep = 0;
+
+function showSignature() {
+    if (currentSignatureStep >= signatureSteps.length) {
+        return;
+    }
+
+    const message = signatureSteps[currentSignatureStep];
+    cinematicMessage.textContent = '';
+
+    // Effet machine à écrire
+    let charIndex = 0;
+    const typingInterval = setInterval(() => {
+        if (charIndex < message.length) {
+            cinematicMessage.textContent += message[charIndex];
+            charIndex++;
+        } else {
+            clearInterval(typingInterval);
+            currentSignatureStep++;
+
+            // Ajoute "- Mohamed 💝" pour l'avant-dernier message
+            if (currentSignatureStep === 3) {
+                setTimeout(() => {
+                    cinematicMessage.textContent += "\n- Mohamed 💝";
+                }, 800);
+            }
+
+            // Pause avant le prochain message
+            setTimeout(() => {
+                if (currentSignatureStep < signatureSteps.length) {
+                    showSignature();
+                }
+            }, currentSignatureStep === 1 ? 1500 : 2500); // "Non j'rigole" reste moins longtemps
         }
     }, 50);
 }

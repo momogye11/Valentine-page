@@ -673,7 +673,85 @@ body {
     transform: scale(0.95);
 }
 
-@media (max-width: 600px) {
+/* ========== MOBILE FIRST RESPONSIVE ========== */
+@media (max-width: 768px) {
+    /* Intro screen */
+    .intro-title {
+        font-size: 60px;
+    }
+
+    .intro-message {
+        font-size: 20px;
+    }
+
+    .intro-btn {
+        padding: 18px 50px;
+        font-size: 20px;
+    }
+
+    /* Loading screen */
+    .loading-name {
+        font-size: 70px;
+    }
+
+    .loading-message {
+        font-size: 22px;
+        padding: 0 20px;
+    }
+
+    .loading-countdown {
+        font-size: 120px;
+    }
+
+    .loading-subtext {
+        font-size: 16px;
+        padding: 0 20px;
+    }
+
+    /* Explosion screen */
+    .explosion-name {
+        font-size: 120px;
+    }
+
+    /* Cinematic screen */
+    .cinematic-message {
+        font-size: 36px;
+        padding: 0 30px;
+    }
+
+    /* Bulles screen */
+    .bubbles-title {
+        font-size: 26px;
+        margin-bottom: 30px;
+        padding: 0 20px;
+    }
+
+    .bubbles-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        padding: 0 20px;
+    }
+
+    .bubble {
+        width: 140px;
+        height: 140px;
+    }
+
+    .bubble-icon {
+        font-size: 50px;
+    }
+
+    .bubble-text {
+        font-size: 16px;
+        padding: 8px;
+    }
+
+    .bubbles-counter {
+        font-size: 20px;
+        margin-top: 30px;
+    }
+
+    /* Main page */
     .card {
         padding: 40px 30px;
     }
@@ -700,5 +778,102 @@ body {
         right: 10px;
         padding: 10px 20px;
         font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Intro screen */
+    .intro-title {
+        font-size: 48px;
+    }
+
+    .intro-message {
+        font-size: 18px;
+    }
+
+    .intro-btn {
+        padding: 16px 40px;
+        font-size: 18px;
+    }
+
+    /* Loading screen */
+    .loading-name {
+        font-size: 55px;
+    }
+
+    .loading-message {
+        font-size: 20px;
+    }
+
+    .loading-countdown {
+        font-size: 100px;
+    }
+
+    .loading-subtext {
+        font-size: 14px;
+    }
+
+    /* Explosion screen */
+    .explosion-name {
+        font-size: 90px;
+    }
+
+    /* Cinematic screen */
+    .cinematic-message {
+        font-size: 28px;
+        padding: 0 25px;
+        white-space: pre-wrap;
+    }
+
+    /* Bulles screen */
+    .bubbles-title {
+        font-size: 22px;
+    }
+
+    .bubbles-container {
+        gap: 15px;
+    }
+
+    .bubble {
+        width: 120px;
+        height: 120px;
+    }
+
+    .bubble-icon {
+        font-size: 40px;
+    }
+
+    .bubble-text {
+        font-size: 14px;
+    }
+
+    .bubbles-counter {
+        font-size: 18px;
+    }
+
+    /* Main page */
+    .question {
+        font-size: 22px;
+    }
+
+    .emoji img {
+        width: 220px;
+    }
+
+    .buttons {
+        flex-direction: column;
+        gap: 20px;
+        min-height: auto;
+        padding: 0 10px;
+    }
+
+    .btn-yes {
+        padding: 14px 40px;
+        font-size: 16px;
+    }
+
+    .btn-no {
+        font-size: 13px;
+        padding: 12px 30px;
     }
 }
