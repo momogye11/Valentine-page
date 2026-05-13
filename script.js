@@ -588,8 +588,9 @@ function showFinalMessage() {
         } else {
             clearInterval(typingInterval);
 
-            // Signature en 4 étapes
+            // Signature en 3 étapes puis fermeture
             setTimeout(() => {
+                currentSignatureStep = 0; // Reset le compteur
                 showSignature();
             }, 2000);
         }
@@ -625,11 +626,9 @@ function showSignature() {
             clearInterval(typingInterval);
             currentSignatureStep++;
 
-            // Pause avant le prochain message
+            // Pause avant le prochain message ou la fermeture
             setTimeout(() => {
-                if (currentSignatureStep < signatureSteps.length) {
-                    showSignature();
-                }
+                showSignature(); // Appelle toujours, la fonction gère la fin
             }, currentSignatureStep === 1 ? 1500 : 2500); // "Non j'rigole" reste moins longtemps
         }
     }, 50);
