@@ -2,6 +2,49 @@
 const personName = "Rita"; // Change le prénom ici
 const gifUrl = "IMG_3151.jpg"; // Image célébration locale
 
+// ============= IMMERSION: Particules flottantes =============
+function createFloatingParticles() {
+    const container = document.getElementById('floatingParticles');
+    for (let i = 0; i < 30; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 15 + 's';
+        particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+        container.appendChild(particle);
+    }
+}
+
+// Lance les particules au chargement
+createFloatingParticles();
+
+// ============= IMMERSION: Vibrations =============
+function vibrate(duration = 100) {
+    if (navigator.vibrate) {
+        navigator.vibrate(duration);
+    }
+}
+
+// ============= IMMERSION: Sons =============
+function playClickSound() {
+    // Utilise Web Audio API pour un son subtil
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    oscillator.frequency.value = 800;
+    oscillator.type = 'sine';
+
+    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.1);
+}
+
 // Elements - Intro & Loading
 const introScreen = document.getElementById('introScreen');
 const introBtn = document.getElementById('introBtn');
@@ -347,14 +390,16 @@ yesBtn.addEventListener('click', () => {
 function startExplosion() {
     explosionScreen.classList.add('show');
 
-    // Flash blanc aveuglant
+    // Flash blanc aveuglant + VIBRATION!
     setTimeout(() => {
         flashWhite.classList.add('active');
+        vibrate(200); // Vibration forte à l'explosion
     }, 100);
 
     // "RITA" explose
     setTimeout(() => {
         explosionName.classList.add('explode');
+        vibrate([100, 50, 100]); // Pattern de vibration
     }, 300);
 
     // Confettis!
@@ -509,8 +554,13 @@ function startBubblesGame() {
                 discoveredCount++;
                 bubblesCounter.textContent = `${discoveredCount}/8 découvertes`;
 
+                // Son + vibration au clic
+                playClickSound();
+                vibrate(50);
+
                 // Toutes les bulles découvertes
                 if (discoveredCount === 8) {
+                    vibrate([100, 50, 100, 50, 100]); // Vibration de célébration
                     setTimeout(showFinalMessage, 2000);
                 }
             }
@@ -550,14 +600,15 @@ function showFinalMessage() {
 const signatureSteps = [
     "Tu comptais vraiment pas skip tout ça hein? 😏",
     "Non j'rigole 😂",
-    "Merci d'exister Rita.",
-    "Avec appréciation, Mohamed ✨"
+    "Merci d'exister Rita. 💝"
 ];
 
 let currentSignatureStep = 0;
 
 function showSignature() {
     if (currentSignatureStep >= signatureSteps.length) {
+        // Tous les messages affichés, montrer la fermeture
+        setTimeout(showFinalClosure, 2500);
         return;
     }
 
@@ -574,13 +625,6 @@ function showSignature() {
             clearInterval(typingInterval);
             currentSignatureStep++;
 
-            // Ajoute "- Mohamed 💝" pour l'avant-dernier message
-            if (currentSignatureStep === 3) {
-                setTimeout(() => {
-                    cinematicMessage.textContent += "\n- Mohamed 💝";
-                }, 800);
-            }
-
             // Pause avant le prochain message
             setTimeout(() => {
                 if (currentSignatureStep < signatureSteps.length) {
@@ -589,4 +633,49 @@ function showSignature() {
             }, currentSignatureStep === 1 ? 1500 : 2500); // "Non j'rigole" reste moins longtemps
         }
     }, 50);
+}
+
+// Fermeture finale avec fade to black
+function showFinalClosure() {
+    // Fade to black
+    cinematicScreen.style.transition = 'background 3s ease';
+    cinematicScreen.style.background = 'black';
+
+    // Fade out le message actuel
+    cinematicMessage.style.transition = 'opacity 2s ease';
+    cinematicMessage.style.opacity = '0';
+
+    // Après 2 secondes, afficher la signature finale
+    setTimeout(() => {
+        cinematicMessage.textContent = '';
+        cinematicMessage.style.opacity = '1';
+        cinematicMessage.style.fontSize = '24px';
+        cinematicMessage.style.textAlign = 'right';
+        cinematicMessage.style.position = 'absolute';
+        cinematicMessage.style.bottom = '40px';
+        cinematicMessage.style.right = '40px';
+        cinematicMessage.style.fontStyle = 'italic';
+        cinematicMessage.style.transition = 'opacity 2s ease';
+
+        // Écrire "Avec appréciation, Mohamed ✨"
+        const finalSignature = "Avec appréciation,\nMohamed ✨";
+        let charIndex = 0;
+        const typingInterval = setInterval(() => {
+            if (charIndex < finalSignature.length) {
+                if (finalSignature[charIndex] === '\n') {
+                    cinematicMessage.innerHTML += '<br>';
+                } else {
+                    cinematicMessage.textContent += finalSignature[charIndex];
+                }
+                charIndex++;
+            } else {
+                clearInterval(typingInterval);
+
+                // Fade out après 4 secondes
+                setTimeout(() => {
+                    cinematicMessage.style.opacity = '0';
+                }, 4000);
+            }
+        }, 80);
+    }, 2000);
 }
