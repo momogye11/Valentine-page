@@ -619,7 +619,7 @@ let currentSignatureStep = 0;
 function showSignature() {
     if (currentSignatureStep >= signatureSteps.length) {
         // Tous les messages affichés, montrer la fermeture
-        setTimeout(showFinalClosure, 2500);
+        setTimeout(showFinalClosure, 2000); // Réduit à 2 secondes
         return;
     }
 
@@ -666,25 +666,21 @@ function showFinalClosure() {
         cinematicMessage.style.fontStyle = 'italic';
         cinematicMessage.style.transition = 'opacity 2s ease';
 
-        // Écrire "Avec appréciation, Mohamed ✨"
-        const finalSignature = "Avec appréciation,\nMohamed ✨";
+        // Écrire "Mohamed ✨" simple et classe
+        const finalSignature = "Mohamed ✨";
         let charIndex = 0;
         const typingInterval = setInterval(() => {
             if (charIndex < finalSignature.length) {
-                if (finalSignature[charIndex] === '\n') {
-                    cinematicMessage.innerHTML += '<br>';
-                } else {
-                    cinematicMessage.textContent += finalSignature[charIndex];
-                }
+                cinematicMessage.textContent += finalSignature[charIndex];
                 charIndex++;
             } else {
                 clearInterval(typingInterval);
 
-                // Fade out après 4 secondes
+                // Fade out après 3 secondes
                 setTimeout(() => {
                     cinematicMessage.style.opacity = '0';
-                }, 4000);
+                }, 3000);
             }
-        }, 80);
+        }, 100);
     }, 2000);
 }
