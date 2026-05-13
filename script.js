@@ -390,16 +390,19 @@ yesBtn.addEventListener('click', () => {
 function startExplosion() {
     explosionScreen.classList.add('show');
 
-    // Flash blanc aveuglant + VIBRATION!
+    // Flash blanc aveuglant + VIBRATION + SHAKE pour iOS!
     setTimeout(() => {
         flashWhite.classList.add('active');
-        vibrate(200); // Vibration forte à l'explosion
+        vibrate(200); // Vibration forte à l'explosion (Android)
+
+        // Shake l'écran pour simuler vibration sur iOS
+        explosionScreen.style.animation = 'shake 0.5s ease';
     }, 100);
 
     // "RITA" explose
     setTimeout(() => {
         explosionName.classList.add('explode');
-        vibrate([100, 50, 100]); // Pattern de vibration
+        vibrate([100, 50, 100]); // Pattern de vibration (Android)
     }, 300);
 
     // Confettis!
@@ -554,13 +557,20 @@ function startBubblesGame() {
                 discoveredCount++;
                 bubblesCounter.textContent = `${discoveredCount}/8 découvertes`;
 
-                // Son + vibration au clic
+                // Son + vibration + animation pulse
                 playClickSound();
-                vibrate(50);
+                vibrate(50); // Android
+
+                // Animation pulse pour feedback visuel (iOS/tous)
+                bubble.style.animation = 'bubblePulse 0.3s ease';
 
                 // Toutes les bulles découvertes
                 if (discoveredCount === 8) {
-                    vibrate([100, 50, 100, 50, 100]); // Vibration de célébration
+                    vibrate([100, 50, 100, 50, 100]); // Android
+
+                    // Shake screen pour iOS
+                    bubblesScreen.style.animation = 'shake 0.6s ease';
+
                     setTimeout(showFinalMessage, 2000);
                 }
             }
