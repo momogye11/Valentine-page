@@ -8,6 +8,17 @@ const introBtn = document.getElementById('introBtn');
 const loadingScreen = document.getElementById('loadingScreen');
 const loadingCountdown = document.getElementById('loadingCountdown');
 
+// Elements - Explosion & Cinematic
+const explosionScreen = document.getElementById('explosionScreen');
+const flashWhite = document.getElementById('flashWhite');
+const explosionName = document.getElementById('explosionName');
+const confettiCanvas = document.getElementById('confettiCanvas');
+const cinematicScreen = document.getElementById('cinematicScreen');
+const cinematicMessage = document.getElementById('cinematicMessage');
+const bubblesScreen = document.getElementById('bubblesScreen');
+const bubblesContainer = document.getElementById('bubblesContainer');
+const bubblesCounter = document.getElementById('bubblesCounter');
+
 // Elements - Main page
 const questionText = document.getElementById('questionText');
 const yesBtn = document.getElementById('yesBtn');
@@ -59,13 +70,10 @@ introBtn.addEventListener('click', () => {
                 // Cache le loading screen
                 loadingScreen.classList.add('hide');
 
-                // Affiche la page principale après 800ms
+                // Lance l'EXPLOSION WOW!
                 setTimeout(() => {
                     loadingScreen.style.display = 'none';
-                    introScreen.style.display = 'none';
-
-                    // Révèle le container de la page principale
-                    document.querySelector('.container').classList.add('show');
+                    startExplosion();
                 }, 800);
             }
         }, 1000);
@@ -334,3 +342,201 @@ yesBtn.addEventListener('click', () => {
         }
     }, 1000);
 });
+
+// ============= EXPLOSION WOW =============
+function startExplosion() {
+    explosionScreen.classList.add('show');
+
+    // Flash blanc aveuglant
+    setTimeout(() => {
+        flashWhite.classList.add('active');
+    }, 100);
+
+    // "RITA" explose
+    setTimeout(() => {
+        explosionName.classList.add('explode');
+    }, 300);
+
+    // Confettis!
+    setTimeout(() => {
+        createConfetti();
+    }, 500);
+
+    // Transition vers les messages cinématiques
+    setTimeout(() => {
+        explosionScreen.classList.remove('show');
+        startCinematicMessages();
+    }, 3000);
+}
+
+// Confettis animés
+function createConfetti() {
+    const canvas = confettiCanvas;
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const particles = [];
+    const colors = ['#FFD700', '#FFA500', '#FF6B6B', '#FF69B4', '#00CED1'];
+
+    for (let i = 0; i < 150; i++) {
+        particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height - canvas.height,
+            vx: (Math.random() - 0.5) * 3,
+            vy: Math.random() * 3 + 2,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            size: Math.random() * 8 + 4,
+            rotation: Math.random() * 360,
+            rotationSpeed: (Math.random() - 0.5) * 10
+        });
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        particles.forEach((p, index) => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.rotation += p.rotationSpeed;
+
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate((p.rotation * Math.PI) / 180);
+            ctx.fillStyle = p.color;
+            ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+            ctx.restore();
+
+            if (p.y > canvas.height) {
+                particles.splice(index, 1);
+            }
+        });
+
+        if (particles.length > 0) {
+            requestAnimationFrame(animate);
+        }
+    }
+
+    animate();
+}
+
+// ============= MESSAGES CINÉMATIQUES =============
+const cinematicMessages = [
+    "Rita...",
+    "Tu sais ce qui est fou?",
+    "Ça fait à peine deux semaines qu'on se connaît...",
+    "Mais c'est comme si...",
+    "Tu avais toujours été là",
+    "Tu as cette énergie...",
+    "Cette authenticité...",
+    "Qui fait qu'on ne peut pas t'ignorer",
+    "Même sans le vouloir...",
+    "Tu rends les gens autour de toi meilleurs",
+    "Alors je voulais prendre un moment...",
+    "Pour que tu saches à quel point...",
+    "Tu comptes déjà 💫"
+];
+
+let currentMessageIndex = 0;
+
+function startCinematicMessages() {
+    cinematicScreen.classList.add('show');
+    showNextMessage();
+}
+
+function showNextMessage() {
+    if (currentMessageIndex >= cinematicMessages.length) {
+        // Tous les messages sont affichés, passer aux bulles
+        setTimeout(() => {
+            cinematicScreen.classList.remove('show');
+            startBubblesGame();
+        }, 2000);
+        return;
+    }
+
+    const message = cinematicMessages[currentMessageIndex];
+    cinematicMessage.textContent = '';
+    cinematicMessage.classList.add('typing');
+
+    // Effet machine à écrire
+    let charIndex = 0;
+    const typingInterval = setInterval(() => {
+        if (charIndex < message.length) {
+            cinematicMessage.textContent += message[charIndex];
+            charIndex++;
+        } else {
+            clearInterval(typingInterval);
+            currentMessageIndex++;
+
+            // Pause avant le message suivant
+            setTimeout(() => {
+                cinematicMessage.classList.remove('typing');
+                setTimeout(showNextMessage, 300);
+            }, 1500);
+        }
+    }, 50);
+}
+
+// ============= MINI-JEU BULLES =============
+const bubbleCompliments = [
+    { icon: "✨", text: "Tu illumines chaque conversation" },
+    { icon: "😊", text: "Ton sourire est contagieux" },
+    { icon: "💯", text: "Tu es authentique et vraie" },
+    { icon: "💛", text: "Tu as un cœur en or" },
+    { icon: "⭐", text: "Ta présence compte vraiment" },
+    { icon: "🌟", text: "Tu mérites le meilleur" },
+    { icon: "💝", text: "Tu es une personne incroyable" },
+    { icon: "🌈", text: "Deux semaines et déjà un impact" }
+];
+
+let discoveredCount = 0;
+
+function startBubblesGame() {
+    bubblesScreen.classList.add('show');
+
+    // Créer les bulles
+    bubbleCompliments.forEach((compliment, index) => {
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+        bubble.innerHTML = `
+            <span class="bubble-icon">${compliment.icon}</span>
+            <span class="bubble-text">${compliment.text}</span>
+        `;
+
+        bubble.addEventListener('click', () => {
+            if (!bubble.classList.contains('clicked')) {
+                bubble.classList.add('clicked');
+                discoveredCount++;
+                bubblesCounter.textContent = `${discoveredCount}/8 découvertes`;
+
+                // Toutes les bulles découvertes
+                if (discoveredCount === 8) {
+                    setTimeout(showFinalMessage, 2000);
+                }
+            }
+        });
+
+        bubblesContainer.appendChild(bubble);
+    });
+}
+
+function showFinalMessage() {
+    bubblesScreen.classList.remove('show');
+
+    // Message final touchant
+    cinematicScreen.classList.add('show');
+    cinematicMessage.textContent = '';
+    cinematicMessage.classList.add('typing');
+
+    const finalMessage = "Voilà Rita... Parce que tu comptes vraiment pour moi 💝✨";
+    let charIndex = 0;
+
+    const typingInterval = setInterval(() => {
+        if (charIndex < finalMessage.length) {
+            cinematicMessage.textContent += finalMessage[charIndex];
+            charIndex++;
+        } else {
+            clearInterval(typingInterval);
+        }
+    }, 50);
+}
