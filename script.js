@@ -75,7 +75,7 @@ const countdown = document.getElementById('countdown');
 const countdownNumber = document.getElementById('countdownNumber');
 
 // Set initial text and gif
-questionText.textContent = `${personName}... j'ai préparé quelque chose pour toi 💫`;
+questionText.textContent = `${personName}... j'ai un truc pour toi, prends pas trop la confiance 😭`;
 gifImage.src = gifUrl;
 
 // Gestion de l'intro et du loading screen
@@ -301,12 +301,12 @@ noBtn.addEventListener('touchstart', (e) => {
 noBtn.addEventListener('click', (e) => {
     e.preventDefault();
 
-    // Messages mignons quand elle essaie de fuir
+    // Messages taquins quand elle essaie de fuir
     const cuteMessages = [
-        'Allez... juste un petit regard ? 🥺',
-        'Tu vas adorer, promis ! 💕',
-        'Fais-moi confiance... 🌟',
-        'Bon d\'accord, prends ton temps 💫'
+        'Fais pas la timide, clique 😭',
+        'T\'inquiète, c\'est pas une demande en mariage 😂',
+        'Viens voir, tu vas pas regretter 😏',
+        'Tu veux vraiment me faire galérer comme ça ? 😭'
     ];
 
     const randomMessage = cuteMessages[Math.floor(Math.random() * cuteMessages.length)];
@@ -326,8 +326,8 @@ yesBtn.addEventListener('click', () => {
     buttonsContainer.classList.add('hide');
     hintText.classList.add('hide');
 
-    // Change text - Message plus touchant et personnel
-    questionText.textContent = `Pour toi ${personName} 💝`;
+    // Change text - Message personnel et taquin
+    questionText.textContent = `C'est pour toi ${personName} 😌`;
 
     // Démarre la musique automatiquement
     if (!audioStarted) {
@@ -361,14 +361,14 @@ yesBtn.addEventListener('click', () => {
             setTimeout(() => {
                 countdown.classList.remove('show');
 
-                // Ajoute un message touchant
+                // Ajoute un message taquin
                 const subtitle = document.createElement('p');
                 subtitle.style.fontSize = '18px';
                 subtitle.style.color = '#764ba2';
                 subtitle.style.marginTop = '10px';
                 subtitle.style.fontWeight = '400';
                 subtitle.style.opacity = '0';
-                subtitle.textContent = 'Parce que tu comptes beaucoup pour moi ✨';
+                subtitle.textContent = 'Je vais pas trop parler, regarde juste 😏';
                 questionText.parentElement.insertBefore(subtitle, countdown);
 
                 // Anime l'apparition du sous-titre
@@ -471,18 +471,18 @@ function createConfetti() {
 // ============= MESSAGES CINÉMATIQUES =============
 const cinematicMessages = [
     "Fatou...",
-    "Tu sais ce qui est fou?",
-    "Ça fait un an et demi qu'on se connaît...",
-    "Mais c'est comme si...",
-    "Tu avais toujours été là",
-    "Tu as cette énergie...",
-    "Cette authenticité...",
-    "Qui fait qu'on ne peut pas t'ignorer",
-    "Même sans le vouloir...",
-    "Tu rends les gens autour de toi meilleurs",
-    "Alors je voulais prendre un moment...",
-    "Pour que tu saches à quel point...",
-    "Tu comptes déjà 💫"
+    "Un an et demi déjà...",
+    "On va pas faire comme si t'avais été sage tout le long 😭",
+    "T'as fait tes petits coups...",
+    "J'ai rien oublié, au cas où 👀",
+    "Mais bon...",
+    "Avec toi, il se passe toujours quelque chose.",
+    "T'as ton délire, ton caractère...",
+    "Et bizarrement, c'est aussi pour ça que je t'apprécie.",
+    "En vrai, t'es devenue importante pour moi.",
+    "Prends pas trop la confiance après cette phrase 😭",
+    "Je voulais juste que tu le saches.",
+    "Voilà, c'est dit. 💫"
 ];
 
 let currentMessageIndex = 0;
@@ -527,14 +527,14 @@ function showNextMessage() {
 
 // ============= MINI-JEU BULLES =============
 const bubbleCompliments = [
-    { icon: "✨", text: "Tu illumines chaque conversation" },
-    { icon: "😊", text: "Ton sourire est contagieux" },
-    { icon: "💯", text: "Tu es authentique et vraie" },
-    { icon: "💛", text: "Tu as un cœur en or" },
-    { icon: "⭐", text: "Ta présence compte vraiment" },
-    { icon: "🌟", text: "Tu mérites le meilleur" },
-    { icon: "💝", text: "Tu es une personne incroyable" },
-    { icon: "🌈", text: "Un an et demi et toujours un impact" }
+    { icon: "😂", text: "Tu me fais rire, même quand tu forces un peu" },
+    { icon: "😤", text: "T'as ton caractère... personne peut nier ça" },
+    { icon: "👀", text: "Tes petits coups, je les ai en mémoire" },
+    { icon: "🎢", text: "Avec toi, y a jamais moyen de s'ennuyer" },
+    { icon: "💛", text: "T'as un bon cœur, faut quand même le dire" },
+    { icon: "✨", text: "Tu sais mettre l'ambiance, même sans prévenir" },
+    { icon: "🫶", text: "Un an et demi, ça commence à compter" },
+    { icon: "💫", text: "Tu comptes pour moi... mais calme-toi 😭" }
 ];
 
 let discoveredCount = 0;
@@ -583,12 +583,12 @@ function startBubblesGame() {
 function showFinalMessage() {
     bubblesScreen.classList.remove('show');
 
-    // Message final touchant
+    // Message final, léger mais sincère
     cinematicScreen.classList.add('show');
     cinematicMessage.textContent = '';
     cinematicMessage.classList.add('typing');
 
-    const finalMessage = "Voilà Fatou... Parce que tu comptes vraiment pour moi 💝✨";
+    const finalMessage = "Bon Fatou... je vais pas faire un grand discours non plus 😭 mais en vrai, je tiens à toi.";
     let charIndex = 0;
 
     const typingInterval = setInterval(() => {
@@ -607,12 +607,13 @@ function showFinalMessage() {
     }, 50);
 }
 
-// Signature en 4 étapes
+// Signature en 5 étapes
 const signatureSteps = [
     "Tu comptais vraiment pas skip tout ça hein? 😏",
-    "Non j'rigole 😂",
-    "Merci d'exister Fatou. 💝",
-    "Fatou, appelle-moi vite là 😭 faut qu'on regarde ton panier Shein ensemble, je te le prends jusqu'à 100 €… mais stp mets pas toute l'appli dedans 😂💗"
+    "Et non, prends pas trop la confiance 😂",
+    "Vas-y, appelle-moi vite.",
+    "On va regarder TON panier Shein ensemble.",
+    "Je te le prends jusqu'à 100 € 💗 Mais stp, mets pas toute l'appli dedans 😭"
 ];
 
 let currentSignatureStep = 0;
