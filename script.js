@@ -1,5 +1,5 @@
 // PERSONNALISATION
-const personName = "Dibaa"; // Change le prénom ici
+const personName = "Fatou"; // Change le prénom ici
 const gifUrl = "IMG_3151.jpg"; // Image célébration locale
 
 // ============= IMMERSION: Particules flottantes =============
@@ -399,7 +399,7 @@ function startExplosion() {
         explosionScreen.style.animation = 'shake 0.5s ease';
     }, 100);
 
-    // "RITA" explose
+    // "FATOU" explose
     setTimeout(() => {
         explosionName.classList.add('explode');
         vibrate([100, 50, 100]); // Pattern de vibration (Android)
@@ -470,9 +470,9 @@ function createConfetti() {
 
 // ============= MESSAGES CINÉMATIQUES =============
 const cinematicMessages = [
-    "Rita...",
+    "Fatou...",
     "Tu sais ce qui est fou?",
-    "Ça fait à peine deux semaines qu'on se connaît...",
+    "Ça fait un an et demi qu'on se connaît...",
     "Mais c'est comme si...",
     "Tu avais toujours été là",
     "Tu as cette énergie...",
@@ -534,7 +534,7 @@ const bubbleCompliments = [
     { icon: "⭐", text: "Ta présence compte vraiment" },
     { icon: "🌟", text: "Tu mérites le meilleur" },
     { icon: "💝", text: "Tu es une personne incroyable" },
-    { icon: "🌈", text: "Deux semaines et déjà un impact" }
+    { icon: "🌈", text: "Un an et demi et toujours un impact" }
 ];
 
 let discoveredCount = 0;
@@ -588,7 +588,7 @@ function showFinalMessage() {
     cinematicMessage.textContent = '';
     cinematicMessage.classList.add('typing');
 
-    const finalMessage = "Voilà Rita... Parce que tu comptes vraiment pour moi 💝✨";
+    const finalMessage = "Voilà Fatou... Parce que tu comptes vraiment pour moi 💝✨";
     let charIndex = 0;
 
     const typingInterval = setInterval(() => {
@@ -611,7 +611,8 @@ function showFinalMessage() {
 const signatureSteps = [
     "Tu comptais vraiment pas skip tout ça hein? 😏",
     "Non j'rigole 😂",
-    "Merci d'exister Rita. 💝"
+    "Merci d'exister Fatou. 💝",
+    "Fatou, appelle-moi vite là 😭 faut qu'on regarde ton panier Shein ensemble, je te le prends jusqu'à 100 €… mais stp mets pas toute l'appli dedans 😂💗"
 ];
 
 let currentSignatureStep = 0;
