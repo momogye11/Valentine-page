@@ -1,6 +1,6 @@
 // PERSONNALISATION
-const personName = "Fatou"; // Change le prénom ici
-const gifUrl = "IMG_3151.jpg"; // Image célébration locale
+const personName = "Morgane"; // Change le prénom ici
+const senderName = "Mohamed"; // Affiché dès l'intro : la page n'est jamais anonyme
 
 // ============= IMMERSION: Particules flottantes =============
 function createFloatingParticles() {
@@ -25,31 +25,12 @@ function vibrate(duration = 100) {
     }
 }
 
-// ============= IMMERSION: Sons =============
-function playClickSound() {
-    // Utilise Web Audio API pour un son subtil
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-
-    oscillator.frequency.value = 800;
-    oscillator.type = 'sine';
-
-    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-
-    oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + 0.1);
-}
-
 // Elements - Intro & Loading
 const introScreen = document.getElementById('introScreen');
 const introBtn = document.getElementById('introBtn');
 const loadingScreen = document.getElementById('loadingScreen');
 const loadingCountdown = document.getElementById('loadingCountdown');
+const skipLoadingBtn = document.getElementById('skipLoadingBtn');
 
 // Elements - Explosion & Cinematic
 const explosionScreen = document.getElementById('explosionScreen');
@@ -58,363 +39,105 @@ const explosionName = document.getElementById('explosionName');
 const confettiCanvas = document.getElementById('confettiCanvas');
 const cinematicScreen = document.getElementById('cinematicScreen');
 const cinematicMessage = document.getElementById('cinematicMessage');
-const bubblesScreen = document.getElementById('bubblesScreen');
-const bubblesContainer = document.getElementById('bubblesContainer');
-const bubblesCounter = document.getElementById('bubblesCounter');
+const skipCinematicBtn = document.getElementById('skipCinematicBtn');
 
-// Elements - Main page
-const questionText = document.getElementById('questionText');
+// Elements - Choix final
+const choiceScreen = document.getElementById('choiceScreen');
+const choiceQuestion = document.getElementById('choiceQuestion');
+const choiceButtons = document.getElementById('choiceButtons');
+const choiceHint = document.getElementById('choiceHint');
+const choiceAnswer = document.getElementById('choiceAnswer');
+const choiceSignature = document.getElementById('choiceSignature');
 const yesBtn = document.getElementById('yesBtn');
 const noBtn = document.getElementById('noBtn');
-const buttonsContainer = document.getElementById('buttonsContainer');
-const hintText = document.getElementById('hintText');
-const successGif = document.getElementById('successGif');
-const gifImage = document.getElementById('gifImage');
-const card = document.querySelector('.card');
-const countdown = document.getElementById('countdown');
-const countdownNumber = document.getElementById('countdownNumber');
 
-// Set initial text and gif
-questionText.textContent = `${personName}... j'ai un truc pour toi, prends pas trop la confiance 😭`;
-gifImage.src = gifUrl;
-
-// Gestion de l'intro et du loading screen
-introBtn.addEventListener('click', () => {
-    // Affiche le loading screen IMMÉDIATEMENT (avant de cacher l'intro)
-    loadingScreen.classList.add('show');
-
-    // Cache l'intro PAR-DESSUS
-    setTimeout(() => {
-        introScreen.classList.add('hide');
-
-        // Démarre la musique AUTOMATIQUEMENT
-        startAudio();
-
-        // Compte à rebours de 24 secondes BLOQUÉ
-        let timeLeft = 24;
-        loadingCountdown.textContent = timeLeft;
-
-        const loadingInterval = setInterval(() => {
-            timeLeft--;
-            loadingCountdown.textContent = timeLeft;
-
-            // Les 5 dernières secondes en rouge intense
-            if (timeLeft <= 5) {
-                loadingCountdown.style.background = 'none';
-                loadingCountdown.style.webkitTextFillColor = '#FF0000';
-                loadingCountdown.style.color = '#FF0000';
-                loadingCountdown.style.textShadow = '0 0 50px rgba(255, 0, 0, 0.8)';
-                loadingCountdown.style.animation = 'countdownMegaPulse 0.5s ease-in-out infinite';
-            }
-
-            if (timeLeft === 0) {
-                clearInterval(loadingInterval);
-
-                // Cache le loading screen
-                loadingScreen.classList.add('hide');
-
-                // Lance l'EXPLOSION WOW!
-                setTimeout(() => {
-                    loadingScreen.style.display = 'none';
-                    startExplosion();
-                }, 800);
-            }
-        }, 1000);
-    }, 100);
-});
-
-// Empêche de skip avec ESC ou autres touches
-document.addEventListener('keydown', (e) => {
-    if (loadingScreen.classList.contains('show')) {
-        e.preventDefault();
-        return false;
-    }
-});
-
-// Audio Player (HTML5 - compatible mobile)
+// ============= AUDIO =============
 let audioStarted = false;
-const soundBtn = document.getElementById('sound-btn');
-
-// Crée l'élément audio
-const audio = new Audio('Guy2Bezbar - Je pense à toi (Paroles).mp3');
+// Nom de fichier volontairement sans espace ni accent : ça casse le chargement une fois hébergé.
+const audio = new Audio('music.mp3');
 audio.loop = true;
-audio.volume = 0.5;
-
-// Précharge l'audio
+audio.volume = 0.35;
 audio.preload = 'auto';
 
 function startAudio() {
     if (audioStarted) return;
     audioStarted = true;
 
-    console.log('Démarrage de la musique...');
-
-    // Démarre au début de la chanson
     audio.currentTime = 0;
-
-    // Lance la lecture
     const playPromise = audio.play();
 
     if (playPromise !== undefined) {
-        playPromise
-            .then(() => {
-                console.log('✅ Musique démarrée avec succès');
-
-                // Cache le bouton avec animation
-                if (soundBtn) {
-                    soundBtn.style.opacity = '0';
-                    setTimeout(() => {
-                        soundBtn.style.display = 'none';
-                    }, 300);
-                }
-            })
-            .catch((error) => {
-                console.error('❌ Erreur de lecture audio:', error);
-                audioStarted = false; // Permet de réessayer
-                alert('Impossible de lire la musique. Réessaye !');
-            });
+        // Si le navigateur refuse la lecture, on laisse simplement la page continuer sans son.
+        playPromise.catch(() => {
+            audioStarted = false;
+        });
     }
 }
 
-// Gestion du bouton son
-if (soundBtn) {
-    // Click pour desktop
-    soundBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        console.log('🖱️ Bouton cliqué');
-        startAudio();
-    });
+// ============= ÉTAPE 1: INTRO -> TRANSITION =============
+let loadingInterval = null;
+let loadingDone = false;
 
-    // Touch pour mobile (plus fiable)
-    soundBtn.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        console.log('📱 Bouton touché');
-        startAudio();
-    }, { passive: false });
+function finishLoading() {
+    if (loadingDone) return;
+    loadingDone = true;
+
+    clearInterval(loadingInterval);
+    loadingScreen.classList.add('hide');
+
+    setTimeout(() => {
+        loadingScreen.style.display = 'none';
+        startExplosion();
+    }, 600);
 }
 
-// Button "No" fleeing behavior
-let isNoBtnActive = true;
+introBtn.addEventListener('click', () => {
+    // Affiche la transition IMMÉDIATEMENT (avant de cacher l'intro)
+    loadingScreen.classList.add('show');
 
-function moveNoButton(mouseX, mouseY) {
-    if (!isNoBtnActive) return;
-
-    const btnRect = noBtn.getBoundingClientRect();
-    const btnCenterX = btnRect.left + btnRect.width / 2;
-    const btnCenterY = btnRect.top + btnRect.height / 2;
-
-    const distance = Math.sqrt(
-        Math.pow(mouseX - btnCenterX, 2) +
-        Math.pow(mouseY - btnCenterY, 2)
-    );
-
-    const threshold = 120; // Distance seuil en pixels - détection normale
-
-    if (distance < threshold) {
-        // Déplacer le bouton dans .card pour qu'il soit relatif à la carte entière
-        if (noBtn.parentElement !== card) {
-            noBtn.classList.add('fleeing');
-            card.appendChild(noBtn);
-        }
-
-        // Calcule une direction opposée à la souris
-        const directionX = btnCenterX - mouseX;
-        const directionY = btnCenterY - mouseY;
-        const moveDistance = 100; // Distance de déplacement à chaque fuite
-
-        // Normalise la direction
-        const length = Math.sqrt(directionX * directionX + directionY * directionY);
-        const normalizedX = directionX / length;
-        const normalizedY = directionY / length;
-
-        // Calcule position relative à la carte
-        const cardRect = card.getBoundingClientRect();
-        const currentX = btnRect.left - cardRect.left;
-        const currentY = btnRect.top - cardRect.top;
-
-        // Nouvelle position en s'éloignant de la souris
-        let newX = currentX + (normalizedX * moveDistance);
-        let newY = currentY + (normalizedY * moveDistance);
-
-        // TRES grande marge de sécurité (presque 1/4 du cadre)
-        const margin = 120;
-
-        // Si trop proche des bords, téléporte au centre ou position sûre
-        const safeZoneMinX = margin;
-        const safeZoneMaxX = cardRect.width - btnRect.width - margin;
-        const safeZoneMinY = margin;
-        const safeZoneMaxY = cardRect.height - btnRect.height - margin;
-
-        // Vérifie si la nouvelle position est dans la zone de danger
-        if (newX < safeZoneMinX || newX > safeZoneMaxX || newY < safeZoneMinY || newY > safeZoneMaxY) {
-            // Téléporte vers une position aléatoire au centre de la carte
-            const centerZoneWidth = cardRect.width * 0.5;
-            const centerZoneHeight = cardRect.height * 0.5;
-            newX = (cardRect.width - btnRect.width - centerZoneWidth) / 2 + Math.random() * (centerZoneWidth - btnRect.width);
-            newY = (cardRect.height - btnRect.height - centerZoneHeight) / 2 + Math.random() * (centerZoneHeight - btnRect.height);
-        }
-
-        noBtn.style.left = `${newX}px`;
-        noBtn.style.top = `${newY}px`;
-    }
-}
-
-// Mouse move event for desktop
-document.addEventListener('mousemove', (e) => {
-    moveNoButton(e.clientX, e.clientY);
-});
-
-// Touch event for mobile
-noBtn.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    if (!isNoBtnActive) return;
-
-    // Déplacer le bouton dans .card pour qu'il soit relatif à la carte entière
-    if (noBtn.parentElement !== card) {
-        noBtn.classList.add('fleeing');
-        card.appendChild(noBtn);
-    }
-
-    const cardRect = card.getBoundingClientRect();
-    const btnRect = noBtn.getBoundingClientRect();
-
-    // TRES grande marge pour éviter les bords (120px minimum)
-    const margin = 120;
-
-    // Zone centrale sûre (50% du cadre au centre)
-    const centerZoneWidth = cardRect.width * 0.5;
-    const centerZoneHeight = cardRect.height * 0.5;
-    const centerStartX = (cardRect.width - centerZoneWidth) / 2;
-    const centerStartY = (cardRect.height - centerZoneHeight) / 2;
-
-    // Déplace dans la zone centrale uniquement
-    const newX = centerStartX + Math.random() * (centerZoneWidth - btnRect.width);
-    const newY = centerStartY + Math.random() * (centerZoneHeight - btnRect.height);
-
-    noBtn.style.left = `${newX}px`;
-    noBtn.style.top = `${newY}px`;
-});
-
-// Click event for "No" button (affiche emoji impatient)
-noBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-
-    // Messages taquins quand elle essaie de fuir
-    const cuteMessages = [
-        'Fais pas la timide, clique 😭',
-        'T\'inquiète, c\'est pas une demande en mariage 😂',
-        'Viens voir, tu vas pas regretter 😏',
-        'Tu veux vraiment me faire galérer comme ça ? 😭'
-    ];
-
-    const randomMessage = cuteMessages[Math.floor(Math.random() * cuteMessages.length)];
-    questionText.textContent = randomMessage;
-    questionText.style.fontSize = '28px';
-
-    // Cache les boutons et le hint
-    buttonsContainer.classList.add('hide');
-    hintText.classList.add('hide');
-});
-
-// Click event for "Yes" button
-yesBtn.addEventListener('click', () => {
-    isNoBtnActive = false;
-
-    // Hide buttons and hint
-    buttonsContainer.classList.add('hide');
-    hintText.classList.add('hide');
-
-    // Change text - Message personnel et taquin
-    questionText.textContent = `C'est pour toi ${personName} 😌`;
-
-    // Démarre la musique automatiquement
-    if (!audioStarted) {
+    setTimeout(() => {
+        introScreen.classList.add('hide');
         startAudio();
-    }
 
-    // Affiche le compte à rebours
-    countdown.classList.add('show');
+        let timeLeft = 5;
+        loadingCountdown.textContent = timeLeft;
 
-    // Compte à rebours de 24 à 0
-    let timeLeft = 24;
-    countdownNumber.textContent = timeLeft;
+        loadingInterval = setInterval(() => {
+            timeLeft--;
+            loadingCountdown.textContent = timeLeft;
 
-    const countdownInterval = setInterval(() => {
-        timeLeft--;
-        countdownNumber.textContent = timeLeft;
-
-        // Animation spéciale pour les dernières secondes
-        if (timeLeft <= 5) {
-            countdownNumber.style.color = '#FF6B6B';
-            countdownNumber.style.animation = 'countdownPulse 0.5s ease-in-out infinite';
-        }
-
-        if (timeLeft === 0) {
-            clearInterval(countdownInterval);
-
-            // Cache le compte à rebours
-            countdown.style.opacity = '0';
-            countdown.style.transform = 'scale(0.8)';
-
-            setTimeout(() => {
-                countdown.classList.remove('show');
-
-                // Ajoute un message taquin
-                const subtitle = document.createElement('p');
-                subtitle.style.fontSize = '18px';
-                subtitle.style.color = '#764ba2';
-                subtitle.style.marginTop = '10px';
-                subtitle.style.fontWeight = '400';
-                subtitle.style.opacity = '0';
-                subtitle.textContent = 'Je vais pas trop parler, regarde juste 😏';
-                questionText.parentElement.insertBefore(subtitle, countdown);
-
-                // Anime l'apparition du sous-titre
-                setTimeout(() => {
-                    subtitle.style.transition = 'all 0.8s ease';
-                    subtitle.style.opacity = '1';
-                }, 100);
-
-                // Affiche l'image après le message
-                setTimeout(() => {
-                    successGif.classList.add('show');
-                }, 800);
-            }, 500);
-        }
-    }, 1000);
+            if (timeLeft <= 0) {
+                finishLoading();
+            }
+        }, 1000);
+    }, 100);
 });
 
-// ============= EXPLOSION WOW =============
+skipLoadingBtn.addEventListener('click', finishLoading);
+
+// ============= ÉTAPE 2: EXPLOSION =============
 function startExplosion() {
     explosionScreen.classList.add('show');
 
-    // Flash blanc aveuglant + VIBRATION + SHAKE pour iOS!
     setTimeout(() => {
         flashWhite.classList.add('active');
-        vibrate(200); // Vibration forte à l'explosion (Android)
-
-        // Shake l'écran pour simuler vibration sur iOS
+        vibrate(200);
         explosionScreen.style.animation = 'shake 0.5s ease';
     }, 100);
 
-    // "FATOU" explose
     setTimeout(() => {
         explosionName.classList.add('explode');
-        vibrate([100, 50, 100]); // Pattern de vibration (Android)
+        vibrate([100, 50, 100]);
     }, 300);
 
-    // Confettis!
     setTimeout(() => {
         createConfetti();
     }, 500);
 
-    // Transition vers les messages cinématiques
     setTimeout(() => {
         explosionScreen.classList.remove('show');
         startCinematicMessages();
-    }, 3000);
+    }, 2800);
 }
 
 // Confettis animés
@@ -468,24 +191,20 @@ function createConfetti() {
     animate();
 }
 
-// ============= MESSAGES CINÉMATIQUES =============
+// ============= ÉTAPE 3: MESSAGES CINÉMATIQUES =============
 const cinematicMessages = [
-    "Fatou...",
-    "Un an et demi déjà...",
-    "On va pas faire comme si t'avais été sage tout le long 😭",
-    "T'as fait tes petits coups...",
-    "J'ai rien oublié, au cas où 👀",
-    "Mais bon...",
-    "Avec toi, il se passe toujours quelque chose.",
-    "T'as ton délire, ton caractère...",
-    "Et bizarrement, c'est aussi pour ça que je t'apprécie.",
-    "En vrai, t'es devenue importante pour moi.",
-    "Prends pas trop la confiance après cette phrase 😭",
-    "Je voulais juste que tu le saches.",
-    "Voilà, c'est dit. 💫"
+    `${personName}.`,
+    "Ça fait un bail, je sais.",
+    "Je vais pas te faire un roman, t'inquiète.",
+    "On a bossé ensemble, on s'est perdus de vue, c'est la vie.",
+    "Mais j'ai repensé à un truc tout bête.",
+    "Un resto. Un soir. Toi, moi.",
+    "On rattrape le temps, on rigole, et basta."
 ];
 
 let currentMessageIndex = 0;
+let typingInterval = null;
+let cinematicDone = false;
 
 function startCinematicMessages() {
     cinematicScreen.classList.add('show');
@@ -493,12 +212,10 @@ function startCinematicMessages() {
 }
 
 function showNextMessage() {
+    if (cinematicDone) return;
+
     if (currentMessageIndex >= cinematicMessages.length) {
-        // Tous les messages sont affichés, passer aux bulles
-        setTimeout(() => {
-            cinematicScreen.classList.remove('show');
-            startBubblesGame();
-        }, 2000);
+        setTimeout(finishCinematic, 1200);
         return;
     }
 
@@ -508,7 +225,7 @@ function showNextMessage() {
 
     // Effet machine à écrire
     let charIndex = 0;
-    const typingInterval = setInterval(() => {
+    typingInterval = setInterval(() => {
         if (charIndex < message.length) {
             cinematicMessage.textContent += message[charIndex];
             charIndex++;
@@ -516,173 +233,51 @@ function showNextMessage() {
             clearInterval(typingInterval);
             currentMessageIndex++;
 
-            // Pause avant le message suivant
             setTimeout(() => {
                 cinematicMessage.classList.remove('typing');
-                setTimeout(showNextMessage, 300);
-            }, 1500);
+                setTimeout(showNextMessage, 250);
+            }, 1300);
         }
-    }, 50);
+    }, 45);
 }
 
-// ============= MINI-JEU BULLES =============
-const bubbleCompliments = [
-    { icon: "😂", text: "Tu me fais rire, même quand tu forces un peu" },
-    { icon: "😤", text: "T'as ton caractère... personne peut nier ça" },
-    { icon: "👀", text: "Tes petits coups, je les ai en mémoire" },
-    { icon: "🎢", text: "Avec toi, y a jamais moyen de s'ennuyer" },
-    { icon: "💛", text: "T'as un bon cœur, faut quand même le dire" },
-    { icon: "✨", text: "Tu sais mettre l'ambiance, même sans prévenir" },
-    { icon: "🫶", text: "Un an et demi, ça commence à compter" },
-    { icon: "💫", text: "Tu comptes pour moi... mais calme-toi 😭" }
-];
+function finishCinematic() {
+    if (cinematicDone) return;
+    cinematicDone = true;
 
-let discoveredCount = 0;
-
-function startBubblesGame() {
-    bubblesScreen.classList.add('show');
-
-    // Créer les bulles
-    bubbleCompliments.forEach((compliment, index) => {
-        const bubble = document.createElement('div');
-        bubble.className = 'bubble';
-        bubble.innerHTML = `
-            <span class="bubble-icon">${compliment.icon}</span>
-            <span class="bubble-text">${compliment.text}</span>
-        `;
-
-        bubble.addEventListener('click', () => {
-            if (!bubble.classList.contains('clicked')) {
-                bubble.classList.add('clicked');
-                discoveredCount++;
-                bubblesCounter.textContent = `${discoveredCount}/8 découvertes`;
-
-                // Son + vibration + animation pulse
-                playClickSound();
-                vibrate(50); // Android
-
-                // Animation pulse pour feedback visuel (iOS/tous)
-                bubble.style.animation = 'bubblePulse 0.3s ease';
-
-                // Toutes les bulles découvertes
-                if (discoveredCount === 8) {
-                    vibrate([100, 50, 100, 50, 100]); // Android
-
-                    // Shake screen pour iOS
-                    bubblesScreen.style.animation = 'shake 0.6s ease';
-
-                    setTimeout(showFinalMessage, 2000);
-                }
-            }
-        });
-
-        bubblesContainer.appendChild(bubble);
-    });
+    clearInterval(typingInterval);
+    cinematicScreen.classList.remove('show');
+    showChoiceScreen();
 }
 
-function showFinalMessage() {
-    bubblesScreen.classList.remove('show');
+skipCinematicBtn.addEventListener('click', finishCinematic);
 
-    // Message final, léger mais sincère
-    cinematicScreen.classList.add('show');
-    cinematicMessage.textContent = '';
-    cinematicMessage.classList.add('typing');
-
-    const finalMessage = "Bon Fatou... je vais pas faire un grand discours non plus 😭 mais en vrai, je tiens à toi.";
-    let charIndex = 0;
-
-    const typingInterval = setInterval(() => {
-        if (charIndex < finalMessage.length) {
-            cinematicMessage.textContent += finalMessage[charIndex];
-            charIndex++;
-        } else {
-            clearInterval(typingInterval);
-
-            // Signature en 3 étapes puis fermeture
-            setTimeout(() => {
-                currentSignatureStep = 0; // Reset le compteur
-                showSignature();
-            }, 2000);
-        }
-    }, 50);
+// ============= ÉTAPE 4: LE CHOIX (les deux réponses sont vraies) =============
+function showChoiceScreen() {
+    choiceScreen.classList.add('show');
 }
 
-// Signature en 5 étapes
-const signatureSteps = [
-    "Tu comptais vraiment pas skip tout ça hein? 😏",
-    "Et non, prends pas trop la confiance 😂",
-    "Vas-y, appelle-moi vite.",
-    "On va regarder TON panier Shein ensemble.",
-    "Je te le prends jusqu'à 100 € 💗 Mais stp, mets pas toute l'appli dedans 😭"
-];
+function revealAnswer(text) {
+    // Une fois qu'elle a répondu, on ne redemande pas : les boutons disparaissent.
+    choiceButtons.classList.add('hide');
+    choiceHint.classList.add('hide');
+    choiceQuestion.classList.add('answered');
 
-let currentSignatureStep = 0;
+    choiceAnswer.textContent = text;
+    choiceAnswer.classList.add('show');
 
-function showSignature() {
-    if (currentSignatureStep >= signatureSteps.length) {
-        // Tous les messages affichés, montrer la fermeture
-        setTimeout(showFinalClosure, 2000); // Réduit à 2 secondes
-        return;
-    }
-
-    const message = signatureSteps[currentSignatureStep];
-    cinematicMessage.textContent = '';
-
-    // Effet machine à écrire
-    let charIndex = 0;
-    const typingInterval = setInterval(() => {
-        if (charIndex < message.length) {
-            cinematicMessage.textContent += message[charIndex];
-            charIndex++;
-        } else {
-            clearInterval(typingInterval);
-            currentSignatureStep++;
-
-            // Pause avant le prochain message ou la fermeture
-            setTimeout(() => {
-                showSignature(); // Appelle toujours, la fonction gère la fin
-            }, currentSignatureStep === 1 ? 1500 : 2500); // "Non j'rigole" reste moins longtemps
-        }
-    }, 50);
-}
-
-// Fermeture finale avec fade to black
-function showFinalClosure() {
-    // Fade to black
-    cinematicScreen.style.transition = 'background 3s ease';
-    cinematicScreen.style.background = 'black';
-
-    // Fade out le message actuel
-    cinematicMessage.style.transition = 'opacity 2s ease';
-    cinematicMessage.style.opacity = '0';
-
-    // Après 2 secondes, afficher la signature finale
     setTimeout(() => {
-        cinematicMessage.textContent = '';
-        cinematicMessage.style.opacity = '1';
-        cinematicMessage.style.fontSize = '24px';
-        cinematicMessage.style.textAlign = 'right';
-        cinematicMessage.style.position = 'absolute';
-        cinematicMessage.style.bottom = '40px';
-        cinematicMessage.style.right = '40px';
-        cinematicMessage.style.fontStyle = 'italic';
-        cinematicMessage.style.transition = 'opacity 2s ease';
-
-        // Écrire "Mohamed ✨" simple et classe
-        const finalSignature = "Mohamed ✨";
-        let charIndex = 0;
-        const typingInterval = setInterval(() => {
-            if (charIndex < finalSignature.length) {
-                cinematicMessage.textContent += finalSignature[charIndex];
-                charIndex++;
-            } else {
-                clearInterval(typingInterval);
-
-                // Fade out après 3 secondes
-                setTimeout(() => {
-                    cinematicMessage.style.opacity = '0';
-                }, 3000);
-            }
-        }, 100);
-    }, 2000);
+        choiceSignature.classList.add('show');
+    }, 1400);
 }
+
+yesBtn.addEventListener('click', () => {
+    vibrate([100, 50, 100]);
+    createConfetti();
+    revealAnswer("Sérieux ? Parfait. Dis-moi juste le jour qui t'arrange, je m'occupe du reste 🤝");
+});
+
+noBtn.addEventListener('click', () => {
+    // Un "non" est un vrai non : pas de relance, pas de culpabilisation.
+    revealAnswer("Tranquille, c'est noté. Aucun souci et aucune relance, promis. Prends soin de toi 👌");
+});
