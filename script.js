@@ -195,12 +195,13 @@ function createConfetti() {
 // ============= ÉTAPE 3: MESSAGES CINÉMATIQUES =============
 const cinematicMessages = [
     `${personName}.`,
-    "Ça fait un bail, je sais.",
-    "Je vais pas te faire un roman, t'inquiète.",
-    "On a bossé ensemble, on s'est perdus de vue, c'est la vie.",
-    "Mais j'ai repensé à un truc tout bête.",
-    "Un resto. Un soir. Toi, moi.",
-    "On rattrape le temps, on rigole, et basta."
+    "Non, t'es pas piratée. C'est bien moi.",
+    "Ça fait un bail. T'as survécu, apparemment.",
+    "Bon, j'avoue un truc.",
+    "J'ai codé un site entier.",
+    "Pour une question. Une seule.",
+    "J'aurais pu envoyer un texto, je sais.",
+    "Mais on fait avec ce qu'on a."
 ];
 
 let currentMessageIndex = 0;
@@ -266,10 +267,11 @@ function revealAnswer(text) {
 yesBtn.addEventListener('click', () => {
     vibrate([100, 50, 100]);
     createConfetti();
-    revealAnswer("Sérieux ? Parfait. Dis-moi juste le jour qui t'arrange, je m'occupe du reste.");
+    revealAnswer("Bah voilà. Dis-moi quel jour, je réserve. Et non, c'est pas un McDo.");
 });
 
 noBtn.addEventListener('click', () => {
-    // Un "non" est un vrai non : pas de relance, pas de culpabilisation.
-    revealAnswer("Tranquille, c'est noté. Aucun souci et aucune relance, promis. Prends soin de toi.");
+    // Un "non" reste un vrai non. La blague est à mes dépens, jamais aux siens :
+    // elle doit pouvoir fermer l'onglet en rigolant, pas en culpabilisant.
+    revealAnswer("Ah. Bon. Bah au moins j'aurai révisé mon CSS. Passe une bonne soirée.");
 });

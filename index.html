@@ -9,7 +9,7 @@
     <title>Pour Morgane 💫</title>
     <!-- IMPORTANT : garder le même ?v= sur le CSS et le JS, et l'incrémenter à chaque déploiement.
          Sans ça le navigateur ressert l'ancienne feuille de style et la page s'affiche cassée. -->
-    <link rel="stylesheet" href="style.css?v=morgane-v2">
+    <link rel="stylesheet" href="style.css?v=morgane-v3">
 </head>
 <body>
     <!-- Particules flottantes permanentes -->
@@ -20,7 +20,7 @@
         <div class="intro-content">
             <p class="eyebrow">Une question, une seule</p>
             <h1 class="intro-title">Morgane</h1>
-            <p class="intro-message">C'est Mohamed.<br>Quarante secondes de ton temps, pas plus.</p>
+            <p class="intro-message">C'est Mohamed.<br>Quarante secondes chrono.</p>
             <button class="btn btn-primary intro-btn" id="introBtn">Vas-y, j'écoute</button>
         </div>
     </div>
@@ -31,7 +31,7 @@
             <h1 class="loading-name">Morgane</h1>
             <p class="loading-message">Deux secondes, je pose le décor</p>
             <div class="loading-countdown" id="loadingCountdown">24</div>
-            <p class="loading-subtext">Laisse tourner, ça vaut le coup</p>
+            <p class="loading-subtext">Laisse tourner, j'ai galéré sur cette partie</p>
         </div>
     </div>
 
@@ -52,21 +52,22 @@
         <!-- tabindex="-1" : sans lui, le focus() du script est ignoré et le lecteur
              d'écran resterait sur l'écran précédent. -->
         <div class="choice-card" tabindex="-1" role="group" aria-labelledby="choiceQuestion">
-            <p class="eyebrow" id="choiceEyebrow">Alors&nbsp;?</p>
-            <h2 class="choice-question" id="choiceQuestion">Un resto.<br>Un soir de ton choix.</h2>
+            <p class="eyebrow" id="choiceEyebrow">La fameuse question</p>
+            <h2 class="choice-question" id="choiceQuestion">Tu manges toujours,<br>j'imagine&nbsp;?</h2>
 
             <div class="choice-buttons" id="choiceButtons">
-                <button class="btn btn-secondary" id="noBtn">Non, ça ira</button>
+                <button class="btn btn-secondary" id="noBtn">Nan, ça ira</button>
                 <button class="btn btn-primary" id="yesBtn">Pourquoi pas</button>
             </div>
 
-            <p class="choice-hint" id="choiceHint">Réponds ce que tu penses vraiment, y a zéro pression.</p>
+            <!-- Pas de "celui de gauche" : sous 480px les boutons s'empilent et la phrase serait fausse. -->
+            <p class="choice-hint" id="choiceHint">Deux boutons, aucun piège. Les deux marchent vraiment.</p>
             <p class="choice-answer" id="choiceAnswer"></p>
 
             <p class="choice-signature" id="choiceSignature">Mohamed</p>
         </div>
     </div>
 
-    <script src="script.js?v=morgane-v2"></script>
+    <script src="script.js?v=morgane-v3"></script>
 </body>
 </html>
