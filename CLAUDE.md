@@ -18,7 +18,9 @@ These are deliberate product decisions, not oversights. Do not "fix" them:
 2. **The "no" button is real.** It is the same size as the "yes" button, it never moves, never flees
    the cursor, and clicking it ends the page gracefully with no retry and no guilt-trip. Earlier
    versions of this project had a cursor-fleeing "no" button — it was removed on purpose.
-3. **Nothing is unskippable.** Every timed screen has a visible "Passer →" button.
+
+The opening countdown (`COUNTDOWN_SECONDS`, currently 24) has no skip button: that is the owner's
+deliberate choice, made after being asked. Closing the tab remains the exit.
 
 ## Architecture
 
@@ -30,14 +32,30 @@ These are deliberate product decisions, not oversights. Do not "fix" them:
 ### Flow (script.js)
 | Step | Function | Notes |
 |---|---|---|
-| Intro click | `introBtn` listener | Starts audio, launches the 5s countdown |
-| Transition | `finishLoading()` | Skippable via `#skipLoadingBtn`; `loadingDone` guards double-fire |
+| Intro click | `introBtn` listener | Starts audio, launches the countdown |
+| Countdown | inline interval | `COUNTDOWN_SECONDS` (24); last 5s add `.urgent` (red) |
 | Explosion | `startExplosion()` → `createConfetti()` | Flash, name blow-up, confetti canvas |
 | Cinematic | `startCinematicMessages()` → `showNextMessage()` | Typewriter effect over `cinematicMessages` |
 | Choice | `showChoiceScreen()` → `revealAnswer()` | Both buttons call `revealAnswer()` and hide the buttons |
 
-The `loadingDone` and `cinematicDone` flags exist so that clicking "Passer" while a timer is still
-running cannot advance the sequence twice.
+`prefersReducedMotion` (from `matchMedia`) disables confetti, particles, shake and vibration while
+keeping the sequence intact.
+
+### Cache busting — read before deploying
+`index.html` carries a `?v=` query on **both** `style.css` and `script.js`, and they must be bumped
+**together** on every deploy. A version bumped on the JS but not the CSS is what produced the
+black-text, broken-layout render on 2026-08-03: the browser reused the previous stylesheet, which had
+no rules for the current markup.
+
+### Styling conventions
+`style.css` opens with a `:root` token block (colors, type scale, 8px spacing scale, motion durations
+and easings). Use those variables rather than raw values. Notable decisions:
+- `--scrim` is a radial darkening overlay on every screen. The background gradient ends in light pink
+  (`#f093fb`), where white text would fall to ~2.2:1 contrast — the scrim keeps it above 4.5:1.
+- The choice screen's buttons stack below **480px**, not 400px: common phones are 360–430px wide, and
+  side-by-side buttons wrap their labels at those widths.
+- `.choice-card`'s stagger animation lists its children explicitly. A `> *` selector would also match
+  `.choice-answer` / `.choice-signature`, whose `both` fill-mode would reveal the answer early.
 
 ## Customization
 

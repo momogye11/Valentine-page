@@ -1,9 +1,16 @@
 // PERSONNALISATION
 const personName = "Morgane"; // Change le prénom ici
 const senderName = "Mohamed"; // Affiché dès l'intro : la page n'est jamais anonyme
+const COUNTDOWN_SECONDS = 24; // Durée du compte à rebours d'ouverture
+
+// Respecte le réglage système "réduire les animations" : on garde le déroulé,
+// on coupe seulement le décoratif (confettis, shake, particules).
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // ============= IMMERSION: Particules flottantes =============
 function createFloatingParticles() {
+    if (prefersReducedMotion) return;
+
     const container = document.getElementById('floatingParticles');
     for (let i = 0; i < 30; i++) {
         const particle = document.createElement('div');
@@ -15,34 +22,33 @@ function createFloatingParticles() {
     }
 }
 
-// Lance les particules au chargement
 createFloatingParticles();
 
 // ============= IMMERSION: Vibrations =============
 function vibrate(duration = 100) {
-    if (navigator.vibrate) {
+    if (navigator.vibrate && !prefersReducedMotion) {
         navigator.vibrate(duration);
     }
 }
 
-// Elements - Intro & Loading
+// Elements - Intro & compte à rebours
 const introScreen = document.getElementById('introScreen');
 const introBtn = document.getElementById('introBtn');
 const loadingScreen = document.getElementById('loadingScreen');
 const loadingCountdown = document.getElementById('loadingCountdown');
-const skipLoadingBtn = document.getElementById('skipLoadingBtn');
 
-// Elements - Explosion & Cinematic
+// Elements - Explosion & cinématique
 const explosionScreen = document.getElementById('explosionScreen');
 const flashWhite = document.getElementById('flashWhite');
 const explosionName = document.getElementById('explosionName');
 const confettiCanvas = document.getElementById('confettiCanvas');
 const cinematicScreen = document.getElementById('cinematicScreen');
 const cinematicMessage = document.getElementById('cinematicMessage');
-const skipCinematicBtn = document.getElementById('skipCinematicBtn');
 
 // Elements - Choix final
 const choiceScreen = document.getElementById('choiceScreen');
+const choiceCard = document.querySelector('.choice-card');
+const choiceEyebrow = document.getElementById('choiceEyebrow');
 const choiceQuestion = document.getElementById('choiceQuestion');
 const choiceButtons = document.getElementById('choiceButtons');
 const choiceHint = document.getElementById('choiceHint');
@@ -67,53 +73,46 @@ function startAudio() {
     const playPromise = audio.play();
 
     if (playPromise !== undefined) {
-        // Si le navigateur refuse la lecture, on laisse simplement la page continuer sans son.
+        // Si le navigateur refuse la lecture, la page continue simplement sans son.
         playPromise.catch(() => {
             audioStarted = false;
         });
     }
 }
 
-// ============= ÉTAPE 1: INTRO -> TRANSITION =============
-let loadingInterval = null;
-let loadingDone = false;
-
-function finishLoading() {
-    if (loadingDone) return;
-    loadingDone = true;
-
-    clearInterval(loadingInterval);
-    loadingScreen.classList.add('hide');
-
-    setTimeout(() => {
-        loadingScreen.style.display = 'none';
-        startExplosion();
-    }, 600);
-}
-
+// ============= ÉTAPE 1: INTRO -> COMPTE À REBOURS =============
 introBtn.addEventListener('click', () => {
-    // Affiche la transition IMMÉDIATEMENT (avant de cacher l'intro)
+    // Affiche le compte à rebours IMMÉDIATEMENT (avant de cacher l'intro)
     loadingScreen.classList.add('show');
 
     setTimeout(() => {
         introScreen.classList.add('hide');
         startAudio();
 
-        let timeLeft = 5;
+        let timeLeft = COUNTDOWN_SECONDS;
         loadingCountdown.textContent = timeLeft;
 
-        loadingInterval = setInterval(() => {
+        const loadingInterval = setInterval(() => {
             timeLeft--;
             loadingCountdown.textContent = timeLeft;
 
+            // Les 5 dernières secondes passent en rouge
+            if (timeLeft <= 5) {
+                loadingCountdown.classList.add('urgent');
+            }
+
             if (timeLeft <= 0) {
-                finishLoading();
+                clearInterval(loadingInterval);
+                loadingScreen.classList.add('hide');
+
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                    startExplosion();
+                }, 700);
             }
         }, 1000);
     }, 100);
 });
-
-skipLoadingBtn.addEventListener('click', finishLoading);
 
 // ============= ÉTAPE 2: EXPLOSION =============
 function startExplosion() {
@@ -122,7 +121,9 @@ function startExplosion() {
     setTimeout(() => {
         flashWhite.classList.add('active');
         vibrate(200);
-        explosionScreen.style.animation = 'shake 0.5s ease';
+        if (!prefersReducedMotion) {
+            explosionScreen.style.animation = 'shake 0.5s ease';
+        }
     }, 100);
 
     setTimeout(() => {
@@ -130,9 +131,7 @@ function startExplosion() {
         vibrate([100, 50, 100]);
     }, 300);
 
-    setTimeout(() => {
-        createConfetti();
-    }, 500);
+    setTimeout(createConfetti, 500);
 
     setTimeout(() => {
         explosionScreen.classList.remove('show');
@@ -142,6 +141,8 @@ function startExplosion() {
 
 // Confettis animés
 function createConfetti() {
+    if (prefersReducedMotion) return;
+
     const canvas = confettiCanvas;
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
@@ -203,8 +204,6 @@ const cinematicMessages = [
 ];
 
 let currentMessageIndex = 0;
-let typingInterval = null;
-let cinematicDone = false;
 
 function startCinematicMessages() {
     cinematicScreen.classList.add('show');
@@ -212,10 +211,11 @@ function startCinematicMessages() {
 }
 
 function showNextMessage() {
-    if (cinematicDone) return;
-
     if (currentMessageIndex >= cinematicMessages.length) {
-        setTimeout(finishCinematic, 1200);
+        setTimeout(() => {
+            cinematicScreen.classList.remove('show');
+            showChoiceScreen();
+        }, 1200);
         return;
     }
 
@@ -225,7 +225,7 @@ function showNextMessage() {
 
     // Effet machine à écrire
     let charIndex = 0;
-    typingInterval = setInterval(() => {
+    const typingInterval = setInterval(() => {
         if (charIndex < message.length) {
             cinematicMessage.textContent += message[charIndex];
             charIndex++;
@@ -241,26 +241,18 @@ function showNextMessage() {
     }, 45);
 }
 
-function finishCinematic() {
-    if (cinematicDone) return;
-    cinematicDone = true;
-
-    clearInterval(typingInterval);
-    cinematicScreen.classList.remove('show');
-    showChoiceScreen();
-}
-
-skipCinematicBtn.addEventListener('click', finishCinematic);
-
 // ============= ÉTAPE 4: LE CHOIX (les deux réponses sont vraies) =============
 function showChoiceScreen() {
     choiceScreen.classList.add('show');
+    // Le focus part sur la carte pour que la question soit lue en premier au lecteur d'écran.
+    choiceCard.focus({ preventScroll: true });
 }
 
 function revealAnswer(text) {
     // Une fois qu'elle a répondu, on ne redemande pas : les boutons disparaissent.
     choiceButtons.classList.add('hide');
     choiceHint.classList.add('hide');
+    choiceEyebrow.classList.add('hide');
     choiceQuestion.classList.add('answered');
 
     choiceAnswer.textContent = text;
@@ -268,16 +260,16 @@ function revealAnswer(text) {
 
     setTimeout(() => {
         choiceSignature.classList.add('show');
-    }, 1400);
+    }, 900);
 }
 
 yesBtn.addEventListener('click', () => {
     vibrate([100, 50, 100]);
     createConfetti();
-    revealAnswer("Sérieux ? Parfait. Dis-moi juste le jour qui t'arrange, je m'occupe du reste 🤝");
+    revealAnswer("Sérieux ? Parfait. Dis-moi juste le jour qui t'arrange, je m'occupe du reste.");
 });
 
 noBtn.addEventListener('click', () => {
     // Un "non" est un vrai non : pas de relance, pas de culpabilisation.
-    revealAnswer("Tranquille, c'est noté. Aucun souci et aucune relance, promis. Prends soin de toi 👌");
+    revealAnswer("Tranquille, c'est noté. Aucun souci et aucune relance, promis. Prends soin de toi.");
 });

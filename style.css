@@ -1,3 +1,55 @@
+/* ============================================================
+   Design tokens
+   ============================================================ */
+:root {
+    /* Couleurs */
+    --grad-bg: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    --grad-gold: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+    --gold: #FFD700;
+    --gold-soft: #FFE58A;
+    --ink: #FFFFFF;
+    --ink-muted: rgba(255, 255, 255, 0.78);
+    --danger: #FF5A5A;
+
+    /* Verre */
+    --glass-bg: rgba(255, 255, 255, 0.13);
+    --glass-border: rgba(255, 255, 255, 0.28);
+    --glass-blur: 22px;
+
+    /* Le dégradé finit en rose clair : ce voile garantit le contraste du texte blanc
+       (>= 4.5:1) quelle que soit la zone du fond. */
+    --scrim: radial-gradient(ellipse at 50% 35%,
+                rgba(24, 8, 50, 0.10) 0%,
+                rgba(24, 8, 50, 0.52) 100%);
+
+    /* Échelle typographique */
+    --fs-xs: 0.8125rem;   /* 13 */
+    --fs-sm: 0.9375rem;   /* 15 */
+    --fs-md: 1.0625rem;   /* 17 */
+    --fs-lg: 1.25rem;     /* 20 */
+    --fs-xl: 1.5rem;      /* 24 */
+    --fs-2xl: 2rem;       /* 32 */
+    --fs-3xl: 2.625rem;   /* 42 */
+    --fs-4xl: 3.5rem;     /* 56 */
+
+    /* Espacement (rythme 8px) */
+    --sp-1: 8px;
+    --sp-2: 16px;
+    --sp-3: 24px;
+    --sp-4: 32px;
+    --sp-5: 40px;
+    --sp-6: 56px;
+
+    --radius-card: 28px;
+    --radius-pill: 999px;
+
+    /* Mouvement */
+    --dur-fast: 180ms;
+    --dur-mid: 280ms;
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -11,32 +63,66 @@ html, body {
     overflow: hidden;
     position: fixed;
     overscroll-behavior: none;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    background: var(--grad-bg);
 }
 
-/* Safari iOS fix pour les barres blanches */
 html {
     height: -webkit-fill-available;
 }
 
 body {
-    font-family: system-ui, -apple-system, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0;
-    min-height: 100vh;
-    min-height: -webkit-fill-available;
+    min-height: 100dvh;
 }
 
-/* Particules flottantes en permanence */
+/* Anneau de focus visible : obligatoire pour la navigation clavier. */
+:focus-visible {
+    outline: 3px solid var(--gold);
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+/* ============================================================
+   Base commune des écrans plein écran
+   ============================================================ */
+.intro-screen,
+.loading-screen,
+.explosion-screen,
+.cinematic-screen,
+.choice-screen {
+    position: fixed;
+    inset: 0;
+    min-height: 100dvh;
+    background: var(--grad-bg);
+    align-items: center;
+    justify-content: center;
+    padding: max(var(--sp-4), env(safe-area-inset-top)) var(--sp-3)
+             max(var(--sp-4), env(safe-area-inset-bottom));
+}
+
+/* Voile de contraste appliqué à tous les écrans */
+.intro-screen::before,
+.loading-screen::before,
+.cinematic-screen::before,
+.choice-screen::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--scrim);
+    pointer-events: none;
+}
+
+/* ============================================================
+   Particules flottantes
+   ============================================================ */
 .floating-particles {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
     pointer-events: none;
     z-index: 1;
 }
@@ -52,240 +138,211 @@ body {
 }
 
 @keyframes float {
-    0%, 100% {
-        transform: translateY(0) translateX(0);
-        opacity: 0;
-    }
-    10% {
-        opacity: 1;
-    }
-    90% {
-        opacity: 1;
-    }
-    100% {
-        transform: translateY(-100vh) translateX(30px);
-        opacity: 0;
-    }
+    0%   { transform: translateY(0) translateX(0); opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: 1; }
+    100% { transform: translateY(-100vh) translateX(30px); opacity: 0; }
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes fadeOut {
-    from { opacity: 1; }
-    to { opacity: 0; }
-}
+@keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
 
 @keyframes nameGlow {
-    0%, 100% {
-        opacity: 0.9;
-        transform: scale(1);
-        text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
-    }
-    50% {
-        opacity: 1;
-        transform: scale(1.05);
-        text-shadow: 0 0 40px rgba(255, 215, 0, 0.9);
-    }
+    0%, 100% { opacity: 0.92; transform: scale(1);    text-shadow: 0 0 24px rgba(255, 215, 0, 0.55); }
+    50%      { opacity: 1;    transform: scale(1.04); text-shadow: 0 0 48px rgba(255, 215, 0, 0.9); }
 }
 
-@keyframes pulseText {
-    0%, 100% {
-        opacity: 0.8;
-        transform: scale(1);
-    }
-    50% {
-        opacity: 1;
-        transform: scale(1.05);
-    }
+/* ============================================================
+   Éléments partagés
+   ============================================================ */
+.eyebrow {
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold-soft);
+    margin-bottom: var(--sp-2);
 }
 
-/* ========== ÉCRAN D'INTRO ========== */
-.intro-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    min-height: 100vh;
-    min-height: -webkit-fill-available;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-    display: flex;
+.eyebrow.hide {
+    display: none;
+}
+
+/* Système de boutons unifié — hauteur >= 52px (cible tactile confortable) */
+.btn {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
+    min-height: 52px;
+    padding: 0 var(--sp-4);
+    border-radius: var(--radius-pill);
+    font-family: inherit;
+    font-size: var(--fs-lg);
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform var(--dur-fast) var(--ease-out),
+                box-shadow var(--dur-fast) var(--ease-out),
+                background-color var(--dur-fast) var(--ease-out);
+}
+
+.btn:active {
+    transform: scale(0.97);
+}
+
+.btn-primary {
+    background: var(--grad-gold);
+    color: #3D2600;
+    box-shadow: 0 8px 26px rgba(255, 175, 0, 0.42);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 34px rgba(255, 175, 0, 0.6);
+}
+
+.btn-primary:active {
+    transform: scale(0.97);
+}
+
+/* Le "non" garde un poids visuel équivalent : même taille, même lisibilité. */
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.16);
+    color: var(--ink);
+    border-color: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.28);
+    transform: translateY(-2px);
+}
+
+.btn-secondary:active {
+    transform: scale(0.97);
+}
+
+/* ============================================================
+   Écran d'intro
+   ============================================================ */
+.intro-screen {
+    display: flex;
     z-index: 10000;
-    animation: fadeIn 0.8s ease;
+    animation: fadeIn 0.7s var(--ease-out);
 }
 
 .intro-screen.hide {
-    animation: fadeOut 0.8s ease forwards;
+    animation: fadeOut 0.7s var(--ease-out) forwards;
     pointer-events: none;
 }
 
 .intro-content {
+    position: relative;
+    z-index: 1;
     text-align: center;
-    color: white;
-    padding: 0 24px;
+    max-width: 34rem;
 }
 
 .intro-title {
-    font-size: 80px;
+    font-size: var(--fs-4xl);
     font-weight: 900;
-    margin-bottom: 20px;
-    animation: nameGlow 2s ease-in-out infinite;
-    text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+    letter-spacing: -0.02em;
+    margin-bottom: var(--sp-3);
+    animation: nameGlow 2.4s ease-in-out infinite;
 }
 
 .intro-message {
-    font-size: 24px;
-    line-height: 1.5;
-    margin-bottom: 40px;
-    opacity: 0.95;
+    font-size: var(--fs-lg);
+    line-height: 1.55;
+    color: var(--ink-muted);
+    margin-bottom: var(--sp-5);
 }
 
 .intro-btn {
-    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-    color: white;
-    border: none;
-    padding: 20px 60px;
-    border-radius: 999px;
-    font-size: 22px;
-    font-weight: 700;
-    cursor: pointer;
-    box-shadow: 0 8px 30px rgba(255, 215, 0, 0.5);
-    transition: all 0.3s ease;
-    animation: btnPulse 2s ease-in-out infinite;
+    animation: btnPulse 2.4s ease-in-out infinite;
 }
 
 @keyframes btnPulse {
-    0%, 100% {
-        transform: scale(1);
-        box-shadow: 0 8px 30px rgba(255, 215, 0, 0.5);
-    }
-    50% {
-        transform: scale(1.05);
-        box-shadow: 0 12px 40px rgba(255, 215, 0, 0.7);
-    }
+    0%, 100% { box-shadow: 0 8px 26px rgba(255, 175, 0, 0.42); }
+    50%      { box-shadow: 0 12px 40px rgba(255, 175, 0, 0.72); }
 }
 
-.intro-btn:hover {
-    transform: scale(1.08) translateY(-2px);
-    box-shadow: 0 12px 40px rgba(255, 215, 0, 0.8);
-}
-
-/* ========== BOUTON "PASSER" ========== */
-/* Toujours visible : elle peut sortir de l'animation quand elle veut. */
-.skip-btn {
-    background: rgba(255, 255, 255, 0.15);
-    color: rgba(255, 255, 255, 0.9);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    padding: 10px 24px;
-    border-radius: 999px;
-    font-size: 15px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-}
-
-.skip-btn:hover {
-    background: rgba(255, 255, 255, 0.28);
-    color: #fff;
-}
-
-.skip-cinematic {
-    position: absolute;
-    bottom: 40px;
-    right: 40px;
-    z-index: 10;
-}
-
-/* ========== ÉCRAN DE TRANSITION ========== */
+/* ============================================================
+   Compte à rebours
+   ============================================================ */
 .loading-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    min-height: 100vh;
-    min-height: -webkit-fill-available;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
     display: none;
-    align-items: center;
-    justify-content: center;
     z-index: 9999;
 }
 
 .loading-screen.show {
     display: flex;
-    animation: fadeIn 0.5s ease;
+    animation: fadeIn 0.5s var(--ease-out);
 }
 
 .loading-screen.hide {
-    animation: fadeOut 0.6s ease forwards;
+    animation: fadeOut 0.6s var(--ease-out) forwards;
 }
 
 .loading-content {
-    text-align: center;
-    color: white;
     position: relative;
-    z-index: 100;
-    padding: 0 24px;
+    z-index: 1;
+    text-align: center;
 }
 
 .loading-name {
-    font-size: 90px;
+    font-size: var(--fs-3xl);
     font-weight: 900;
-    margin-bottom: 20px;
-    animation: nameGlow 2s ease-in-out infinite;
-    text-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+    letter-spacing: -0.02em;
+    margin-bottom: var(--sp-1);
+    animation: nameGlow 2.4s ease-in-out infinite;
 }
 
 .loading-message {
-    font-size: 24px;
-    opacity: 0.95;
-    font-weight: 500;
+    font-size: var(--fs-md);
+    color: var(--ink-muted);
 }
 
 .loading-countdown {
-    font-size: 140px;
+    font-size: clamp(5rem, 26vw, 9rem);
     font-weight: 900;
-    background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FF6B6B 100%);
+    line-height: 1;
+    margin: var(--sp-3) 0 var(--sp-2);
+    /* Chiffres tabulaires : la largeur ne saute pas entre 24 et 9. */
+    font-variant-numeric: tabular-nums;
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 55%, #FF6B6B 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin: 20px 0 30px;
-    animation: countdownMegaPulse 1s ease-in-out infinite;
-    line-height: 1;
+    animation: countdownPulse 1s ease-in-out infinite;
 }
 
-@keyframes countdownMegaPulse {
-    0%, 100% {
-        transform: scale(1);
-        filter: brightness(1);
-    }
-    50% {
-        transform: scale(1.12);
-        filter: brightness(1.3);
-    }
+/* Les 5 dernières secondes */
+.loading-countdown.urgent {
+    background: none;
+    -webkit-text-fill-color: var(--danger);
+    color: var(--danger);
+    text-shadow: 0 0 50px rgba(255, 60, 60, 0.75);
 }
 
-/* ========== EXPLOSION ========== */
+@keyframes countdownPulse {
+    0%, 100% { transform: scale(1);    filter: brightness(1); }
+    50%      { transform: scale(1.09); filter: brightness(1.25); }
+}
+
+.loading-subtext {
+    font-size: var(--fs-sm);
+    color: var(--ink-muted);
+    font-style: italic;
+}
+
+/* ============================================================
+   Explosion
+   ============================================================ */
 .explosion-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    min-height: 100vh;
-    min-height: -webkit-fill-available;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
     display: none;
-    align-items: center;
-    justify-content: center;
     z-index: 9998;
     overflow: hidden;
 }
@@ -296,10 +353,7 @@ body {
 
 .flash-white {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
     background: white;
     opacity: 0;
     z-index: 1;
@@ -310,15 +364,16 @@ body {
 }
 
 @keyframes flashBang {
-    0% { opacity: 0; }
-    20% { opacity: 1; }
+    0%   { opacity: 0; }
+    20%  { opacity: 1; }
     100% { opacity: 0; }
 }
 
 .explosion-name {
-    font-size: 180px;
+    font-size: clamp(3.5rem, 17vw, 11rem);
     font-weight: 900;
-    color: #FFD700;
+    letter-spacing: -0.03em;
+    color: var(--gold);
     text-shadow: 0 0 80px rgba(255, 215, 0, 1);
     z-index: 2;
     opacity: 0;
@@ -326,58 +381,38 @@ body {
 }
 
 .explosion-name.explode {
-    animation: nameExplode 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    animation: nameExplode 1.5s var(--ease-spring) forwards;
 }
 
 @keyframes nameExplode {
-    0% {
-        opacity: 0;
-        transform: scale(0.3) rotate(-10deg);
-        filter: blur(20px);
-    }
-    40% {
-        opacity: 1;
-        transform: scale(1.3) rotate(5deg);
-        filter: blur(0px);
-    }
-    50% { transform: scale(1.15) rotate(-2deg); }
-    60% { transform: scale(1.25) rotate(3deg); }
-    70% { transform: scale(1.1) rotate(-1deg); }
-    100% {
-        opacity: 1;
-        transform: scale(1) rotate(0deg);
-    }
+    0%   { opacity: 0; transform: scale(0.3) rotate(-10deg); filter: blur(20px); }
+    40%  { opacity: 1; transform: scale(1.3) rotate(5deg);   filter: blur(0); }
+    50%  { transform: scale(1.15) rotate(-2deg); }
+    60%  { transform: scale(1.25) rotate(3deg); }
+    70%  { transform: scale(1.1) rotate(-1deg); }
+    100% { opacity: 1; transform: scale(1) rotate(0deg); }
 }
 
 @keyframes shake {
-    0%, 100% { transform: translateX(0); }
+    0%, 100%              { transform: translateX(0); }
     10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
-    20%, 40%, 60%, 80% { transform: translateX(10px); }
+    20%, 40%, 60%, 80%      { transform: translateX(10px); }
 }
 
 #confettiCanvas {
     position: absolute;
-    top: 0;
-    left: 0;
+    inset: 0;
     width: 100%;
     height: 100%;
     z-index: 3;
     pointer-events: none;
 }
 
-/* ========== ÉCRAN CINÉMATIQUE ========== */
+/* ============================================================
+   Écran cinématique
+   ============================================================ */
 .cinematic-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    min-height: 100vh;
-    min-height: -webkit-fill-available;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
     display: none;
-    align-items: center;
-    justify-content: center;
     z-index: 9997;
 }
 
@@ -386,70 +421,111 @@ body {
 }
 
 .cinematic-message {
-    font-size: 48px;
+    position: relative;
+    z-index: 1;
+    font-size: clamp(1.6rem, 5.4vw, 3rem);
     font-weight: 700;
-    color: white;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
     text-align: center;
-    padding: 0 40px;
+    /* 35-60 caractères par ligne : la mesure de lecture confortable. */
+    max-width: 20ch;
     opacity: 0;
-    text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
-    max-width: 900px;
+    text-shadow: 0 2px 24px rgba(40, 10, 70, 0.5);
 }
 
 .cinematic-message.typing {
     opacity: 1;
 }
 
-/* ========== ÉCRAN DE CHOIX ========== */
+/* ============================================================
+   Écran de choix
+   ============================================================ */
 .choice-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    min-height: 100vh;
-    min-height: -webkit-fill-available;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
     display: none;
-    align-items: center;
-    justify-content: center;
     z-index: 9996;
-    padding: 40px 24px;
 }
 
 .choice-screen.show {
     display: flex;
-    animation: fadeIn 0.8s ease;
 }
 
-.choice-content {
-    text-align: center;
-    color: white;
-    max-width: 620px;
+/* Carte glassmorphism : porte le contraste et cadre la question. */
+.choice-card {
+    position: relative;
+    z-index: 1;
     width: 100%;
+    max-width: 32rem;
+    padding: var(--sp-6) var(--sp-5);
+    text-align: center;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-card);
+    backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+    box-shadow: 0 24px 70px rgba(24, 8, 50, 0.42),
+                inset 0 1px 0 rgba(255, 255, 255, 0.28);
+    animation: cardIn 0.7s var(--ease-spring) both;
+}
+
+@keyframes cardIn {
+    from { opacity: 0; transform: translateY(26px) scale(0.94); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Entrée décalée des éléments de la carte (30-50ms par élément).
+   Volontairement listés un par un : un sélecteur `> *` toucherait aussi
+   .choice-answer et .choice-signature, dont le fill-mode `both` forcerait
+   l'opacité à 1 et révélerait la réponse avant qu'elle ait cliqué. */
+.choice-card > .eyebrow,
+.choice-card > .choice-question,
+.choice-card > .choice-buttons,
+.choice-card > .choice-hint {
+    animation: itemIn 0.5s var(--ease-out) both;
+}
+
+.choice-card > .eyebrow          { animation-delay: 0.22s; }
+.choice-card > .choice-question  { animation-delay: 0.30s; }
+.choice-card > .choice-buttons   { animation-delay: 0.38s; }
+.choice-card > .choice-hint      { animation-delay: 0.46s; }
+
+@keyframes itemIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
 .choice-question {
-    font-size: 42px;
+    font-size: var(--fs-2xl);
     font-weight: 800;
-    line-height: 1.3;
-    margin-bottom: 45px;
-    text-shadow: 0 0 25px rgba(255, 215, 0, 0.35);
-    transition: all 0.6s ease;
+    line-height: 1.22;
+    letter-spacing: -0.02em;
+    margin-bottom: var(--sp-5);
+    text-shadow: 0 2px 20px rgba(40, 10, 70, 0.4);
+    transition: font-size var(--dur-mid) var(--ease-out),
+                opacity var(--dur-mid) var(--ease-out),
+                margin var(--dur-mid) var(--ease-out);
 }
 
+/* Après réponse, la question recule dans la hiérarchie sans disparaître. */
 .choice-question.answered {
-    font-size: 30px;
-    opacity: 0.55;
-    margin-bottom: 30px;
+    font-size: var(--fs-lg);
+    opacity: 0.6;
+    margin-bottom: var(--sp-3);
 }
 
 .choice-buttons {
     display: flex;
-    gap: 20px;
+    gap: var(--sp-2);
     justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
+}
+
+.choice-buttons .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0 var(--sp-2);
+    /* Sans ça, le libellé le plus long passe sur deux lignes et les deux
+       boutons cessent d'avoir le même poids visuel. */
+    white-space: nowrap;
 }
 
 .choice-buttons.hide,
@@ -457,66 +533,20 @@ body {
     display: none;
 }
 
-/* Les deux boutons ont un poids visuel comparable : aucun des deux ne se dérobe. */
-.btn-yes {
-    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-    color: white;
-    border: none;
-    padding: 18px 45px;
-    border-radius: 999px;
-    font-size: 20px;
-    font-weight: 700;
-    cursor: pointer;
-    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
-    transition: all 0.3s ease;
-}
-
-.btn-yes:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.6);
-}
-
-.btn-yes:active {
-    transform: translateY(0);
-}
-
-.btn-no {
-    background: rgba(255, 255, 255, 0.15);
-    color: #fff;
-    border: 2px solid rgba(255, 255, 255, 0.55);
-    padding: 18px 45px;
-    border-radius: 999px;
-    font-size: 20px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-}
-
-.btn-no:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: translateY(-2px);
-}
-
-.btn-no:active {
-    transform: translateY(0);
-}
-
 .choice-hint {
-    margin-top: 25px;
-    font-size: 16px;
-    font-style: italic;
-    opacity: 0.75;
+    margin-top: var(--sp-3);
+    font-size: var(--fs-sm);
+    line-height: 1.5;
+    color: var(--ink-muted);
 }
 
 .choice-answer {
-    font-size: 26px;
+    font-size: var(--fs-lg);
     font-weight: 600;
     line-height: 1.5;
     opacity: 0;
-    transform: translateY(15px);
-    transition: all 0.9s ease;
+    transform: translateY(14px);
+    transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
 }
 
 .choice-answer.show {
@@ -525,95 +555,64 @@ body {
 }
 
 .choice-signature {
-    margin-top: 45px;
-    font-size: 22px;
-    font-style: italic;
+    /* L'espace reste réservé même invisible : la carte ne saute pas à la révélation. */
+    margin-top: var(--sp-3);
+    font-size: var(--fs-md);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold-soft);
     opacity: 0;
-    transition: opacity 1.2s ease;
+    transition: opacity 1s var(--ease-out);
 }
 
 .choice-signature.show {
-    opacity: 0.9;
+    opacity: 1;
 }
 
-/* ========== MOBILE FIRST RESPONSIVE ========== */
-@media (max-width: 768px) {
-    .intro-title { font-size: 60px; }
-    .intro-message { font-size: 20px; }
-    .intro-btn {
-        padding: 18px 50px;
-        font-size: 20px;
-    }
-
-    .loading-name { font-size: 70px; }
-    .loading-message { font-size: 20px; }
-    .loading-countdown { font-size: 110px; }
-
-    .explosion-name { font-size: 120px; }
-
-    .cinematic-message {
-        font-size: 36px;
-        padding: 0 30px;
-    }
-
-    .skip-cinematic {
-        bottom: 28px;
-        right: 24px;
-    }
-
-    .choice-question { font-size: 32px; }
-    .choice-question.answered { font-size: 24px; }
-    .choice-answer { font-size: 22px; }
-    .btn-yes,
-    .btn-no {
-        padding: 16px 38px;
-        font-size: 18px;
-    }
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (min-width: 768px) {
+    .intro-title      { font-size: 5rem; }
+    .intro-message    { font-size: var(--fs-xl); }
+    .loading-name     { font-size: var(--fs-4xl); }
+    .choice-question  { font-size: var(--fs-3xl); }
+    .choice-question.answered { font-size: var(--fs-xl); }
+    .choice-answer    { font-size: var(--fs-xl); }
+    .cinematic-message { max-width: 24ch; }
 }
 
+/* 480px et non 400 : les téléphones courants font 360 à 430px de large. En dessous
+   de ce seuil, deux boutons côte à côte deviennent trop étroits pour leur libellé. */
 @media (max-width: 480px) {
-    .intro-title { font-size: 48px; }
-    .intro-message { font-size: 18px; }
-    .intro-btn {
-        padding: 16px 40px;
-        font-size: 18px;
+    .choice-card {
+        padding: var(--sp-5) var(--sp-3);
     }
 
-    .loading-name { font-size: 55px; }
-    .loading-message { font-size: 18px; }
-    .loading-countdown { font-size: 90px; }
-
-    .explosion-name { font-size: 90px; }
-
-    .cinematic-message {
-        font-size: 28px;
-        padding: 0 25px;
-        white-space: pre-wrap;
-    }
-
-    .choice-question {
-        font-size: 27px;
-        margin-bottom: 35px;
-    }
-
-    .choice-question.answered { font-size: 21px; }
-    .choice-answer { font-size: 19px; }
-
-    /* Boutons empilés, mais toujours de taille identique. */
+    /* Les boutons s'empilent, à taille strictement identique.
+       column-reverse remonte l'action principale en tête. */
     .choice-buttons {
         flex-direction: column-reverse;
-        gap: 16px;
     }
 
-    .btn-yes,
-    .btn-no {
+    .choice-buttons .btn {
         width: 100%;
-        padding: 16px 30px;
-        font-size: 17px;
+        flex: 0 0 auto;
+    }
+}
+
+/* ============================================================
+   Accessibilité : réduction des animations
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
     }
 
-    .choice-signature {
-        margin-top: 35px;
-        font-size: 19px;
-    }
+    .cinematic-message { opacity: 1; }
 }
