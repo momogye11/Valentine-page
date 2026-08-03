@@ -1,44 +1,40 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#764ba2">
-    <title>Pour Morgane 💫</title>
-    <!-- IMPORTANT : garder le même ?v= sur le CSS et le JS, et l'incrémenter à chaque déploiement.
-         Sans ça le navigateur ressert l'ancienne feuille de style et la page s'affiche cassée. -->
-    <link rel="stylesheet" href="style.css?v=morgane-v3">
+    <title>Pour Fatou 💫</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <!-- Particules flottantes permanentes -->
     <div class="floating-particles" id="floatingParticles"></div>
 
-    <!-- Page d'intro : l'expéditeur est annoncé ici, avant tout le reste -->
+    <!-- Page d'intro bloquée -->
     <div class="intro-screen" id="introScreen">
         <div class="intro-content">
-            <p class="eyebrow">Une question, une seule</p>
-            <h1 class="intro-title">Morgane</h1>
-            <p class="intro-message">C'est Mohamed.<br>Quarante secondes chrono.</p>
-            <button class="btn btn-primary intro-btn" id="introBtn">Vas-y, j'écoute</button>
+            <h1 class="intro-title">Fatou...</h1>
+            <p class="intro-message">J'ai un truc à te dire... prends pas trop la confiance 😭</p>
+            <button class="intro-btn" id="introBtn">Clique pour commencer ✨</button>
         </div>
     </div>
 
-    <!-- Écran de compte à rebours -->
+    <!-- Écran de compte à rebours bloqué -->
     <div class="loading-screen" id="loadingScreen">
         <div class="loading-content">
-            <h1 class="loading-name">Morgane</h1>
-            <p class="loading-message">Deux secondes, je pose le décor</p>
+            <h1 class="loading-name">Fatou... 💝</h1>
+            <p class="loading-message">Prépare-toi, j'ai fait un effort là 😂</p>
             <div class="loading-countdown" id="loadingCountdown">24</div>
-            <p class="loading-subtext">Laisse tourner, j'ai galéré sur cette partie</p>
+            <p class="loading-subtext">Tu peux pas skip, assume jusqu'au bout 🤭✨</p>
         </div>
     </div>
 
-    <!-- Explosion visuelle -->
+    <!-- Explosion visuelle WOW -->
     <div class="explosion-screen" id="explosionScreen">
         <div class="flash-white" id="flashWhite"></div>
-        <div class="explosion-name" id="explosionName">MORGANE</div>
+        <div class="explosion-name" id="explosionName">FATOU</div>
         <canvas id="confettiCanvas"></canvas>
     </div>
 
@@ -47,27 +43,42 @@
         <p class="cinematic-message" id="cinematicMessage"></p>
     </div>
 
-    <!-- Écran de choix : les deux boutons sont réels, aucun ne fuit -->
-    <div class="choice-screen" id="choiceScreen">
-        <!-- tabindex="-1" : sans lui, le focus() du script est ignoré et le lecteur
-             d'écran resterait sur l'écran précédent. -->
-        <div class="choice-card" tabindex="-1" role="group" aria-labelledby="choiceQuestion">
-            <p class="eyebrow" id="choiceEyebrow">La fameuse question</p>
-            <h2 class="choice-question" id="choiceQuestion">Tu manges toujours,<br>j'imagine&nbsp;?</h2>
-
-            <div class="choice-buttons" id="choiceButtons">
-                <button class="btn btn-secondary" id="noBtn">Nan, ça ira</button>
-                <button class="btn btn-primary" id="yesBtn">Pourquoi pas</button>
-            </div>
-
-            <!-- Pas de "celui de gauche" : sous 480px les boutons s'empilent et la phrase serait fausse. -->
-            <p class="choice-hint" id="choiceHint">Deux boutons, aucun piège. Les deux marchent vraiment.</p>
-            <p class="choice-answer" id="choiceAnswer"></p>
-
-            <p class="choice-signature" id="choiceSignature">Mohamed</p>
-        </div>
+    <!-- Mini-jeu bulles interactives -->
+    <div class="bubbles-screen" id="bubblesScreen">
+        <h2 class="bubbles-title">Clique sur les étoiles, mais fais pas trop la curieuse 😏</h2>
+        <div class="bubbles-container" id="bubblesContainer"></div>
+        <p class="bubbles-counter" id="bubblesCounter">0/8 découvertes</p>
     </div>
 
-    <script src="script.js?v=morgane-v3"></script>
+    <!-- Bouton activer son (caché maintenant car auto) -->
+    <button id="sound-btn" style="display: none; position: fixed; top: 20px; right: 20px; z-index: 10000; background: linear-gradient(135deg, #FFD700, #FFA500); color: white; border: none; padding: 12px 24px; border-radius: 50px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(255,215,0,0.4);">
+        🎵 Activer la musique
+    </button>
+    <div class="container">
+        <div class="card">
+            <div class="emoji">
+                <img src="image.png" alt="Cute cat">
+            </div>
+            <h1 class="question" id="questionText"></h1>
+            <div class="buttons" id="buttonsContainer">
+                <button class="btn-no" id="noBtn">Attends... 🙈</button>
+                <button class="btn-yes" id="yesBtn">Montre-moi ! 💝</button>
+            </div>
+            <p class="hint" id="hintText">Petit indice : essaye le bouton de gauche d'abord 🤭</p>
+
+            <!-- Compte à rebours -->
+            <div class="countdown" id="countdown">
+                <div class="countdown-text">Prépare-toi... 💫</div>
+                <div class="countdown-number" id="countdownNumber">24</div>
+                <div class="countdown-subtext">secondes avant la magie ✨</div>
+            </div>
+
+            <div class="success" id="successGif">
+                <img src="" alt="Celebration" id="gifImage">
+            </div>
+        </div>
+    </div>
+    <!-- Le numéro de version évite qu'un ancien script reste en cache après un déploiement. -->
+    <script src="script.js?v=fatou-v2"></script>
 </body>
 </html>

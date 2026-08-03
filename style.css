@@ -1,55 +1,3 @@
-/* ============================================================
-   Design tokens
-   ============================================================ */
-:root {
-    /* Couleurs */
-    --grad-bg: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-    --grad-gold: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-    --gold: #FFD700;
-    --gold-soft: #FFE58A;
-    --ink: #FFFFFF;
-    --ink-muted: rgba(255, 255, 255, 0.78);
-    --danger: #FF5A5A;
-
-    /* Verre */
-    --glass-bg: rgba(255, 255, 255, 0.13);
-    --glass-border: rgba(255, 255, 255, 0.28);
-    --glass-blur: 22px;
-
-    /* Le dégradé finit en rose clair : ce voile garantit le contraste du texte blanc
-       (>= 4.5:1) quelle que soit la zone du fond. */
-    --scrim: radial-gradient(ellipse at 50% 35%,
-                rgba(24, 8, 50, 0.10) 0%,
-                rgba(24, 8, 50, 0.52) 100%);
-
-    /* Échelle typographique */
-    --fs-xs: 0.8125rem;   /* 13 */
-    --fs-sm: 0.9375rem;   /* 15 */
-    --fs-md: 1.0625rem;   /* 17 */
-    --fs-lg: 1.25rem;     /* 20 */
-    --fs-xl: 1.5rem;      /* 24 */
-    --fs-2xl: 2rem;       /* 32 */
-    --fs-3xl: 2.625rem;   /* 42 */
-    --fs-4xl: 3.5rem;     /* 56 */
-
-    /* Espacement (rythme 8px) */
-    --sp-1: 8px;
-    --sp-2: 16px;
-    --sp-3: 24px;
-    --sp-4: 32px;
-    --sp-5: 40px;
-    --sp-6: 56px;
-
-    --radius-card: 28px;
-    --radius-pill: 999px;
-
-    /* Mouvement */
-    --dur-fast: 180ms;
-    --dur-mid: 280ms;
-    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-    --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
-}
-
 * {
     margin: 0;
     padding: 0;
@@ -63,66 +11,32 @@ html, body {
     overflow: hidden;
     position: fixed;
     overscroll-behavior: none;
-    background: var(--grad-bg);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
 }
 
+/* Safari iOS fix pour les barres blanches */
 html {
     height: -webkit-fill-available;
 }
 
 body {
-    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-    color: var(--ink);
-    -webkit-font-smoothing: antialiased;
+    font-family: system-ui, -apple-system, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 100dvh;
+    padding: 0;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
 }
 
-/* Anneau de focus visible : obligatoire pour la navigation clavier. */
-:focus-visible {
-    outline: 3px solid var(--gold);
-    outline-offset: 3px;
-    border-radius: 4px;
-}
-
-/* ============================================================
-   Base commune des écrans plein écran
-   ============================================================ */
-.intro-screen,
-.loading-screen,
-.explosion-screen,
-.cinematic-screen,
-.choice-screen {
-    position: fixed;
-    inset: 0;
-    min-height: 100dvh;
-    background: var(--grad-bg);
-    align-items: center;
-    justify-content: center;
-    padding: max(var(--sp-4), env(safe-area-inset-top)) var(--sp-3)
-             max(var(--sp-4), env(safe-area-inset-bottom));
-}
-
-/* Voile de contraste appliqué à tous les écrans */
-.intro-screen::before,
-.loading-screen::before,
-.cinematic-screen::before,
-.choice-screen::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--scrim);
-    pointer-events: none;
-}
-
-/* ============================================================
-   Particules flottantes
-   ============================================================ */
+/* Particules flottantes en permanence */
 .floating-particles {
     position: fixed;
-    inset: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     pointer-events: none;
     z-index: 1;
 }
@@ -138,211 +52,218 @@ body {
 }
 
 @keyframes float {
-    0%   { transform: translateY(0) translateX(0); opacity: 0; }
-    10%  { opacity: 1; }
-    90%  { opacity: 1; }
-    100% { transform: translateY(-100vh) translateX(30px); opacity: 0; }
+    0%, 100% {
+        transform: translateY(0) translateX(0);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-100vh) translateX(30px);
+        opacity: 0;
+    }
 }
 
-@keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
-@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
-
-@keyframes nameGlow {
-    0%, 100% { opacity: 0.92; transform: scale(1);    text-shadow: 0 0 24px rgba(255, 215, 0, 0.55); }
-    50%      { opacity: 1;    transform: scale(1.04); text-shadow: 0 0 48px rgba(255, 215, 0, 0.9); }
-}
-
-/* ============================================================
-   Éléments partagés
-   ============================================================ */
-.eyebrow {
-    font-size: var(--fs-xs);
-    font-weight: 700;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--gold-soft);
-    margin-bottom: var(--sp-2);
-}
-
-.eyebrow.hide {
-    display: none;
-}
-
-/* Système de boutons unifié — hauteur >= 52px (cible tactile confortable) */
-.btn {
-    display: inline-flex;
+/* Page d'intro bloquée */
+.intro-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 52px;
-    padding: 0 var(--sp-4);
-    border-radius: var(--radius-pill);
-    font-family: inherit;
-    font-size: var(--fs-lg);
-    font-weight: 700;
-    line-height: 1;
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: transform var(--dur-fast) var(--ease-out),
-                box-shadow var(--dur-fast) var(--ease-out),
-                background-color var(--dur-fast) var(--ease-out);
-}
-
-.btn:active {
-    transform: scale(0.97);
-}
-
-.btn-primary {
-    background: var(--grad-gold);
-    color: #3D2600;
-    box-shadow: 0 8px 26px rgba(255, 175, 0, 0.42);
-}
-
-.btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 34px rgba(255, 175, 0, 0.6);
-}
-
-.btn-primary:active {
-    transform: scale(0.97);
-}
-
-/* Le "non" garde un poids visuel équivalent : même taille, même lisibilité. */
-.btn-secondary {
-    background: rgba(255, 255, 255, 0.16);
-    color: var(--ink);
-    border-color: rgba(255, 255, 255, 0.55);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-}
-
-.btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.28);
-    transform: translateY(-2px);
-}
-
-.btn-secondary:active {
-    transform: scale(0.97);
-}
-
-/* ============================================================
-   Écran d'intro
-   ============================================================ */
-.intro-screen {
-    display: flex;
     z-index: 10000;
-    animation: fadeIn 0.7s var(--ease-out);
+    animation: fadeIn 0.8s ease;
 }
 
 .intro-screen.hide {
-    animation: fadeOut 0.7s var(--ease-out) forwards;
+    animation: fadeOut 0.8s ease forwards;
     pointer-events: none;
 }
 
 .intro-content {
-    position: relative;
-    z-index: 1;
     text-align: center;
-    max-width: 34rem;
+    color: white;
 }
 
 .intro-title {
-    font-size: var(--fs-4xl);
+    font-size: 80px;
     font-weight: 900;
-    letter-spacing: -0.02em;
-    margin-bottom: var(--sp-3);
-    animation: nameGlow 2.4s ease-in-out infinite;
+    margin-bottom: 20px;
+    animation: nameGlow 2s ease-in-out infinite;
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+}
+
+@keyframes nameGlow {
+    0%, 100% {
+        opacity: 0.9;
+        transform: scale(1);
+        text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.05);
+        text-shadow: 0 0 40px rgba(255, 215, 0, 0.9);
+    }
 }
 
 .intro-message {
-    font-size: var(--fs-lg);
-    line-height: 1.55;
-    color: var(--ink-muted);
-    margin-bottom: var(--sp-5);
+    font-size: 24px;
+    margin-bottom: 40px;
+    opacity: 0.95;
+    animation: pulseText 1.5s ease-in-out infinite;
 }
 
 .intro-btn {
-    animation: btnPulse 2.4s ease-in-out infinite;
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+    color: white;
+    border: none;
+    padding: 20px 60px;
+    border-radius: 999px;
+    font-size: 22px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 8px 30px rgba(255, 215, 0, 0.5);
+    transition: all 0.3s ease;
+    animation: btnPulse 2s ease-in-out infinite;
 }
 
 @keyframes btnPulse {
-    0%, 100% { box-shadow: 0 8px 26px rgba(255, 175, 0, 0.42); }
-    50%      { box-shadow: 0 12px 40px rgba(255, 175, 0, 0.72); }
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 8px 30px rgba(255, 215, 0, 0.5);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 12px 40px rgba(255, 215, 0, 0.7);
+    }
 }
 
-/* ============================================================
-   Compte à rebours
-   ============================================================ */
+.intro-btn:hover {
+    transform: scale(1.08) translateY(-2px);
+    box-shadow: 0 12px 40px rgba(255, 215, 0, 0.8);
+}
+
+/* Écran de chargement bloqué */
 .loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
     display: none;
+    align-items: center;
+    justify-content: center;
     z-index: 9999;
 }
 
 .loading-screen.show {
     display: flex;
-    animation: fadeIn 0.5s var(--ease-out);
+    animation: fadeIn 0.5s ease;
 }
 
 .loading-screen.hide {
-    animation: fadeOut 0.6s var(--ease-out) forwards;
+    animation: fadeOut 0.8s ease forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
 }
 
 .loading-content {
-    position: relative;
-    z-index: 1;
     text-align: center;
+    color: white;
+    position: relative;
+    z-index: 100;
 }
 
 .loading-name {
-    font-size: var(--fs-3xl);
+    font-size: 90px;
     font-weight: 900;
-    letter-spacing: -0.02em;
-    margin-bottom: var(--sp-1);
-    animation: nameGlow 2.4s ease-in-out infinite;
+    margin-bottom: 30px;
+    animation: nameGlow 2s ease-in-out infinite;
+    text-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
 }
 
 .loading-message {
-    font-size: var(--fs-md);
-    color: var(--ink-muted);
+    font-size: 26px;
+    margin-bottom: 50px;
+    opacity: 0.95;
+    font-weight: 500;
 }
 
 .loading-countdown {
-    font-size: clamp(5rem, 26vw, 9rem);
+    font-size: 150px;
     font-weight: 900;
-    line-height: 1;
-    margin: var(--sp-3) 0 var(--sp-2);
-    /* Chiffres tabulaires : la largeur ne saute pas entre 24 et 9. */
-    font-variant-numeric: tabular-nums;
-    background: linear-gradient(135deg, #FFD700 0%, #FFA500 55%, #FF6B6B 100%);
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FF6B6B 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    animation: countdownPulse 1s ease-in-out infinite;
+    margin: 30px 0;
+    animation: countdownMegaPulse 1s ease-in-out infinite;
+    text-shadow: 0 0 50px rgba(255, 215, 0, 0.5);
+    line-height: 1;
+    position: relative;
+    z-index: 1000;
 }
 
-/* Les 5 dernières secondes */
-.loading-countdown.urgent {
-    background: none;
-    -webkit-text-fill-color: var(--danger);
-    color: var(--danger);
-    text-shadow: 0 0 50px rgba(255, 60, 60, 0.75);
-}
-
-@keyframes countdownPulse {
-    0%, 100% { transform: scale(1);    filter: brightness(1); }
-    50%      { transform: scale(1.09); filter: brightness(1.25); }
+@keyframes countdownMegaPulse {
+    0%, 100% {
+        transform: scale(1);
+        filter: brightness(1);
+    }
+    50% {
+        transform: scale(1.15);
+        filter: brightness(1.3);
+    }
 }
 
 .loading-subtext {
-    font-size: var(--fs-sm);
-    color: var(--ink-muted);
+    font-size: 18px;
+    opacity: 0.8;
     font-style: italic;
+    margin-top: 30px;
 }
 
-/* ============================================================
-   Explosion
-   ============================================================ */
+/* Explosion screen */
 .explosion-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
     display: none;
+    align-items: center;
+    justify-content: center;
     z-index: 9998;
     overflow: hidden;
 }
@@ -353,7 +274,10 @@ body {
 
 .flash-white {
     position: absolute;
-    inset: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background: white;
     opacity: 0;
     z-index: 1;
@@ -364,16 +288,21 @@ body {
 }
 
 @keyframes flashBang {
-    0%   { opacity: 0; }
-    20%  { opacity: 1; }
-    100% { opacity: 0; }
+    0% {
+        opacity: 0;
+    }
+    20% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
 }
 
 .explosion-name {
-    font-size: clamp(3.5rem, 17vw, 11rem);
+    font-size: 180px;
     font-weight: 900;
-    letter-spacing: -0.03em;
-    color: var(--gold);
+    color: #FFD700;
     text-shadow: 0 0 80px rgba(255, 215, 0, 1);
     z-index: 2;
     opacity: 0;
@@ -381,38 +310,65 @@ body {
 }
 
 .explosion-name.explode {
-    animation: nameExplode 1.5s var(--ease-spring) forwards;
+    animation: nameExplode 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
 @keyframes nameExplode {
-    0%   { opacity: 0; transform: scale(0.3) rotate(-10deg); filter: blur(20px); }
-    40%  { opacity: 1; transform: scale(1.3) rotate(5deg);   filter: blur(0); }
-    50%  { transform: scale(1.15) rotate(-2deg); }
-    60%  { transform: scale(1.25) rotate(3deg); }
-    70%  { transform: scale(1.1) rotate(-1deg); }
-    100% { opacity: 1; transform: scale(1) rotate(0deg); }
+    0% {
+        opacity: 0;
+        transform: scale(0.3) rotate(-10deg);
+        filter: blur(20px);
+    }
+    40% {
+        opacity: 1;
+        transform: scale(1.3) rotate(5deg);
+        filter: blur(0px);
+    }
+    50% {
+        transform: scale(1.15) rotate(-2deg);
+    }
+    60% {
+        transform: scale(1.25) rotate(3deg);
+    }
+    70% {
+        transform: scale(1.1) rotate(-1deg);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+    }
 }
 
+/* Animation shake pour simuler vibration */
 @keyframes shake {
-    0%, 100%              { transform: translateX(0); }
+    0%, 100% { transform: translateX(0); }
     10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
-    20%, 40%, 60%, 80%      { transform: translateX(10px); }
+    20%, 40%, 60%, 80% { transform: translateX(10px); }
 }
 
 #confettiCanvas {
     position: absolute;
-    inset: 0;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     z-index: 3;
     pointer-events: none;
 }
 
-/* ============================================================
-   Écran cinématique
-   ============================================================ */
+/* Écran cinématique */
 .cinematic-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
     display: none;
+    align-items: center;
+    justify-content: center;
     z-index: 9997;
 }
 
@@ -421,198 +377,595 @@ body {
 }
 
 .cinematic-message {
-    position: relative;
-    z-index: 1;
-    font-size: clamp(1.6rem, 5.4vw, 3rem);
+    font-size: 48px;
     font-weight: 700;
-    line-height: 1.3;
-    letter-spacing: -0.01em;
+    color: white;
     text-align: center;
-    /* 35-60 caractères par ligne : la mesure de lecture confortable. */
-    max-width: 20ch;
+    padding: 0 40px;
     opacity: 0;
-    text-shadow: 0 2px 24px rgba(40, 10, 70, 0.5);
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+    max-width: 900px;
 }
 
 .cinematic-message.typing {
     opacity: 1;
 }
 
-/* ============================================================
-   Écran de choix
-   ============================================================ */
-.choice-screen {
-    display: none;
-    z-index: 9996;
-}
-
-.choice-screen.show {
-    display: flex;
-}
-
-/* Carte glassmorphism : porte le contraste et cadre la question. */
-.choice-card {
-    position: relative;
-    z-index: 1;
+/* Écran bulles */
+.bubbles-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
-    max-width: 32rem;
-    padding: var(--sp-6) var(--sp-5);
-    text-align: center;
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-card);
-    backdrop-filter: blur(var(--glass-blur)) saturate(140%);
-    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
-    box-shadow: 0 24px 70px rgba(24, 8, 50, 0.42),
-                inset 0 1px 0 rgba(255, 255, 255, 0.28);
-    animation: cardIn 0.7s var(--ease-spring) both;
-}
-
-@keyframes cardIn {
-    from { opacity: 0; transform: translateY(26px) scale(0.94); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-/* Entrée décalée des éléments de la carte (30-50ms par élément).
-   Volontairement listés un par un : un sélecteur `> *` toucherait aussi
-   .choice-answer et .choice-signature, dont le fill-mode `both` forcerait
-   l'opacité à 1 et révélerait la réponse avant qu'elle ait cliqué. */
-.choice-card > .eyebrow,
-.choice-card > .choice-question,
-.choice-card > .choice-buttons,
-.choice-card > .choice-hint {
-    animation: itemIn 0.5s var(--ease-out) both;
-}
-
-.choice-card > .eyebrow          { animation-delay: 0.22s; }
-.choice-card > .choice-question  { animation-delay: 0.30s; }
-.choice-card > .choice-buttons   { animation-delay: 0.38s; }
-.choice-card > .choice-hint      { animation-delay: 0.46s; }
-
-@keyframes itemIn {
-    from { opacity: 0; transform: translateY(12px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
-
-.choice-question {
-    font-size: var(--fs-2xl);
-    font-weight: 800;
-    line-height: 1.22;
-    letter-spacing: -0.02em;
-    margin-bottom: var(--sp-5);
-    text-shadow: 0 2px 20px rgba(40, 10, 70, 0.4);
-    transition: font-size var(--dur-mid) var(--ease-out),
-                opacity var(--dur-mid) var(--ease-out),
-                margin var(--dur-mid) var(--ease-out);
-}
-
-/* Après réponse, la question recule dans la hiérarchie sans disparaître. */
-.choice-question.answered {
-    font-size: var(--fs-lg);
-    opacity: 0.6;
-    margin-bottom: var(--sp-3);
-}
-
-.choice-buttons {
-    display: flex;
-    gap: var(--sp-2);
+    height: 100%;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    display: none;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
+    z-index: 9996;
+    padding: 40px;
 }
 
-.choice-buttons .btn {
-    flex: 1 1 0;
-    min-width: 0;
-    padding: 0 var(--sp-2);
-    /* Sans ça, le libellé le plus long passe sur deux lignes et les deux
-       boutons cessent d'avoir le même poids visuel. */
-    white-space: nowrap;
+.bubbles-screen.show {
+    display: flex;
 }
 
-.choice-buttons.hide,
-.choice-hint.hide {
+.bubbles-title {
+    font-size: 32px;
+    color: white;
+    margin-bottom: 40px;
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    animation: pulseText 2s ease-in-out infinite;
+}
+
+.bubbles-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+    max-width: 800px;
+    width: 100%;
+}
+
+.bubble {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 8px 30px rgba(255, 215, 0, 0.4);
+    transition: all 0.3s ease;
+    position: relative;
+    animation: bubbleFloat 3s ease-in-out infinite;
+}
+
+.bubble:nth-child(odd) {
+    animation-delay: 0.5s;
+}
+
+.bubble:nth-child(even) {
+    animation-delay: 1s;
+}
+
+@keyframes bubbleFloat {
+    0%, 100% {
+        transform: translateY(0) scale(1);
+    }
+    50% {
+        transform: translateY(-10px) scale(1.05);
+    }
+}
+
+/* Pulse pour bulle cliquée */
+@keyframes bubblePulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.bubble:hover {
+    transform: scale(1.1) translateY(-5px);
+    box-shadow: 0 12px 40px rgba(255, 215, 0, 0.6);
+}
+
+.bubble-icon {
+    font-size: 60px;
+}
+
+.bubble-text {
+    position: absolute;
+    font-size: 18px;
+    color: white;
+    font-weight: 600;
+    text-align: center;
+    padding: 10px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.bubble.clicked .bubble-icon {
     display: none;
 }
 
-.choice-hint {
-    margin-top: var(--sp-3);
-    font-size: var(--fs-sm);
-    line-height: 1.5;
-    color: var(--ink-muted);
-}
-
-.choice-answer {
-    font-size: var(--fs-lg);
-    font-weight: 600;
-    line-height: 1.5;
-    opacity: 0;
-    transform: translateY(14px);
-    transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
-}
-
-.choice-answer.show {
+.bubble.clicked .bubble-text {
     opacity: 1;
+    animation: textReveal 0.5s ease forwards;
+}
+
+@keyframes textReveal {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.bubbles-counter {
+    margin-top: 40px;
+    font-size: 24px;
+    color: white;
+    font-weight: 600;
+}
+
+.container {
+    width: 100%;
+    max-width: 500px;
+    display: none; /* Caché au début, révélé après le loading */
+}
+
+.container.show {
+    display: block;
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 50px 40px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    position: relative;
+    overflow: visible;
+}
+
+.emoji {
+    margin-bottom: 20px;
+    display: inline-block;
+}
+
+.emoji img {
+    width: 450px;
+    height: auto;
+    display: block;
+}
+
+.question {
+    font-size: 32px;
+    font-weight: 800;
+    color: #1a1a1a;
+    margin-bottom: 40px;
+    line-height: 1.3;
+}
+
+.buttons {
+    position: relative;
+    display: flex;
+    gap: 50px;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 150px;
+    margin-bottom: 15px;
+    padding: 0 20px;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.btn-yes {
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+    color: white;
+    border: none;
+    padding: 18px 60px;
+    border-radius: 999px;
+    font-size: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+    transition: all 0.3s ease;
+}
+
+.btn-yes:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.6);
+}
+
+.btn-yes:active {
     transform: translateY(0);
 }
 
-.choice-signature {
-    /* L'espace reste réservé même invisible : la carte ne saute pas à la révélation. */
-    margin-top: var(--sp-3);
-    font-size: var(--fs-md);
+.btn-no {
+    background: #f0f0f0;
+    color: #1a1a1a;
+    border: 2px solid #e0e0e0;
+    padding: 16px 40px;
+    border-radius: 999px;
+    font-size: 18px;
     font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--gold-soft);
-    opacity: 0;
-    transition: opacity 1s var(--ease-out);
+    cursor: pointer;
+    position: relative;
+    transition: all 0.15s ease;
 }
 
-.choice-signature.show {
-    opacity: 1;
+.btn-no.fleeing {
+    position: absolute;
+    z-index: 1000;
 }
 
-/* ============================================================
-   Responsive
-   ============================================================ */
-@media (min-width: 768px) {
-    .intro-title      { font-size: 5rem; }
-    .intro-message    { font-size: var(--fs-xl); }
-    .loading-name     { font-size: var(--fs-4xl); }
-    .choice-question  { font-size: var(--fs-3xl); }
-    .choice-question.answered { font-size: var(--fs-xl); }
-    .choice-answer    { font-size: var(--fs-xl); }
-    .cinematic-message { max-width: 24ch; }
+.btn-no:hover {
+    background: #e8e8e8;
 }
 
-/* 480px et non 400 : les téléphones courants font 360 à 430px de large. En dessous
-   de ce seuil, deux boutons côte à côte deviennent trop étroits pour leur libellé. */
+.hint {
+    color: #666;
+    font-size: 14px;
+    font-style: italic;
+    margin-top: 10px;
+}
+
+.success {
+    display: none;
+    margin-top: 30px;
+}
+
+.success.show {
+    display: block;
+    animation: revealImg 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes revealImg {
+    0% {
+        opacity: 0;
+        transform: scale(0.4) translateY(30px);
+        filter: blur(8px);
+    }
+    60% {
+        opacity: 1;
+        transform: scale(1.05) translateY(-4px);
+        filter: blur(0px);
+    }
+    80% {
+        transform: scale(0.97) translateY(2px);
+    }
+    100% {
+        transform: scale(1) translateY(0);
+    }
+}
+
+.success img {
+    max-width: 100%;
+    border-radius: 16px;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.45), 0 8px 24px rgba(0, 0, 0, 0.2);
+    margin-bottom: 20px;
+    border: 3px solid rgba(255, 215, 0, 0.5);
+    animation: glowPulse 2s ease-in-out 0.7s infinite alternate;
+}
+
+@keyframes glowPulse {
+    from {
+        box-shadow: 0 0 30px rgba(255, 215, 0, 0.45), 0 8px 24px rgba(0, 0, 0, 0.2);
+    }
+    to {
+        box-shadow: 0 0 50px rgba(255, 215, 0, 0.8), 0 8px 30px rgba(0, 0, 0, 0.25);
+    }
+}
+
+.music-player {
+    margin-top: 20px;
+    width: 100%;
+    max-width: 100%;
+}
+
+.buttons.hide,
+.hint.hide {
+    display: none;
+}
+
+/* Compte à rebours */
+.countdown {
+    display: none;
+    margin-top: 30px;
+    text-align: center;
+}
+
+.countdown.show {
+    display: block;
+    animation: fadeInScale 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes fadeInScale {
+    0% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.countdown-text {
+    font-size: 20px;
+    color: #764ba2;
+    font-weight: 600;
+    margin-bottom: 15px;
+    animation: pulseText 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseText {
+    0%, 100% {
+        opacity: 0.8;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+}
+
+.countdown-number {
+    font-size: 120px;
+    font-weight: 900;
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FF6B6B 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    margin: 20px 0;
+    animation: countdownPulse 1s ease-in-out infinite;
+    text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+}
+
+@keyframes countdownPulse {
+    0%, 100% {
+        transform: scale(1);
+        filter: brightness(1);
+    }
+    50% {
+        transform: scale(1.1);
+        filter: brightness(1.2);
+    }
+}
+
+.countdown-subtext {
+    font-size: 16px;
+    color: #666;
+    font-style: italic;
+    margin-top: 10px;
+}
+
+#sound-btn {
+    transition: opacity 0.3s ease, transform 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+#sound-btn:active {
+    transform: scale(0.95);
+}
+
+/* ========== MOBILE FIRST RESPONSIVE ========== */
+@media (max-width: 768px) {
+    /* Intro screen */
+    .intro-title {
+        font-size: 60px;
+    }
+
+    .intro-message {
+        font-size: 20px;
+    }
+
+    .intro-btn {
+        padding: 18px 50px;
+        font-size: 20px;
+    }
+
+    /* Loading screen */
+    .loading-name {
+        font-size: 70px;
+    }
+
+    .loading-message {
+        font-size: 22px;
+        padding: 0 20px;
+    }
+
+    .loading-countdown {
+        font-size: 120px;
+    }
+
+    .loading-subtext {
+        font-size: 16px;
+        padding: 0 20px;
+    }
+
+    /* Explosion screen */
+    .explosion-name {
+        font-size: 120px;
+    }
+
+    /* Cinematic screen */
+    .cinematic-message {
+        font-size: 36px;
+        padding: 0 30px;
+    }
+
+    /* Bulles screen */
+    .bubbles-title {
+        font-size: 26px;
+        margin-bottom: 30px;
+        padding: 0 20px;
+    }
+
+    .bubbles-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        padding: 0 20px;
+    }
+
+    .bubble {
+        width: 140px;
+        height: 140px;
+    }
+
+    .bubble-icon {
+        font-size: 50px;
+    }
+
+    .bubble-text {
+        font-size: 16px;
+        padding: 8px;
+    }
+
+    .bubbles-counter {
+        font-size: 20px;
+        margin-top: 30px;
+    }
+
+    /* Main page */
+    .card {
+        padding: 40px 30px;
+    }
+
+    .question {
+        font-size: 26px;
+    }
+
+    .emoji img {
+        width: 280px;
+    }
+
+    .btn-yes {
+        padding: 16px 50px;
+        font-size: 18px;
+    }
+
+    .btn-no {
+        font-size: 14px;
+    }
+
+    #sound-btn {
+        top: 10px;
+        right: 10px;
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+}
+
 @media (max-width: 480px) {
-    .choice-card {
-        padding: var(--sp-5) var(--sp-3);
+    /* Intro screen */
+    .intro-title {
+        font-size: 48px;
     }
 
-    /* Les boutons s'empilent, à taille strictement identique.
-       column-reverse remonte l'action principale en tête. */
-    .choice-buttons {
-        flex-direction: column-reverse;
+    .intro-message {
+        font-size: 18px;
     }
 
-    .choice-buttons .btn {
-        width: 100%;
-        flex: 0 0 auto;
-    }
-}
-
-/* ============================================================
-   Accessibilité : réduction des animations
-   ============================================================ */
-@media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
+    .intro-btn {
+        padding: 16px 40px;
+        font-size: 18px;
     }
 
-    .cinematic-message { opacity: 1; }
+    /* Loading screen */
+    .loading-name {
+        font-size: 55px;
+    }
+
+    .loading-message {
+        font-size: 20px;
+    }
+
+    .loading-countdown {
+        font-size: 100px;
+    }
+
+    .loading-subtext {
+        font-size: 14px;
+    }
+
+    /* Explosion screen */
+    .explosion-name {
+        font-size: 90px;
+    }
+
+    /* Cinematic screen */
+    .cinematic-message {
+        font-size: 28px;
+        padding: 0 25px;
+        white-space: pre-wrap;
+    }
+
+    /* Bulles screen */
+    .bubbles-title {
+        font-size: 22px;
+    }
+
+    .bubbles-container {
+        gap: 15px;
+    }
+
+    .bubble {
+        width: 120px;
+        height: 120px;
+    }
+
+    .bubble-icon {
+        font-size: 40px;
+    }
+
+    .bubble-text {
+        font-size: 14px;
+    }
+
+    .bubbles-counter {
+        font-size: 18px;
+    }
+
+    /* Main page */
+    .question {
+        font-size: 22px;
+    }
+
+    .emoji img {
+        width: 220px;
+    }
+
+    .buttons {
+        flex-direction: column;
+        gap: 20px;
+        min-height: auto;
+        padding: 0 10px;
+    }
+
+    .btn-yes {
+        padding: 14px 40px;
+        font-size: 16px;
+    }
+
+    .btn-no {
+        font-size: 13px;
+        padding: 12px 30px;
+    }
 }
