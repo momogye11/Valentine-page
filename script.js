@@ -4,7 +4,8 @@ const CONFIG = {
     dates: "du 14 au 16 août 2026",
     destination: "Lamantin Beach",
     musicFile: "Guy2Bezbar - Je pense à toi (Paroles).mp3",
-    whatsappNumber: ""
+    callNumber: "+221782957169",
+    messageNumber: "0695052125"
 };
 
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -326,7 +327,11 @@ function askFinalChoice() {
                 await say("Ok, je reste calme… enfin j’essaie 🥳");
                 await say("Je t’envoie tout le programme 🤍");
                 launchConfetti({ amount: 90, duration: 2400 });
-                showFinalPanel("Bon bah… c’est oui 😭🤍", "Envoie-moi ta réponse avant que tu changes d’avis 😂");
+                showFinalPanel(
+                    "Bon bah… c’est oui 😭🤍",
+                    "Appelle-moi directement avant que tu changes d’avis 😂📞",
+                    "call"
+                );
             }
         },
         {
@@ -335,7 +340,11 @@ function askFinalChoice() {
                 finalChoice = "Oui, je suis partante, mais je préfère qu’on ait deux chambres.";
                 await say("Ça marche 🤝 Deux chambres, c’est noté.");
                 await say("Je m’en occupe. Le principal, c’est que tu sois tranquille 🤍");
-                showFinalPanel("Partante, avec deux chambres 🤝", "Tout est clair. Tu peux m’envoyer ça directement.");
+                showFinalPanel(
+                    "Partante, avec deux chambres 🤝",
+                    "Appelle-moi directement, on règle tout ça ensemble 📞",
+                    "call"
+                );
             }
         },
         {
@@ -391,7 +400,7 @@ textReplyForm.addEventListener("submit", async (event) => {
     showFinalPanel("À toi d’envoyer 😌", "Ta réponse est prête pour Mohamed.");
 });
 
-function buildWhatsAppMessage() {
+function buildTextMessage() {
     const lines = [
         `Coucou ${CONFIG.sender} 👀`,
         "",
@@ -405,31 +414,45 @@ function buildWhatsAppMessage() {
     return lines.join("\n");
 }
 
-function showFinalPanel(title, copy) {
+function showFinalPanel(title, copy, action = "message") {
     clearReplies();
     replyArea.hidden = true;
+    const isCall = action === "call";
 
     const panel = document.createElement("section");
     panel.className = "final-panel";
+    panel.dataset.action = action;
     panel.innerHTML = `
         <p class="final-panel__eyebrow">DERNIÈRE ÉTAPE</p>
         <h2></h2>
         <p class="final-panel__copy"></p>
         <button class="send-button" type="button">
-            <span>Envoyer ma réponse à Mohamed</span>
+            <span></span>
             <span aria-hidden="true">→</span>
         </button>
-        <p class="send-help">WhatsApp s’ouvrira avec le message déjà écrit. Rien ne part sans ton dernier clic.</p>
+        <p class="send-help"></p>
     `;
     panel.querySelector("h2").textContent = title;
     panel.querySelector(".final-panel__copy").textContent = copy;
+    panel.querySelector(".send-button span:first-child").textContent = isCall
+        ? "Appelle-moi maintenant 📞"
+        : "Envoyer mon message 💬";
+    panel.querySelector(".send-help").textContent = isCall
+        ? "Ton téléphone ouvrira l’appel. Rien ne démarre sans ta confirmation."
+        : "L’app Messages s’ouvrira avec le texte déjà écrit. Rien ne part sans ton dernier clic.";
     panel.querySelector(".send-button").addEventListener("click", () => {
-        const encodedMessage = encodeURIComponent(buildWhatsAppMessage());
-        const cleanNumber = CONFIG.whatsappNumber.replace(/\D/g, "");
-        const base = cleanNumber
-            ? `https://wa.me/${cleanNumber}`
-            : "https://wa.me/";
-        window.location.href = `${base}?text=${encodedMessage}`;
+        if (isCall) {
+            const callDigits = CONFIG.callNumber.replace(/\D/g, "");
+            const cleanCallNumber = CONFIG.callNumber.trim().startsWith("+")
+                ? `+${callDigits}`
+                : callDigits;
+            window.location.href = `tel:${cleanCallNumber}`;
+            return;
+        }
+
+        const cleanMessageNumber = CONFIG.messageNumber.replace(/\D/g, "");
+        const encodedMessage = encodeURIComponent(buildTextMessage());
+        window.location.href = `sms:${cleanMessageNumber}?body=${encodedMessage}`;
     });
 
     messages.appendChild(panel);
