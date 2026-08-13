@@ -21,6 +21,9 @@ test("the backend accepts a valid final response and rejects unsafe payloads", (
     assert.equal(validateEvent({ ...valid, seq: 201 }), null);
     assert.equal(validateEvent({ ...valid, outcome: "maybe" }), null);
     assert.equal(validateEvent({ ...valid, type: "keystroke" }), null);
+    assert.equal(validateEvent({ ...valid, freeText: "hidden text" }), null);
+    assert.equal(validateEvent({ ...valid, freeText: null }).outcome, "accepted");
+    assert.equal(validateEvent({ ...valid, type: "text_submitted" }), null);
     assert.equal(cleanString("  réponse  ", 20), "réponse");
     assert.equal(secureEqual("secret", "secret"), true);
     assert.equal(secureEqual("secret", "wrong"), false);
@@ -82,4 +85,18 @@ test("the reveal keeps two rooms while the requested line only says two nights",
     assert.match(script, /Deux nuits… oui madame, j’ai vraiment pensé à tout/);
     assert.doesNotMatch(script, /Deux nuits, deux chambres… oui madame/);
     assert.match(html, /<span>CHAMBRES<\/span>\s*<strong>2<\/strong>/);
+});
+
+test("every in-page response is a playful predefined choice", () => {
+    const script = fs.readFileSync(path.join(__dirname, "..", "script.js"), "utf8");
+    const html = fs.readFileSync(path.join(__dirname, "..", "index.html"), "utf8");
+    const analytics = fs.readFileSync(path.join(__dirname, "..", "analytics.js"), "utf8");
+
+    assert.doesNotMatch(html, /<textarea|textReplyForm/);
+    assert.doesNotMatch(script, /showTextReply|text_submitted|freeText/);
+    assert.doesNotMatch(analytics, /freeText/);
+    assert.match(script, /On y va comment \? 🚗/);
+    assert.match(script, /Deux chambres, t’es sûr \? 😂/);
+    assert.match(script, /La surprise me surprend trop 😂/);
+    assert.match(script, /Bon… verdict provisoire \? 👀😂/);
 });

@@ -59,8 +59,7 @@ body {
     animation: intro-canvas-in 1.6s 500ms ease forwards;
 }
 
-button,
-textarea {
+button {
     font: inherit;
 }
 
@@ -68,8 +67,7 @@ button {
     color: inherit;
 }
 
-button:focus-visible,
-textarea:focus-visible {
+button:focus-visible {
     outline: 2px solid var(--sand);
     outline-offset: 3px;
 }
@@ -565,6 +563,23 @@ textarea:focus-visible {
     display: none;
 }
 
+.reply-options--grid {
+    display: grid;
+    max-height: min(42dvh, 290px);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    overflow-x: visible;
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+.reply-options--grid .reply-button {
+    width: 100%;
+    min-width: 0;
+    border-radius: 16px;
+    text-align: left;
+    white-space: normal;
+}
+
 .reply-button {
     flex: 0 0 auto;
     min-height: 43px;
@@ -692,50 +707,6 @@ textarea:focus-visible {
     border-radius: 50%;
     background: #3c7469;
     box-shadow: 0 0 0 4px rgba(60, 116, 105, 0.12);
-}
-
-.text-reply label {
-    display: block;
-    margin: 0 0 9px;
-    color: var(--muted);
-    font-size: 10px;
-}
-
-.text-reply__row {
-    display: flex;
-    align-items: flex-end;
-    gap: 8px;
-}
-
-.text-reply textarea {
-    min-height: 48px;
-    max-height: 110px;
-    flex: 1;
-    resize: vertical;
-    padding: 12px 14px;
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    color: var(--ink);
-    background: rgba(255, 255, 255, 0.055);
-    line-height: 1.4;
-}
-
-.text-reply textarea::placeholder {
-    color: rgba(174, 189, 185, 0.5);
-}
-
-.text-reply button {
-    display: grid;
-    flex: 0 0 48px;
-    width: 48px;
-    height: 48px;
-    place-items: center;
-    border: 0;
-    border-radius: 50%;
-    color: #17201f;
-    background: var(--sand);
-    font-size: 20px;
-    cursor: pointer;
 }
 
 .final-panel {

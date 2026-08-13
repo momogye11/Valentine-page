@@ -22,10 +22,10 @@ const EVENT_TYPES = new Set([
     "conversation_started",
     "choice_selected",
     "trip_revealed",
-    "text_submitted",
     "final_response",
     "contact_action"
 ]);
+const EVENT_KEYS = new Set(["id", "seq", "type", "stepId", "choiceId", "choiceLabel", "freeText", "outcome", "action"]);
 const OUTCOMES = new Set(["accepted", "needs_details", "thinking", "declined"]);
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const publicFiles = new Map([
@@ -147,15 +147,14 @@ function requireAdmin(request, response, next) {
 
 function validateEvent(event) {
     if (!event || typeof event !== "object") return null;
+    if (Object.keys(event).some((key) => !EVENT_KEYS.has(key))) return null;
+    if (event.freeText !== undefined && event.freeText !== null) return null;
     if (!UUID_PATTERN.test(event.id || "")) return null;
     if (!Number.isInteger(event.seq) || event.seq < 1 || event.seq > 200) return null;
     if (!EVENT_TYPES.has(event.type)) return null;
 
     const outcome = cleanString(event.outcome, 32);
     if (outcome && !OUTCOMES.has(outcome)) return null;
-
-    const freeText = cleanString(event.freeText, 300);
-    if (event.freeText && !freeText) return null;
 
     return {
         id: event.id,
@@ -164,7 +163,6 @@ function validateEvent(event) {
         stepId: cleanString(event.stepId, 64),
         choiceId: cleanString(event.choiceId, 64),
         choiceLabel: cleanString(event.choiceLabel, 180),
-        freeText,
         outcome,
         action: cleanString(event.action, 32)
     };
@@ -196,7 +194,6 @@ async function initializeDatabase() {
             step_id TEXT,
             choice_id TEXT,
             choice_label TEXT,
-            free_text VARCHAR(300),
             outcome TEXT,
             action TEXT,
             received_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -294,8 +291,8 @@ app.post("/api/events", requireSameOrigin, requireDatabase, async (request, resp
         for (const event of events) {
             const result = await client.query(
                 `INSERT INTO invitation_events
-                    (id, session_id, sequence, event_type, step_id, choice_id, choice_label, free_text, outcome, action)
-                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                    (id, session_id, sequence, event_type, step_id, choice_id, choice_label, outcome, action)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
                  ON CONFLICT DO NOTHING`,
                 [
                     event.id,
@@ -305,7 +302,6 @@ app.post("/api/events", requireSameOrigin, requireDatabase, async (request, resp
                     event.stepId,
                     event.choiceId,
                     event.choiceLabel,
-                    event.freeText,
                     event.outcome,
                     event.action
                 ]
@@ -363,7 +359,6 @@ app.get("/admin", limitAdminAttempts, requireAdmin, requireDatabase, async (_req
             conversation_started: "Conversation commencée",
             choice_selected: "Réponse choisie",
             trip_revealed: "Surprise découverte",
-            text_submitted: "Message libre envoyé",
             final_response: "Réponse finale",
             contact_action: "Action de contact"
         };
@@ -375,7 +370,6 @@ app.get("/admin", limitAdminAttempts, requireAdmin, requireDatabase, async (_req
                     <div>
                         <strong>${escapeHtml(typeLabels[event.event_type] || event.event_type)}</strong>
                         ${event.choice_label ? `<span>${escapeHtml(event.choice_label)}</span>` : ""}
-                        ${event.free_text ? `<blockquote>${escapeHtml(event.free_text)}</blockquote>` : ""}
                         ${event.action ? `<span>Action : ${escapeHtml(event.action)}</span>` : ""}
                     </div>
                 </li>
@@ -402,10 +396,10 @@ main{max-width:860px;margin:auto}header{display:flex;justify-content:space-betwe
 h1{margin:0;font:600 clamp(36px,7vw,62px) Georgia,serif}header p{margin:6px 0 0;color:#aebdb9}.refresh{color:#061719;background:#e8d5b7;padding:11px 16px;border-radius:999px;text-decoration:none;font-weight:700}
 .empty,.session{display:block;margin:12px 0;border:1px solid #29484a;border-radius:18px;background:#0a2224;overflow:hidden}
 summary{display:grid;grid-template-columns:1fr auto;gap:6px 18px;padding:18px;cursor:pointer}.session-number{color:#c7a97c;font-size:12px;letter-spacing:.08em;text-transform:uppercase}summary strong{grid-row:1/3;grid-column:2;align-self:center}summary time{color:#8fa39f;font-size:12px}
-ol{list-style:none;margin:0;padding:4px 18px 18px;border-top:1px solid #29484a}li{display:grid;grid-template-columns:145px 1fr;gap:16px;padding:15px 0;border-bottom:1px solid #1c393b}li:last-child{border:0}li time{color:#829995;font-size:11px}li div{display:grid;gap:5px}li span{color:#e8d5b7}blockquote{margin:4px 0 0;padding:10px 12px;border-left:2px solid #df8064;background:#102c2e;border-radius:0 10px 10px 0}.privacy{margin-top:28px;color:#829995;font-size:11px}@media(max-width:560px){header{align-items:start}.refresh{font-size:0}.refresh::after{content:'↻';font-size:20px}summary{grid-template-columns:1fr}summary strong{grid-row:auto;grid-column:auto}li{grid-template-columns:1fr;gap:5px}}
+ol{list-style:none;margin:0;padding:4px 18px 18px;border-top:1px solid #29484a}li{display:grid;grid-template-columns:145px 1fr;gap:16px;padding:15px 0;border-bottom:1px solid #1c393b}li:last-child{border:0}li time{color:#829995;font-size:11px}li div{display:grid;gap:5px}li span{color:#e8d5b7}.privacy{margin-top:28px;color:#829995;font-size:11px}@media(max-width:560px){header{align-items:start}.refresh{font-size:0}.refresh::after{content:'↻';font-size:20px}summary{grid-template-columns:1fr}summary strong{grid-row:auto;grid-column:auto}li{grid-template-columns:1fr;gap:5px}}
 </style></head><body><main><header><div><h1>Suivi Morgane</h1><p>${sessionsResult.rows.length} visite${sessionsResult.rows.length > 1 ? "s" : ""} enregistrée${sessionsResult.rows.length > 1 ? "s" : ""}</p></div><a class="refresh" href="/admin">Actualiser</a></header>
 ${sessionCards || '<p class="empty" style="padding:24px">Aucune réponse pour le moment.</p>'}
-<p class="privacy">Heure de Dakar · Aucun suivi de localisation, appareil ou frappe en cours.</p></main></body></html>`);
+<p class="privacy">Heure de Dakar · Seuls les choix validés et les clics appel/SMS sont enregistrés.</p></main></body></html>`);
     } catch (error) {
         return next(error);
     }

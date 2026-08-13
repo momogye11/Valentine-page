@@ -21,8 +21,6 @@ const presenceText = document.getElementById("presenceText");
 const replyArea = document.getElementById("replyArea");
 const replyPrompt = document.getElementById("replyPrompt");
 const replyOptions = document.getElementById("replyOptions");
-const textReplyForm = document.getElementById("textReplyForm");
-const textReply = document.getElementById("textReply");
 const confettiCanvas = document.getElementById("confettiCanvas");
 const introCanvas = document.getElementById("introCanvas");
 
@@ -33,7 +31,9 @@ audio.preload = "auto";
 
 let interactionLocked = false;
 let finalChoice = null;
-let finalNote = "";
+let detailsIntroduced = false;
+let declineRetryOffered = false;
+const viewedDetailTopics = new Set();
 let activeConfettiFrame = null;
 let introAnimationFrame = null;
 let introResizeHandler = null;
@@ -330,12 +330,12 @@ async function say(text, options = {}) {
 
 function clearReplies() {
     replyOptions.replaceChildren();
-    textReplyForm.hidden = true;
 }
 
 function ask(stepId, prompt, choices) {
     clearReplies();
     replyPrompt.textContent = prompt;
+    replyOptions.classList.toggle("reply-options--grid", choices.length >= 4);
 
     choices.forEach((choice, index) => {
         const button = document.createElement("button");
@@ -506,18 +506,7 @@ function askFinalChoice() {
         {
             id: "thinking",
             label: "Laisse-moi réfléchir 🤍",
-            action: async () => {
-                finalChoice = "Je ne suis pas encore sûre pour le séjour du 14 au 16 août.";
-                trackEvent("final_response", {
-                    stepId: "outcome",
-                    choiceId: "thinking",
-                    choiceLabel: "Laisse-moi réfléchir 🤍",
-                    outcome: "thinking"
-                });
-                await say("Ça marche, prends ton temps 🤍");
-                await say("Dis-moi juste ce qui te fait hésiter. Zéro pression.");
-                showTextReply();
-            }
+            action: askWhatMakesHerHesitate
         },
         {
             id: "decline_first",
@@ -547,19 +536,168 @@ async function acceptTrip() {
 }
 
 async function askForDetails() {
-    finalChoice = "J’ai besoin de quelques détails avant de répondre.";
+    if (!detailsIntroduced) {
+        detailsIntroduced = true;
+        await say("Je savais que le mode FBI allait revenir 😂🕵🏽‍♀️");
+        await say("Vas-y madame, choisis ton dossier 👇😂");
+    } else {
+        await say("Ahhh, l’enquête n’était donc pas finie 😭😂");
+    }
+    showDetailMenu("Tu veux savoir quoi ? 👀");
+}
+
+function detailLabel(id, label) {
+    return `${viewedDetailTopics.has(id) ? "✓ " : ""}${label}`;
+}
+
+function showDetailMenu(prompt = "Autre question, madame l’inspectrice ? 😂") {
+    ask("detail_topic", prompt, [
+        {
+            id: "transport",
+            label: detailLabel("transport", "On y va comment ? 🚗"),
+            action: async () => {
+                viewedDetailTopics.add("transport");
+                await say("Pour le trajet, on cale l’heure ensemble et je t’envoie tout 😌🚗");
+                await say("Pas de mission compliquée pour madame, tu peux laisser le GPS respirer 😂");
+                showDetailMenu();
+            }
+        },
+        {
+            id: "program",
+            label: detailLabel("program", "On fait quoi là-bas ? 👀"),
+            action: async () => {
+                viewedDetailTopics.add("program");
+                await say("Piscine, plage, bien manger et surtout souffler 😌🌊☀️");
+                await say("Et si madame veut dormir jusqu’à midi, je ne juge pas… trop 😂");
+                showDetailMenu();
+            }
+        },
+        {
+            id: "rooms",
+            label: detailLabel("rooms", "Deux chambres, t’es sûr ? 😂"),
+            action: async () => {
+                viewedDetailTopics.add("rooms");
+                await say("Oui oui, deux vraies chambres séparées 😂");
+                await say("J’ai anticipé l’enquête avant même qu’elle commence. Range le badge FBI 🕵🏽‍♀️🤍");
+                showDetailMenu();
+            }
+        },
+        {
+            id: "secret",
+            label: detailLabel("secret", "Avoue, tu caches quoi ? 🤨😂"),
+            action: async () => {
+                viewedDetailTopics.add("secret");
+                await say("Rien de louche, promis 😂 Le gros secret, c’était surtout le séjour 👀");
+                await say("Du 14 au 16, Lamantin Beach, deux chambres. Madame a le dossier complet ✅");
+                showDetailMenu();
+            }
+        },
+        {
+            id: "accept",
+            label: "Ok, je valide 😭🤍",
+            primary: true,
+            action: acceptTrip
+        },
+        {
+            id: "think",
+            label: "Je réfléchis encore 😂🤍",
+            action: askWhatMakesHerHesitate
+        },
+        {
+            id: "decline",
+            label: "Ça donne envie, mais je peux pas 😕",
+            action: handleFirstDecline
+        }
+    ]);
+}
+
+async function askWhatMakesHerHesitate() {
+    await say("Ahhh… madame ouvre une réunion avec elle-même maintenant ? 😭😂");
+    ask("hesitation_reason", "C’est quoi qui te fait hésiter ? 👀", [
+        {
+            id: "dates",
+            label: "Les dates peut-être 😭",
+            action: async () => {
+                await say("Ahhh… donc mon vrai rival, c’est ton calendrier 😭😂");
+                await say("Vérifie tranquillement, si ça bloque je comprends 🤍");
+                askAfterHesitation();
+            }
+        },
+        {
+            id: "organisation",
+            label: "Je dois m’organiser 👀",
+            action: async () => {
+                await say("Le mode planning est activé, je reconnais 😂");
+                await say("Regarde tout ça calmement, aucune pression 🤍");
+                askAfterHesitation();
+            }
+        },
+        {
+            id: "too_surprised",
+            label: "La surprise me surprend trop 😂",
+            action: async () => {
+                await say("J’avoue… j’ai peut-être un peu abusé sur l’effet surprise 😭😂");
+                await say("Prends le temps de digérer tout ça, madame 🤍");
+                askAfterHesitation();
+            }
+        },
+        {
+            id: "needs_time",
+            label: "J’ai juste besoin de temps 🤍",
+            action: async () => {
+                await say("Donc madame veut me laisser dans le suspense maintenant ? 😭😂");
+                await say("Ça marche, le plus important c’est que tu sois à l’aise 🤍");
+                askAfterHesitation();
+            }
+        }
+    ]);
+}
+
+function askAfterHesitation() {
+    ask("after_hesitation", "Bon… verdict provisoire ? 👀😂", [
+        {
+            id: "accept",
+            label: "Bon… oui, je viens 😭🤍",
+            primary: true,
+            action: acceptTrip
+        },
+        {
+            id: "details",
+            label: "Je veux voir les détails 👀",
+            action: askForDetails
+        },
+        {
+            id: "later",
+            label: "Je te réponds plus tard 🤍",
+            action: finalizeThinking
+        },
+        {
+            id: "decline",
+            label: "Non, ça va pas être possible 😕",
+            action: handleFirstDecline
+        }
+    ]);
+}
+
+async function finalizeThinking() {
+    finalChoice = "J’ai besoin d’un peu de temps pour réfléchir au séjour du 14 au 16 août 🤍";
     trackEvent("final_response", {
         stepId: "outcome",
-        choiceId: "needs_details",
+        choiceId: "thinking",
         choiceLabel: finalChoice,
-        outcome: "needs_details"
+        outcome: "thinking"
     });
-    await say("Je savais que le mode FBI allait revenir 😂🕵🏽‍♀️");
-    await say("Vas-y, pose-moi toutes tes questions 👀");
-    showTextReply();
+    await say("Ça marche, je range mon discours commercial pour aujourd’hui 😂🤍");
+    await say("Prends ton temps, vraiment. Aucune pression.");
+    showFinalPanel("Suspense accepté 😂🤍", "Ta réponse est déjà prête, tu n’as rien à rédiger.");
 }
 
 async function handleFirstDecline() {
+    if (declineRetryOffered) {
+        await finalizeDecline();
+        return;
+    }
+    declineRetryOffered = true;
     await say("Attends… même avec piscine, soleil ET deux chambres ? 😭😂");
     await say("Bon, j’aurai tenté de vendre mon programme jusqu’au bout 😌");
     await say("Mais en vrai, si tu peux pas, je comprends 🤍 Zéro pression.");
@@ -615,45 +753,12 @@ async function finalizeDecline() {
     showFinalPanel("C’est noté 🤍", "Tu peux m’envoyer ta réponse sans avoir à tout réécrire.");
 }
 
-function showTextReply() {
-    clearReplies();
-    replyPrompt.textContent = "Écris-moi ce que tu veux savoir 👇";
-    textReplyForm.hidden = false;
-    textReply.value = "";
-    textReply.focus();
-    setLocked(false);
-    scrollToLatest();
-}
-
-textReplyForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const value = textReply.value.trim();
-    if (!value || interactionLocked) return;
-
-    finalNote = value;
-    trackEvent("text_submitted", {
-        stepId: "free_text",
-        freeText: value
-    });
-    setLocked(true);
-    addMessage("morgane", value);
-    textReplyForm.hidden = true;
-    await say("Parfait, j’ai compris 👀 Envoie-moi ça et je te réponds.");
-    showFinalPanel("À toi d’envoyer 😌", "Ta réponse est prête pour Mohamed.");
-});
-
 function buildTextMessage() {
-    const lines = [
+    return [
         `Coucou ${CONFIG.sender} 👀`,
         "",
         finalChoice || `Je te réponds pour le séjour ${CONFIG.dates} au ${CONFIG.destination}.`
-    ];
-
-    if (finalNote) {
-        lines.push("", `Ce que je voulais ajouter : ${finalNote}`);
-    }
-
-    return lines.join("\n");
+    ].join("\n");
 }
 
 function showFinalPanel(title, copy, action = "message") {

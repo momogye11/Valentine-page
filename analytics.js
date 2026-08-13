@@ -1,7 +1,7 @@
 (function initializeInvitationAnalytics() {
     "use strict";
 
-    const STORAGE_PREFIX = "morganeInvitation.";
+    const STORAGE_PREFIX = "morganeInvitation.v2.";
     const CLIENT_KEY = `${STORAGE_PREFIX}clientId`;
     const SESSION_KEY = `${STORAGE_PREFIX}session`;
     const QUEUE_KEY = `${STORAGE_PREFIX}queue`;
@@ -114,7 +114,6 @@
             stepId: details.stepId || null,
             choiceId: details.choiceId || null,
             choiceLabel: details.choiceLabel || null,
-            freeText: details.freeText || null,
             outcome: details.outcome || null,
             action: details.action || null
         };
