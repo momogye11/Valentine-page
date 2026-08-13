@@ -2,7 +2,7 @@
 
 ## Project overview
 
-This repository contains a private, interactive invitation for Morgane. It is a static vanilla HTML/CSS/JavaScript experience with no build step or backend.
+This repository contains a private, interactive invitation for Morgane. The interface is vanilla HTML/CSS/JavaScript, served by a small Node/Express backend with PostgreSQL response logging.
 
 The page presents a conversational story from Mohamed, reveals a confirmed stay at Lamantin Beach from August 14 to August 16, 2026, and lets Morgane choose a genuine response. An acceptance opens the phone dialer; other answers open a prefilled SMS. She must still confirm the call or message herself.
 
@@ -11,6 +11,9 @@ The page presents a conversational story from Mohamed, reveals a confirmed stay 
 - `index.html` — semantic page shell, conversation containers, and the trip-card template.
 - `style.css` — premium dark coastal visual system, responsive layout, animations, and reduced-motion support.
 - `script.js` — configuration, branching conversation engine, automatic music, trip reveal, free-text response, and phone/SMS handoff.
+- `analytics.js` — consent-disclosed, best-effort delivery of validated choices; it never records typing in progress.
+- `server.js` — static files, response API, PostgreSQL schema initialization, and the protected `/admin` timeline.
+- `test/app.test.js` — backend validation, storage-failure resilience, and key content assertions.
 
 ## Personalization
 
@@ -28,17 +31,22 @@ The visible date and destination details in `index.html` must be updated separat
 
 ## Running locally
 
-Serve the directory through a local static server so audio and browser behavior match production:
+Install dependencies and run the same Node server used in production:
 
 ```bash
-python3 -m http.server 8000
+npm install
+npm start
 ```
 
-Then open `http://localhost:8000`.
+Then open `http://localhost:8080`. Without `DATABASE_URL`, the invitation still works but response logging and `/admin` return 503.
+
+Run the automated checks with `npm run check && npm test`.
 
 ## Product constraints
 
-- This is a static site. It cannot silently collect or transmit a response.
+- Response logging starts only after Morgane clicks the disclosed entry button. It records validated choices, submitted free text, the final outcome, and clicks on call/SMS — never keystrokes, location, or device fingerprinting.
+- Production requires `DATABASE_URL`, `ADMIN_USER`, and `ADMIN_PASSWORD` as server environment variables. Never commit their values.
+- `/admin` is private and protected with HTTPS Basic Auth. Keep search-engine blocking and cache prevention enabled.
 - The dialer or Messages app only opens after Morgane explicitly clicks the final button; the site cannot place a call or send an SMS silently.
 - Do not include booking references, payment details, or other secrets in client-side files.
 - Keep all final choices real and clickable. Do not make a refusal button flee or pressure the recipient.

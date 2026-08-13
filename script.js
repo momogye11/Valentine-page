@@ -3,7 +3,7 @@ const CONFIG = {
     sender: "Mohamed",
     dates: "du 14 au 16 août 2026",
     destination: "Lamantin Beach",
-    musicFile: "Guy2Bezbar - Je pense à toi (Paroles).mp3",
+    musicFile: "/media/music",
     callNumber: "+221782957169",
     messageNumber: "0695052125"
 };
@@ -24,16 +24,22 @@ const replyOptions = document.getElementById("replyOptions");
 const textReplyForm = document.getElementById("textReplyForm");
 const textReply = document.getElementById("textReply");
 const confettiCanvas = document.getElementById("confettiCanvas");
+const introCanvas = document.getElementById("introCanvas");
 
 const audio = new Audio(CONFIG.musicFile);
 audio.loop = true;
-audio.volume = 0.32;
+audio.volume = 0;
 audio.preload = "auto";
 
 let interactionLocked = false;
 let finalChoice = null;
 let finalNote = "";
 let activeConfettiFrame = null;
+let introAnimationFrame = null;
+let introResizeHandler = null;
+let introVisibilityHandler = null;
+let musicFadeFrame = null;
+let musicStartPromise = null;
 
 const wait = (duration) => new Promise((resolve) => window.setTimeout(resolve, duration));
 
@@ -50,6 +56,122 @@ function vibrate(pattern = 35) {
     if (!prefersReducedMotion && navigator.vibrate) {
         navigator.vibrate(pattern);
     }
+}
+
+function trackEvent(type, details = {}) {
+    try {
+        window.valentineAnalytics?.track(type, details);
+    } catch {
+        // Response tracking must never interrupt Morgane's conversation.
+    }
+}
+
+function trackImmediate(type, details = {}) {
+    try {
+        return window.valentineAnalytics?.trackImmediate(type, details) ?? Promise.resolve();
+    } catch {
+        return Promise.resolve();
+    }
+}
+
+function startAnalytics() {
+    try {
+        void window.valentineAnalytics?.start()?.catch(() => {});
+    } catch {
+        // The invitation remains usable even if tracking is unavailable.
+    }
+}
+
+function initializeIntroAtmosphere() {
+    if (prefersReducedMotion || !introCanvas) return;
+
+    const context = introCanvas.getContext("2d");
+    if (!context) return;
+
+    let width = 0;
+    let height = 0;
+    let pixelRatio = 1;
+    let reflections = [];
+    let previousFrame = 0;
+
+    function resize() {
+        const previousWidth = width;
+        const previousHeight = height;
+        width = window.innerWidth;
+        height = window.innerHeight;
+        pixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
+        introCanvas.width = Math.round(width * pixelRatio);
+        introCanvas.height = Math.round(height * pixelRatio);
+        context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+        if (reflections.length && Math.abs(previousWidth - width) < 8) {
+            const heightRatio = previousHeight ? height / previousHeight : 1;
+            reflections.forEach((reflection) => {
+                reflection.y *= heightRatio;
+            });
+            return;
+        }
+        reflections = Array.from({ length: width < 480 ? 24 : 32 }, (_, index) => ({
+            x: width * (0.08 + Math.random() * 0.84),
+            y: height * (0.45 + Math.random() * 0.46),
+            length: 8 + Math.random() * 34,
+            phase: Math.random() * Math.PI * 2,
+            speed: 0.35 + Math.random() * 0.55,
+            alpha: 0.08 + Math.random() * 0.22,
+            warm: index % 4 === 0
+        }));
+    }
+
+    function draw(timestamp) {
+        introAnimationFrame = requestAnimationFrame(draw);
+        if (timestamp - previousFrame < 32) return;
+        previousFrame = timestamp;
+        context.clearRect(0, 0, width, height);
+
+        const time = timestamp / 1000;
+        reflections.forEach((reflection) => {
+            const shimmer = 0.45 + Math.sin(time * reflection.speed * 4 + reflection.phase) * 0.45;
+            const drift = Math.sin(time * reflection.speed + reflection.phase) * 11;
+            context.beginPath();
+            context.moveTo(reflection.x + drift - reflection.length / 2, reflection.y);
+            context.lineTo(reflection.x + drift + reflection.length / 2, reflection.y);
+            context.strokeStyle = reflection.warm
+                ? `rgba(232, 213, 183, ${reflection.alpha * shimmer})`
+                : `rgba(133, 194, 179, ${reflection.alpha * shimmer})`;
+            context.lineWidth = reflection.warm ? 1.2 : 0.8;
+            context.stroke();
+        });
+    }
+
+    introResizeHandler = resize;
+    introVisibilityHandler = () => {
+        if (document.hidden && introAnimationFrame !== null) {
+            cancelAnimationFrame(introAnimationFrame);
+            introAnimationFrame = null;
+        } else if (!document.hidden && !intro.hidden && introAnimationFrame === null) {
+            previousFrame = 0;
+            introAnimationFrame = requestAnimationFrame(draw);
+        }
+    };
+    window.addEventListener("resize", introResizeHandler, { passive: true });
+    document.addEventListener("visibilitychange", introVisibilityHandler);
+    resize();
+    introAnimationFrame = requestAnimationFrame(draw);
+}
+
+function stopIntroAtmosphere() {
+    if (introAnimationFrame !== null) {
+        cancelAnimationFrame(introAnimationFrame);
+        introAnimationFrame = null;
+    }
+    if (introResizeHandler) {
+        window.removeEventListener("resize", introResizeHandler);
+        introResizeHandler = null;
+    }
+    if (introVisibilityHandler) {
+        document.removeEventListener("visibilitychange", introVisibilityHandler);
+        introVisibilityHandler = null;
+    }
+    if (introCanvas) introCanvas.hidden = true;
 }
 
 function launchConfetti(options = {}) {
@@ -120,12 +242,43 @@ function launchConfetti(options = {}) {
     activeConfettiFrame = requestAnimationFrame(draw);
 }
 
+function fadeMusicIn() {
+    if (musicFadeFrame !== null) cancelAnimationFrame(musicFadeFrame);
+    const targetVolume = 0.32;
+    const initialVolume = audio.volume;
+    const startedAt = performance.now();
+
+    function fade(timestamp) {
+        const progress = Math.min(Math.max((timestamp - startedAt) / 1200, 0), 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        audio.volume = Math.min(Math.max(initialVolume + (targetVolume - initialVolume) * eased, 0), 1);
+        if (progress < 1) {
+            musicFadeFrame = requestAnimationFrame(fade);
+        } else {
+            musicFadeFrame = null;
+        }
+    }
+
+    musicFadeFrame = requestAnimationFrame(fade);
+}
+
 function startMusic() {
-    if (!audio.paused) return;
-    audio.play().catch(() => {
-        // La plupart des navigateurs bloquent le son avant le premier geste.
-        // Le clic d’entrée ci-dessous relance alors la lecture immédiatement.
-    });
+    if (!audio.paused) {
+        if (audio.volume < 0.31) fadeMusicIn();
+        return Promise.resolve();
+    }
+    if (musicStartPromise) return musicStartPromise;
+
+    musicStartPromise = audio.play()
+        .then(fadeMusicIn)
+        .catch(() => {
+            // La plupart des navigateurs bloquent le son avant le premier geste.
+            // Le clic d’entrée ci-dessous relance alors la lecture immédiatement.
+        })
+        .finally(() => {
+            musicStartPromise = null;
+        });
+    return musicStartPromise;
 }
 
 // Tente l’autoplay dès l’ouverture, puis garantit le démarrage au premier geste
@@ -133,6 +286,7 @@ function startMusic() {
 startMusic();
 document.addEventListener("pointerdown", startMusic, { once: true, capture: true });
 document.addEventListener("keydown", startMusic, { once: true, capture: true });
+initializeIntroAtmosphere();
 
 function setLocked(locked) {
     interactionLocked = locked;
@@ -179,7 +333,7 @@ function clearReplies() {
     textReplyForm.hidden = true;
 }
 
-function ask(prompt, choices) {
+function ask(stepId, prompt, choices) {
     clearReplies();
     replyPrompt.textContent = prompt;
 
@@ -191,6 +345,11 @@ function ask(prompt, choices) {
         button.addEventListener("click", async () => {
             if (interactionLocked) return;
             setLocked(true);
+            trackEvent("choice_selected", {
+                stepId,
+                choiceId: choice.id,
+                choiceLabel: choice.label
+            });
             addMessage("morgane", choice.label);
             clearReplies();
             vibrate(index === 0 ? 45 : 25);
@@ -207,17 +366,25 @@ function ask(prompt, choices) {
 
 async function startConversation() {
     startMusic();
+    startAnalytics();
     startButton.disabled = true;
+
+    const introRect = intro.getBoundingClientRect();
+    const buttonRect = startButton.getBoundingClientRect();
+    intro.style.setProperty("--ring-x", `${buttonRect.left + buttonRect.width / 2 - introRect.left}px`);
+    intro.style.setProperty("--ring-y", `${buttonRect.top + buttonRect.height / 2 - introRect.top}px`);
     intro.classList.add("is-leaving");
-    await wait(prefersReducedMotion ? 20 : 430);
+    await wait(prefersReducedMotion ? 20 : 720);
+    stopIntroAtmosphere();
     intro.hidden = true;
     conversation.hidden = false;
     conversationScroll.focus({ preventScroll: true });
 
     await say("Morgane… j’ai une petite question 👀");
     await say("Le week-end du 14 août, t’avais déjà prévu quelque chose ? 😌");
-    ask("Dis la vérité 😂", [
+    ask("availability", "Dis la vérité 😂", [
         {
+            id: "busy",
             label: "Oui… pourquoi ? 🤨",
             action: async () => {
                 await say("Ok, je note 👀 Laisse-moi quand même finir avant de paniquer 😂");
@@ -225,6 +392,7 @@ async function startConversation() {
             }
         },
         {
+            id: "free",
             label: "Rien de prévu 😌",
             action: async () => {
                 await say("Parfait… garde-le libre. Je dis ça, je dis rien 😂");
@@ -232,6 +400,7 @@ async function startConversation() {
             }
         },
         {
+            id: "depends",
             label: "Ça dépend de ce que tu prépares 👀",
             action: async () => {
                 await say("Tu me connais trop bien, ça devient grave 😂");
@@ -244,8 +413,9 @@ async function startConversation() {
 async function askPerfectWeekendQuestion() {
     await say("Bon, j’ai besoin d’une info très importante 😌");
     await say("Pour toi, le programme parfait pour souffler un peu, c’est quoi ? 👀");
-    ask("Choisis bien, je prends des notes 😂", [
+    ask("break_style", "Choisis bien, je prends des notes 😂", [
         {
+            id: "sleep",
             label: "Dormir jusqu’à midi 😴",
             action: async () => {
                 await say("Ah donc madame veut surtout qu’on la laisse tranquille 😭😂");
@@ -253,6 +423,7 @@ async function askPerfectWeekendQuestion() {
             }
         },
         {
+            id: "pool",
             label: "Piscine + soleil ☀️",
             action: async () => {
                 await say("Je vois… dans ta tête, le transat est déjà réservé 😂");
@@ -260,6 +431,7 @@ async function askPerfectWeekendQuestion() {
             }
         },
         {
+            id: "food",
             label: "Bien manger d’abord 😂",
             action: async () => {
                 await say("Enfin une réponse sérieuse, je respecte 😭😂");
@@ -267,6 +439,7 @@ async function askPerfectWeekendQuestion() {
             }
         },
         {
+            id: "why",
             label: "Pourquoi toutes ces questions ? 🤨",
             action: async () => {
                 await say("Deux questions et le mode FBI est déjà activé 😂");
@@ -281,13 +454,15 @@ async function beginRevealLeadIn() {
     await say("Pas un cadeau qui finit au fond d’un tiroir 😭");
     await say("Plutôt une vraie pause : rien à gérer, juste profiter 🌴☀️", { emphasis: true });
     await say("Et oui… j’ai vraiment tout organisé 😂");
-    ask("Tu veux voir ? 👀", [
+    ask("reveal", "Tu veux voir ? 👀", [
         {
+            id: "show",
             label: "Oui, montre-moi 😭",
             primary: true,
             action: revealTrip
         },
         {
+            id: "nervous",
             label: "J’ai peur de toi là 😂",
             action: async () => {
                 await say("Tu peux 😂 Mais promis, la surprise vaut le coup 👀");
@@ -302,6 +477,7 @@ async function revealTrip() {
     setLocked(true);
     await wait(prefersReducedMotion ? 40 : 450);
     messages.appendChild(revealTemplate.content.cloneNode(true));
+    trackEvent("trip_revealed", { stepId: "trip" });
     launchConfetti();
     vibrate([50, 35, 80]);
     scrollToLatest();
@@ -315,26 +491,36 @@ async function revealTrip() {
 }
 
 function askFinalChoice() {
-    ask("Alors madame ? 👀", [
+    ask("final", "Alors madame ? 👀", [
         {
+            id: "accept",
             label: "Oui, je viens 😭🤍",
             primary: true,
             action: acceptTrip
         },
         {
+            id: "details",
             label: "Je veux les détails 👀",
             action: askForDetails
         },
         {
+            id: "thinking",
             label: "Laisse-moi réfléchir 🤍",
             action: async () => {
                 finalChoice = "Je ne suis pas encore sûre pour le séjour du 14 au 16 août.";
+                trackEvent("final_response", {
+                    stepId: "outcome",
+                    choiceId: "thinking",
+                    choiceLabel: "Laisse-moi réfléchir 🤍",
+                    outcome: "thinking"
+                });
                 await say("Ça marche, prends ton temps 🤍");
                 await say("Dis-moi juste ce qui te fait hésiter. Zéro pression.");
                 showTextReply();
             }
         },
         {
+            id: "decline_first",
             label: "Je ne peux pas 😕",
             action: handleFirstDecline
         }
@@ -343,6 +529,12 @@ function askFinalChoice() {
 
 async function acceptTrip() {
     finalChoice = "Oui, je viens au Lamantin Beach du 14 au 16 août 😭🤍";
+    trackEvent("final_response", {
+        stepId: "outcome",
+        choiceId: "accepted",
+        choiceLabel: finalChoice,
+        outcome: "accepted"
+    });
     await say("Attends… c’est vraiment oui là ? 😭😂");
     await say("Ok, je reste calme… enfin j’essaie 🥳");
     await say("Je t’envoie tout le programme 🤍");
@@ -356,6 +548,12 @@ async function acceptTrip() {
 
 async function askForDetails() {
     finalChoice = "J’ai besoin de quelques détails avant de répondre.";
+    trackEvent("final_response", {
+        stepId: "outcome",
+        choiceId: "needs_details",
+        choiceLabel: finalChoice,
+        outcome: "needs_details"
+    });
     await say("Je savais que le mode FBI allait revenir 😂🕵🏽‍♀️");
     await say("Vas-y, pose-moi toutes tes questions 👀");
     showTextReply();
@@ -365,13 +563,15 @@ async function handleFirstDecline() {
     await say("Attends… même avec piscine, soleil ET deux chambres ? 😭😂");
     await say("Bon, j’aurai tenté de vendre mon programme jusqu’au bout 😌");
     await say("Mais en vrai, si tu peux pas, je comprends 🤍 Zéro pression.");
-    ask("Je tente une toute dernière fois ? 😂", [
+    ask("decline_retry", "Je tente une toute dernière fois ? 😂", [
         {
+            id: "retry",
             label: "Vas-y, tente encore 😂",
             primary: true,
             action: makeLastPlayfulAttempt
         },
         {
+            id: "decline_confirmed",
             label: "Non vraiment, je peux pas 🤍",
             action: finalizeDecline
         }
@@ -382,17 +582,20 @@ async function makeLastPlayfulAttempt() {
     await say("Ahhh 😭 Bon, écoute bien mon dernier argument 😂");
     await say("Deux nuits, deux chambres, piscine, soleil… et toi, tu n’organises absolument rien 😌🌴");
     await say("Voilà. Fin de ma publicité 😂🤍");
-    ask("Alors ? 👀", [
+    ask("retry_final", "Alors ? 👀", [
         {
+            id: "accept",
             label: "Bon… oui je viens 😭🤍",
             primary: true,
             action: acceptTrip
         },
         {
+            id: "details",
             label: "J’ai encore des questions 👀",
             action: askForDetails
         },
         {
+            id: "decline",
             label: "Non vraiment 🤍",
             action: finalizeDecline
         }
@@ -401,6 +604,12 @@ async function makeLastPlayfulAttempt() {
 
 async function finalizeDecline() {
     finalChoice = "Je ne pourrai pas venir au séjour du 14 au 16 août.";
+    trackEvent("final_response", {
+        stepId: "outcome",
+        choiceId: "declined",
+        choiceLabel: finalChoice,
+        outcome: "declined"
+    });
     await say("Ok, là j’arrête vraiment ma pub 😂");
     await say("Je comprends, aucun souci 🤍 Merci de me l’avoir dit franchement.");
     showFinalPanel("C’est noté 🤍", "Tu peux m’envoyer ta réponse sans avoir à tout réécrire.");
@@ -422,6 +631,10 @@ textReplyForm.addEventListener("submit", async (event) => {
     if (!value || interactionLocked) return;
 
     finalNote = value;
+    trackEvent("text_submitted", {
+        stepId: "free_text",
+        freeText: value
+    });
     setLocked(true);
     addMessage("morgane", value);
     textReplyForm.hidden = true;
@@ -469,7 +682,12 @@ function showFinalPanel(title, copy, action = "message") {
     panel.querySelector(".send-help").textContent = isCall
         ? "Ton téléphone ouvrira l’appel. Rien ne démarre sans ta confirmation."
         : "L’app Messages s’ouvrira avec le texte déjà écrit. Rien ne part sans ton dernier clic.";
-    panel.querySelector(".send-button").addEventListener("click", () => {
+    panel.querySelector(".send-button").addEventListener("click", async () => {
+        await Promise.race([trackImmediate("contact_action", {
+            stepId: "contact",
+            action: isCall ? "call" : "sms",
+            choiceLabel: isCall ? "Appeler Mohamed" : "Envoyer un SMS à Mohamed"
+        }), wait(350)]);
         if (isCall) {
             const callDigits = CONFIG.callNumber.replace(/\D/g, "");
             const cleanCallNumber = CONFIG.callNumber.trim().startsWith("+")
@@ -490,3 +708,8 @@ function showFinalPanel(title, copy, action = "message") {
 }
 
 startButton.addEventListener("click", startConversation, { once: true });
+
+window.setTimeout(() => {
+    startButton.disabled = false;
+    startButton.classList.add("is-ready");
+}, prefersReducedMotion ? 0 : 3400);

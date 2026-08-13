@@ -7,10 +7,11 @@
     <meta name="description" content="Un message privé pour Morgane.">
     <meta name="robots" content="noindex, nofollow, noarchive">
     <title>Pour Morgane</title>
-    <link rel="stylesheet" href="style.css?v=morgane-august-7">
+    <link rel="stylesheet" href="style.css?v=morgane-august-9">
 </head>
 <body>
     <canvas class="confetti-canvas" id="confettiCanvas" aria-hidden="true"></canvas>
+    <canvas class="intro-canvas" id="introCanvas" aria-hidden="true"></canvas>
     <div class="ambient" aria-hidden="true">
         <span class="ambient__glow ambient__glow--one"></span>
         <span class="ambient__glow ambient__glow--two"></span>
@@ -30,15 +31,20 @@
         </header>
 
         <section class="intro" id="intro" aria-labelledby="introTitle">
+            <span class="intro__horizon" aria-hidden="true"></span>
             <p class="intro__eyebrow">MESSAGE PRIVÉ · POUR MORGANE</p>
             <h1 id="introTitle">Morgane,</h1>
-            <p class="intro__lead">j’avais prévu de faire un truc simple.</p>
-            <p class="intro__aside">J’ai visiblement échoué.</p>
-            <button class="primary-button" id="startButton" type="button">
-                Vas-y, parle
+            <div class="intro__story">
+                <p class="intro__lead intro__lead--one">J’avais juste une <span class="intro__mark">petite idée</span>.</p>
+                <p class="intro__lead intro__lead--two">Puis j’ai commencé à trop réfléchir…</p>
+            </div>
+            <p class="intro__aside">Bref… ça a légèrement dégénéré 😂</p>
+            <button class="primary-button" id="startButton" type="button" disabled>
+                Ok, montre-moi 👀
                 <span aria-hidden="true">→</span>
             </button>
-            <p class="intro__note">Promis, aucun compte à rebours de 24 secondes.</p>
+            <p class="intro__note"><strong>Tu pourras te moquer après 😂</strong><span>Transparence : tes réponses validées sont enregistrées pour Mohamed, rien d’autre.</span></p>
+            <span class="intro__transition-ring" id="introTransitionRing" aria-hidden="true"></span>
         </section>
 
         <section class="conversation" id="conversation" aria-label="Conversation" hidden>
@@ -103,6 +109,7 @@
         </article>
     </template>
 
-    <script src="script.js?v=morgane-august-7"></script>
+    <script src="analytics.js?v=morgane-august-9"></script>
+    <script src="script.js?v=morgane-august-9"></script>
 </body>
 </html>
