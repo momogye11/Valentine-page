@@ -241,7 +241,8 @@ button:focus-visible {
 }
 
 .intro h1 {
-    margin: 0;
+    margin: 0 0 -0.14em;
+    padding-bottom: 0.14em;
     font-family: "Playfair Display", Georgia, serif;
     font-size: clamp(56px, 12vw, 94px);
     font-weight: 600;

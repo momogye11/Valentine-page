@@ -555,16 +555,6 @@ function detailLabel(id, label) {
 function showDetailMenu(prompt = "Autre question, madame l’inspectrice ? 😂") {
     ask("detail_topic", prompt, [
         {
-            id: "transport",
-            label: detailLabel("transport", "On y va comment ? 🚗"),
-            action: async () => {
-                viewedDetailTopics.add("transport");
-                await say("Pour le trajet, on cale l’heure ensemble et je t’envoie tout 😌🚗");
-                await say("Pas de mission compliquée pour madame, tu peux laisser le GPS respirer 😂");
-                showDetailMenu();
-            }
-        },
-        {
             id: "program",
             label: detailLabel("program", "On fait quoi là-bas ? 👀"),
             action: async () => {

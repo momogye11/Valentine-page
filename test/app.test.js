@@ -97,7 +97,8 @@ test("every in-page response is a playful predefined choice", () => {
     assert.doesNotMatch(html, /<textarea|textReplyForm/);
     assert.doesNotMatch(script, /showTextReply|text_submitted|freeText/);
     assert.doesNotMatch(analytics, /freeText/);
-    assert.match(script, /On y va comment \? 🚗/);
+    assert.doesNotMatch(script, /On y va comment \? 🚗/);
+    assert.doesNotMatch(script, /id: "transport"/);
     assert.match(script, /Deux chambres, t’es sûr \? 😂/);
     assert.match(script, /La surprise me surprend trop 😂/);
     assert.match(script, /Bon… verdict provisoire \? 👀😂/);
