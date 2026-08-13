@@ -10,7 +10,7 @@ The page presents a conversational story from Mohamed, reveals a confirmed stay 
 
 - `index.html` — semantic page shell, conversation containers, and the trip-card template.
 - `style.css` — premium dark coastal visual system, responsive layout, animations, and reduced-motion support.
-- `script.js` — configuration, branching conversation engine, music control, trip reveal, free-text response, and WhatsApp handoff.
+- `script.js` — configuration, branching conversation engine, automatic music, trip reveal, free-text response, and WhatsApp handoff.
 
 ## Personalization
 
@@ -42,6 +42,7 @@ Then open `http://localhost:8000`.
 - Do not include booking references, payment details, or other secrets in client-side files.
 - Keep all final choices real and clickable. Do not make a refusal button flee or pressure the recipient.
 - Keep the room arrangement truthful. The current copy says one room is booked and explicitly offers to arrange two if Morgane prefers.
+- Music is attempted on page load and starts reliably on the first user gesture when browser autoplay policy blocks immediate sound.
 
 ## Accessibility and responsive behavior
 

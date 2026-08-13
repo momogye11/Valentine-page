@@ -22,16 +22,13 @@ const replyPrompt = document.getElementById("replyPrompt");
 const replyOptions = document.getElementById("replyOptions");
 const textReplyForm = document.getElementById("textReplyForm");
 const textReply = document.getElementById("textReply");
-const soundControl = document.getElementById("soundControl");
-const soundLabel = document.getElementById("soundLabel");
 const confettiCanvas = document.getElementById("confettiCanvas");
 
 const audio = new Audio(CONFIG.musicFile);
 audio.loop = true;
-audio.volume = 0.28;
-audio.preload = "metadata";
+audio.volume = 0.32;
+audio.preload = "auto";
 
-let isMusicPlaying = false;
 let interactionLocked = false;
 let finalChoice = null;
 let finalNote = "";
@@ -122,25 +119,19 @@ function launchConfetti(options = {}) {
     activeConfettiFrame = requestAnimationFrame(draw);
 }
 
-async function toggleMusic() {
-    if (isMusicPlaying) {
-        audio.pause();
-        isMusicPlaying = false;
-    } else {
-        try {
-            await audio.play();
-            isMusicPlaying = true;
-        } catch {
-            isMusicPlaying = false;
-        }
-    }
-
-    soundControl.setAttribute("aria-pressed", String(isMusicPlaying));
-    soundControl.setAttribute("aria-label", isMusicPlaying ? "Couper la musique" : "Activer la musique");
-    soundLabel.textContent = isMusicPlaying ? "Couper la musique" : "Avec musique";
+function startMusic() {
+    if (!audio.paused) return;
+    audio.play().catch(() => {
+        // La plupart des navigateurs bloquent le son avant le premier geste.
+        // Le clic d’entrée ci-dessous relance alors la lecture immédiatement.
+    });
 }
 
-soundControl.addEventListener("click", toggleMusic);
+// Tente l’autoplay dès l’ouverture, puis garantit le démarrage au premier geste
+// si le navigateur exige une interaction utilisateur.
+startMusic();
+document.addEventListener("pointerdown", startMusic, { once: true, capture: true });
+document.addEventListener("keydown", startMusic, { once: true, capture: true });
 
 function setLocked(locked) {
     interactionLocked = locked;
@@ -214,6 +205,7 @@ function ask(prompt, choices) {
 }
 
 async function startConversation() {
+    startMusic();
     startButton.disabled = true;
     intro.classList.add("is-leaving");
     await wait(prefersReducedMotion ? 20 : 430);

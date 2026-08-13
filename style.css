@@ -185,42 +185,6 @@ textarea:focus-visible {
     white-space: nowrap;
 }
 
-.sound-control {
-    display: flex;
-    flex: 0 0 auto;
-    min-height: 38px;
-    padding: 8px 12px;
-    align-items: center;
-    gap: 8px;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    color: var(--muted);
-    background: rgba(255, 255, 255, 0.035);
-    cursor: pointer;
-    transition: border-color 180ms ease, color 180ms ease, background 180ms ease;
-}
-
-.sound-control:hover,
-.sound-control[aria-pressed="true"] {
-    border-color: rgba(232, 213, 183, 0.38);
-    color: var(--sand);
-    background: rgba(232, 213, 183, 0.08);
-}
-
-.sound-control svg {
-    width: 16px;
-    fill: none;
-    stroke: currentColor;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    stroke-width: 1.6;
-}
-
-.sound-control span {
-    font-size: 11px;
-    font-weight: 500;
-}
-
 .intro {
     display: flex;
     min-height: 100vh;
@@ -725,16 +689,6 @@ textarea:focus-visible {
 }
 
 @media (max-width: 430px) {
-    .sound-control span {
-        display: none;
-    }
-
-    .sound-control {
-        width: 38px;
-        justify-content: center;
-        padding: 8px;
-    }
-
     .message {
         width: 92%;
     }
