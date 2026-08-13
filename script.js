@@ -215,61 +215,61 @@ async function startConversation() {
     conversationScroll.focus({ preventScroll: true });
 
     await say("Morgane… j’ai une petite question 👀");
-    await say("Le week-end du 14 août, t’avais prévu d’être sage ? 😂");
-    ask("Allez, réponds franchement 😌", [
+    await say("Le week-end du 14 août, t’avais déjà prévu quelque chose ? 😌");
+    ask("Dis la vérité 😂", [
         {
             label: "Oui… pourquoi ? 🤨",
             action: async () => {
-                await say("Ah 😭 Bon… il va peut-être falloir revoir le programme 😂");
-                await askPackingQuestion();
+                await say("Ok, je note 👀 Laisse-moi quand même finir avant de paniquer 😂");
+                await askPerfectWeekendQuestion();
             }
         },
         {
-            label: "Pas du tout 😌",
+            label: "Rien de prévu 😌",
             action: async () => {
-                await say("Parfait 😂 On va très bien s’entendre.");
-                await askPackingQuestion();
+                await say("Parfait… garde-le libre. Je dis ça, je dis rien 😂");
+                await askPerfectWeekendQuestion();
             }
         },
         {
-            label: "Ça dépend de toi 👀",
+            label: "Ça dépend de ce que tu prépares 👀",
             action: async () => {
-                await say("Ça dépend de moi ? Très mauvaise idée… j’adore 😂");
-                await askPackingQuestion();
+                await say("Tu me connais trop bien, ça devient grave 😂");
+                await askPerfectWeekendQuestion();
             }
         }
     ]);
 }
 
-async function askPackingQuestion() {
-    await say("Bon, deuxième question 😌");
-    await say("Si je t’embarque deux nuits au bord de la mer, tu mets quoi en premier dans ta valise ? 🌊");
-    ask("Un seul choix hein, pas de triche 😂", [
+async function askPerfectWeekendQuestion() {
+    await say("Bon, j’ai besoin d’une info très importante 😌");
+    await say("Pour toi, le programme parfait pour souffler un peu, c’est quoi ? 👀");
+    ask("Choisis bien, je prends des notes 😂", [
         {
-            label: "Mon maillot direct 😂",
+            label: "Dormir jusqu’à midi 😴",
             action: async () => {
-                await say("Je vois que madame est déjà prête 😭🌊");
+                await say("Ah donc madame veut surtout qu’on la laisse tranquille 😭😂");
                 await beginRevealLeadIn();
             }
         },
         {
-            label: "Mon chargeur évidemment 😭",
+            label: "Piscine + soleil ☀️",
             action: async () => {
-                await say("Même en escapade, la batterie passe avant tout 😭😂");
+                await say("Je vois… dans ta tête, le transat est déjà réservé 😂");
                 await beginRevealLeadIn();
             }
         },
         {
-            label: "D’abord tu m’expliques 🤨",
+            label: "Bien manger d’abord 😂",
             action: async () => {
-                await say("Ah voilà… le mode inspectrice est activé 😂");
+                await say("Enfin une réponse sérieuse, je respecte 😭😂");
                 await beginRevealLeadIn();
             }
         },
         {
-            label: "Qui a dit que je venais ? 😂",
+            label: "Pourquoi toutes ces questions ? 🤨",
             action: async () => {
-                await say("Personne… pour l’instant 😌 Laisse-moi finir 😂");
+                await say("Deux questions et le mode FBI est déjà activé 😂");
                 await beginRevealLeadIn();
             }
         }
@@ -279,7 +279,7 @@ async function askPackingQuestion() {
 async function beginRevealLeadIn() {
     await say("Bon, en vrai… j’avais envie de te faire une surprise 🤍");
     await say("Pas un cadeau qui finit au fond d’un tiroir 😭");
-    await say("Plutôt une vraie pause : tu viens, tu poses tes affaires et tu profites 🌴☀️", { emphasis: true });
+    await say("Plutôt une vraie pause : rien à gérer, juste profiter 🌴☀️", { emphasis: true });
     await say("Et oui… j’ai vraiment tout organisé 😂");
     ask("Tu veux voir ? 👀", [
         {
@@ -310,7 +310,7 @@ async function revealTrip() {
     await say("Du 14 au 16 août : deux nuits au Lamantin Beach 🌊☀️");
     await say("Et oui, c’est déjà réservé 😌");
     await say("Deux nuits, deux chambres… oui madame, j’ai vraiment pensé à tout 😂🤍");
-    await say("Bon… tu viens avec moi ou je dois sortir mes meilleurs arguments ? 😂", { emphasis: true });
+    await say("Bon… maintenant que tu sais tout, est-ce que madame valide le programme ? 👀😂", { emphasis: true });
     askFinalChoice();
 }
 
