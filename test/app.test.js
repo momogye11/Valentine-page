@@ -103,14 +103,14 @@ test("every in-page response is a playful predefined choice", () => {
     assert.match(script, /Bon… verdict provisoire \? 👀😂/);
 });
 
-test("party tickets are visibly included in the surprise and detail game", () => {
+test("JELANI tickets are visibly included in the surprise and detail game", () => {
     const script = fs.readFileSync(path.join(__dirname, "..", "script.js"), "utf8");
     const html = fs.readFileSync(path.join(__dirname, "..", "index.html"), "utf8");
 
-    assert.match(html, /BONUS INCLUS/);
-    assert.match(html, /Tickets pour la fête/);
+    assert.match(html, /TICKETS INCLUS/);
+    assert.match(html, /Fête JELANI/);
     assert.match(html, /DÉJÀ PRIS/);
     assert.match(script, /id: "party_tickets"/);
-    assert.match(script, /La fête aussi \? 🥳🎟️/);
-    assert.match(script, /tickets sont déjà pris et inclus dans la surprise/);
+    assert.match(script, /JELANI aussi \? 🥳🎟️/);
+    assert.match(script, /tickets JELANI sont déjà pris et inclus dans la surprise/);
 });

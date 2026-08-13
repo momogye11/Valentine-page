@@ -4,7 +4,7 @@
 
 This repository contains a private, interactive invitation for Morgane. The interface is vanilla HTML/CSS/JavaScript, served by a small Node/Express backend with PostgreSQL response logging.
 
-The page presents a conversational story from Mohamed, reveals a confirmed stay at Lamantin Beach from August 14 to August 16, 2026, including two rooms and already-booked party tickets, and lets Morgane choose a genuine response. An acceptance opens the phone dialer; other answers open a prefilled SMS. She must still confirm the call or message herself.
+The page presents a conversational story from Mohamed, reveals a confirmed stay at Lamantin Beach from August 14 to August 16, 2026, including two rooms and already-booked tickets for the JELANI party, and lets Morgane choose a genuine response. An acceptance opens the phone dialer; other answers open a prefilled SMS. She must still confirm the call or message herself.
 
 ## Core files
 
