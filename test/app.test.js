@@ -78,13 +78,15 @@ test("analytics stays best-effort when sessionStorage is blocked", async () => {
     assert.equal(requests.some((request) => request.url === "/api/events"), true);
 });
 
-test("the reveal keeps two rooms while the requested line only says two nights", () => {
+test("the short reveal line and card omit rooms while the detail game stays truthful", () => {
     const script = fs.readFileSync(path.join(__dirname, "..", "script.js"), "utf8");
     const html = fs.readFileSync(path.join(__dirname, "..", "index.html"), "utf8");
 
     assert.match(script, /Deux nuits… oui madame, j’ai vraiment pensé à tout/);
     assert.doesNotMatch(script, /Deux nuits, deux chambres… oui madame/);
-    assert.match(html, /<span>CHAMBRES<\/span>\s*<strong>2<\/strong>/);
+    assert.doesNotMatch(html, /<span>CHAMBRES<\/span>/);
+    assert.doesNotMatch(html, /Transparence : tes réponses validées/);
+    assert.match(script, /Deux chambres, t’es sûr \? 😂/);
 });
 
 test("every in-page response is a playful predefined choice", () => {

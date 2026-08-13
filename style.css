@@ -667,7 +667,7 @@ button:focus-visible {
 .trip-card__details {
     display: grid;
     padding: 18px 0;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     border-block: 1px solid rgba(23, 32, 31, 0.17);
 }
 
