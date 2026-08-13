@@ -319,27 +319,11 @@ function askFinalChoice() {
         {
             label: "Oui, je viens 😭🤍",
             primary: true,
-            action: async () => {
-                finalChoice = "Oui, je viens au Lamantin Beach du 14 au 16 août 😭🤍";
-                await say("Attends… c’est vraiment oui là ? 😭😂");
-                await say("Ok, je reste calme… enfin j’essaie 🥳");
-                await say("Je t’envoie tout le programme 🤍");
-                launchConfetti({ amount: 90, duration: 2400 });
-                showFinalPanel(
-                    "Bon bah… c’est oui 😭🤍",
-                    "Appelle-moi directement avant que tu changes d’avis 😂📞",
-                    "call"
-                );
-            }
+            action: acceptTrip
         },
         {
             label: "Je veux les détails 👀",
-            action: async () => {
-                finalChoice = "J’ai besoin de quelques détails avant de répondre.";
-                await say("Je savais que le mode FBI allait revenir 😂🕵🏽‍♀️");
-                await say("Vas-y, pose-moi toutes tes questions 👀");
-                showTextReply();
-            }
+            action: askForDetails
         },
         {
             label: "Laisse-moi réfléchir 🤍",
@@ -352,14 +336,74 @@ function askFinalChoice() {
         },
         {
             label: "Je ne peux pas 😕",
-            action: async () => {
-                finalChoice = "Je ne pourrai pas venir au séjour du 14 au 16 août.";
-                await say("Ok, je comprends 🤍");
-                await say("Merci de me le dire franchement. Promis, pas de procès 😂");
-                showFinalPanel("C’est noté 🤍", "Tu peux m’envoyer ta réponse sans avoir à tout réécrire.");
-            }
+            action: handleFirstDecline
         }
     ]);
+}
+
+async function acceptTrip() {
+    finalChoice = "Oui, je viens au Lamantin Beach du 14 au 16 août 😭🤍";
+    await say("Attends… c’est vraiment oui là ? 😭😂");
+    await say("Ok, je reste calme… enfin j’essaie 🥳");
+    await say("Je t’envoie tout le programme 🤍");
+    launchConfetti({ amount: 90, duration: 2400 });
+    showFinalPanel(
+        "Bon bah… c’est oui 😭🤍",
+        "Appelle-moi directement avant que tu changes d’avis 😂📞",
+        "call"
+    );
+}
+
+async function askForDetails() {
+    finalChoice = "J’ai besoin de quelques détails avant de répondre.";
+    await say("Je savais que le mode FBI allait revenir 😂🕵🏽‍♀️");
+    await say("Vas-y, pose-moi toutes tes questions 👀");
+    showTextReply();
+}
+
+async function handleFirstDecline() {
+    await say("Attends… même avec piscine, soleil ET deux chambres ? 😭😂");
+    await say("Bon, j’aurai tenté de vendre mon programme jusqu’au bout 😌");
+    await say("Mais en vrai, si tu peux pas, je comprends 🤍 Zéro pression.");
+    ask("Je tente une toute dernière fois ? 😂", [
+        {
+            label: "Vas-y, tente encore 😂",
+            primary: true,
+            action: makeLastPlayfulAttempt
+        },
+        {
+            label: "Non vraiment, je peux pas 🤍",
+            action: finalizeDecline
+        }
+    ]);
+}
+
+async function makeLastPlayfulAttempt() {
+    await say("Ahhh 😭 Bon, écoute bien mon dernier argument 😂");
+    await say("Deux nuits, deux chambres, piscine, soleil… et toi, tu n’organises absolument rien 😌🌴");
+    await say("Voilà. Fin de ma publicité 😂🤍");
+    ask("Alors ? 👀", [
+        {
+            label: "Bon… oui je viens 😭🤍",
+            primary: true,
+            action: acceptTrip
+        },
+        {
+            label: "J’ai encore des questions 👀",
+            action: askForDetails
+        },
+        {
+            label: "Non vraiment 🤍",
+            action: finalizeDecline
+        }
+    ]);
+}
+
+async function finalizeDecline() {
+    finalChoice = "Je ne pourrai pas venir au séjour du 14 au 16 août.";
+    await say("Ok, là j’arrête vraiment ma pub 😂");
+    await say("Je comprends, aucun souci 🤍 Merci de me l’avoir dit franchement.");
+    showFinalPanel("C’est noté 🤍", "Tu peux m’envoyer ta réponse sans avoir à tout réécrire.");
 }
 
 function showTextReply() {
