@@ -1,688 +1,369 @@
-// PERSONNALISATION
-const personName = "Fatou"; // Change le prénom ici
-const gifUrl = "IMG_3151.jpg"; // Image célébration locale
+const CONFIG = {
+    recipient: "Morgane",
+    sender: "Mohamed",
+    dates: "du 14 au 16 août 2026",
+    destination: "Lamantin Beach",
+    musicFile: "Guy2Bezbar - Je pense à toi (Paroles).mp3",
+    whatsappNumber: ""
+};
 
-// ============= IMMERSION: Particules flottantes =============
-function createFloatingParticles() {
-    const container = document.getElementById('floatingParticles');
-    for (let i = 0; i < 30; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        particle.style.left = Math.random() * 100 + '%';
-        particle.style.animationDelay = Math.random() * 15 + 's';
-        particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
-        container.appendChild(particle);
-    }
-}
+const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const intro = document.getElementById("intro");
+const startButton = document.getElementById("startButton");
+const conversation = document.getElementById("conversation");
+const conversationScroll = document.getElementById("conversationScroll");
+const messages = document.getElementById("messages");
+const messageTemplate = document.getElementById("messageTemplate");
+const revealTemplate = document.getElementById("revealTemplate");
+const typingIndicator = document.getElementById("typingIndicator");
+const presenceText = document.getElementById("presenceText");
+const replyArea = document.getElementById("replyArea");
+const replyPrompt = document.getElementById("replyPrompt");
+const replyOptions = document.getElementById("replyOptions");
+const textReplyForm = document.getElementById("textReplyForm");
+const textReply = document.getElementById("textReply");
+const soundControl = document.getElementById("soundControl");
+const soundLabel = document.getElementById("soundLabel");
 
-// Lance les particules au chargement
-createFloatingParticles();
-
-// ============= IMMERSION: Vibrations =============
-function vibrate(duration = 100) {
-    if (navigator.vibrate) {
-        navigator.vibrate(duration);
-    }
-}
-
-// ============= IMMERSION: Sons =============
-function playClickSound() {
-    // Utilise Web Audio API pour un son subtil
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-
-    oscillator.frequency.value = 800;
-    oscillator.type = 'sine';
-
-    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-
-    oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + 0.1);
-}
-
-// Elements - Intro & Loading
-const introScreen = document.getElementById('introScreen');
-const introBtn = document.getElementById('introBtn');
-const loadingScreen = document.getElementById('loadingScreen');
-const loadingCountdown = document.getElementById('loadingCountdown');
-
-// Elements - Explosion & Cinematic
-const explosionScreen = document.getElementById('explosionScreen');
-const flashWhite = document.getElementById('flashWhite');
-const explosionName = document.getElementById('explosionName');
-const confettiCanvas = document.getElementById('confettiCanvas');
-const cinematicScreen = document.getElementById('cinematicScreen');
-const cinematicMessage = document.getElementById('cinematicMessage');
-const bubblesScreen = document.getElementById('bubblesScreen');
-const bubblesContainer = document.getElementById('bubblesContainer');
-const bubblesCounter = document.getElementById('bubblesCounter');
-
-// Elements - Main page
-const questionText = document.getElementById('questionText');
-const yesBtn = document.getElementById('yesBtn');
-const noBtn = document.getElementById('noBtn');
-const buttonsContainer = document.getElementById('buttonsContainer');
-const hintText = document.getElementById('hintText');
-const successGif = document.getElementById('successGif');
-const gifImage = document.getElementById('gifImage');
-const card = document.querySelector('.card');
-const countdown = document.getElementById('countdown');
-const countdownNumber = document.getElementById('countdownNumber');
-
-// Set initial text and gif
-questionText.textContent = `${personName}... j'ai un truc pour toi, prends pas trop la confiance 😭`;
-gifImage.src = gifUrl;
-
-// Gestion de l'intro et du loading screen
-introBtn.addEventListener('click', () => {
-    // Affiche le loading screen IMMÉDIATEMENT (avant de cacher l'intro)
-    loadingScreen.classList.add('show');
-
-    // Cache l'intro PAR-DESSUS
-    setTimeout(() => {
-        introScreen.classList.add('hide');
-
-        // Démarre la musique AUTOMATIQUEMENT
-        startAudio();
-
-        // Compte à rebours de 24 secondes BLOQUÉ
-        let timeLeft = 24;
-        loadingCountdown.textContent = timeLeft;
-
-        const loadingInterval = setInterval(() => {
-            timeLeft--;
-            loadingCountdown.textContent = timeLeft;
-
-            // Les 5 dernières secondes en rouge intense
-            if (timeLeft <= 5) {
-                loadingCountdown.style.background = 'none';
-                loadingCountdown.style.webkitTextFillColor = '#FF0000';
-                loadingCountdown.style.color = '#FF0000';
-                loadingCountdown.style.textShadow = '0 0 50px rgba(255, 0, 0, 0.8)';
-                loadingCountdown.style.animation = 'countdownMegaPulse 0.5s ease-in-out infinite';
-            }
-
-            if (timeLeft === 0) {
-                clearInterval(loadingInterval);
-
-                // Cache le loading screen
-                loadingScreen.classList.add('hide');
-
-                // Lance l'EXPLOSION WOW!
-                setTimeout(() => {
-                    loadingScreen.style.display = 'none';
-                    startExplosion();
-                }, 800);
-            }
-        }, 1000);
-    }, 100);
-});
-
-// Empêche de skip avec ESC ou autres touches
-document.addEventListener('keydown', (e) => {
-    if (loadingScreen.classList.contains('show')) {
-        e.preventDefault();
-        return false;
-    }
-});
-
-// Audio Player (HTML5 - compatible mobile)
-let audioStarted = false;
-const soundBtn = document.getElementById('sound-btn');
-
-// Crée l'élément audio
-const audio = new Audio('Guy2Bezbar - Je pense à toi (Paroles).mp3');
+const audio = new Audio(CONFIG.musicFile);
 audio.loop = true;
-audio.volume = 0.5;
+audio.volume = 0.28;
+audio.preload = "metadata";
 
-// Précharge l'audio
-audio.preload = 'auto';
+let isMusicPlaying = false;
+let interactionLocked = false;
+let finalChoice = null;
+let finalNote = "";
 
-function startAudio() {
-    if (audioStarted) return;
-    audioStarted = true;
+const wait = (duration) => new Promise((resolve) => window.setTimeout(resolve, duration));
 
-    console.log('Démarrage de la musique...');
+function scrollToLatest() {
+    requestAnimationFrame(() => {
+        conversationScroll.scrollTo({
+            top: conversationScroll.scrollHeight,
+            behavior: prefersReducedMotion ? "auto" : "smooth"
+        });
+    });
+}
 
-    // Démarre au début de la chanson
-    audio.currentTime = 0;
-
-    // Lance la lecture
-    const playPromise = audio.play();
-
-    if (playPromise !== undefined) {
-        playPromise
-            .then(() => {
-                console.log('✅ Musique démarrée avec succès');
-
-                // Cache le bouton avec animation
-                if (soundBtn) {
-                    soundBtn.style.opacity = '0';
-                    setTimeout(() => {
-                        soundBtn.style.display = 'none';
-                    }, 300);
-                }
-            })
-            .catch((error) => {
-                console.error('❌ Erreur de lecture audio:', error);
-                audioStarted = false; // Permet de réessayer
-                alert('Impossible de lire la musique. Réessaye !');
-            });
+function vibrate(pattern = 35) {
+    if (!prefersReducedMotion && navigator.vibrate) {
+        navigator.vibrate(pattern);
     }
 }
 
-// Gestion du bouton son
-if (soundBtn) {
-    // Click pour desktop
-    soundBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        console.log('🖱️ Bouton cliqué');
-        startAudio();
+async function toggleMusic() {
+    if (isMusicPlaying) {
+        audio.pause();
+        isMusicPlaying = false;
+    } else {
+        try {
+            await audio.play();
+            isMusicPlaying = true;
+        } catch {
+            isMusicPlaying = false;
+        }
+    }
+
+    soundControl.setAttribute("aria-pressed", String(isMusicPlaying));
+    soundControl.setAttribute("aria-label", isMusicPlaying ? "Couper la musique" : "Activer la musique");
+    soundLabel.textContent = isMusicPlaying ? "Couper la musique" : "Avec musique";
+}
+
+soundControl.addEventListener("click", toggleMusic);
+
+function setLocked(locked) {
+    interactionLocked = locked;
+    replyArea.classList.toggle("is-waiting", locked);
+    Array.from(replyOptions.children).forEach((button) => {
+        button.disabled = locked;
+    });
+}
+
+async function showTyping(duration = 720) {
+    presenceText.textContent = "écrit…";
+    typingIndicator.hidden = false;
+    scrollToLatest();
+    await wait(prefersReducedMotion ? 80 : duration);
+    typingIndicator.hidden = true;
+    presenceText.textContent = "en ligne";
+}
+
+function addMessage(author, text, options = {}) {
+    const fragment = messageTemplate.content.cloneNode(true);
+    const article = fragment.querySelector(".message");
+    const authorLabel = fragment.querySelector(".message__author");
+    const bubble = fragment.querySelector(".message__bubble");
+
+    const isRecipient = author === "morgane";
+    article.classList.toggle("message--morgane", isRecipient);
+    article.classList.toggle("message--emphasis", Boolean(options.emphasis));
+    authorLabel.textContent = isRecipient ? CONFIG.recipient : CONFIG.sender;
+    bubble.textContent = text;
+    messages.appendChild(fragment);
+    scrollToLatest();
+}
+
+async function say(text, options = {}) {
+    setLocked(true);
+    await showTyping(options.delay ?? Math.min(1150, 480 + text.length * 12));
+    addMessage("mohamed", text, options);
+    await wait(prefersReducedMotion ? 30 : 180);
+    setLocked(false);
+}
+
+function clearReplies() {
+    replyOptions.replaceChildren();
+    textReplyForm.hidden = true;
+}
+
+function ask(prompt, choices) {
+    clearReplies();
+    replyPrompt.textContent = prompt;
+
+    choices.forEach((choice, index) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = `reply-button${choice.primary ? " reply-button--primary" : ""}`;
+        button.textContent = choice.label;
+        button.addEventListener("click", async () => {
+            if (interactionLocked) return;
+            setLocked(true);
+            addMessage("morgane", choice.label);
+            clearReplies();
+            vibrate(index === 0 ? 45 : 25);
+            await wait(prefersReducedMotion ? 40 : 260);
+            await choice.action();
+        }, { once: true });
+        replyOptions.appendChild(button);
     });
 
-    // Touch pour mobile (plus fiable)
-    soundBtn.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        console.log('📱 Bouton touché');
-        startAudio();
-    }, { passive: false });
+    setLocked(false);
+    scrollToLatest();
+    requestAnimationFrame(() => replyOptions.querySelector("button")?.focus({ preventScroll: true }));
 }
 
-// Button "No" fleeing behavior
-let isNoBtnActive = true;
+async function startConversation() {
+    startButton.disabled = true;
+    intro.classList.add("is-leaving");
+    await wait(prefersReducedMotion ? 20 : 430);
+    intro.hidden = true;
+    conversation.hidden = false;
+    conversationScroll.focus({ preventScroll: true });
 
-function moveNoButton(mouseX, mouseY) {
-    if (!isNoBtnActive) return;
-
-    const btnRect = noBtn.getBoundingClientRect();
-    const btnCenterX = btnRect.left + btnRect.width / 2;
-    const btnCenterY = btnRect.top + btnRect.height / 2;
-
-    const distance = Math.sqrt(
-        Math.pow(mouseX - btnCenterX, 2) +
-        Math.pow(mouseY - btnCenterY, 2)
-    );
-
-    const threshold = 120; // Distance seuil en pixels - détection normale
-
-    if (distance < threshold) {
-        // Déplacer le bouton dans .card pour qu'il soit relatif à la carte entière
-        if (noBtn.parentElement !== card) {
-            noBtn.classList.add('fleeing');
-            card.appendChild(noBtn);
+    await say("Bon. Avant toute chose : le week-end du 14 août, tu comptais être raisonnable ?");
+    ask("Réponds franchement", [
+        {
+            label: "Oui, pourquoi ?",
+            action: async () => {
+                await say("Alors il va falloir annuler cette ambition.");
+                await askPackingQuestion();
+            }
+        },
+        {
+            label: "Pas du tout",
+            action: async () => {
+                await say("Parfait. On vient de gagner beaucoup de temps.");
+                await askPackingQuestion();
+            }
+        },
+        {
+            label: "Ça dépend de toi",
+            action: async () => {
+                await say("Très bonne réponse. Beaucoup trop bonne, même.");
+                await askPackingQuestion();
+            }
         }
-
-        // Calcule une direction opposée à la souris
-        const directionX = btnCenterX - mouseX;
-        const directionY = btnCenterY - mouseY;
-        const moveDistance = 100; // Distance de déplacement à chaque fuite
-
-        // Normalise la direction
-        const length = Math.sqrt(directionX * directionX + directionY * directionY);
-        const normalizedX = directionX / length;
-        const normalizedY = directionY / length;
-
-        // Calcule position relative à la carte
-        const cardRect = card.getBoundingClientRect();
-        const currentX = btnRect.left - cardRect.left;
-        const currentY = btnRect.top - cardRect.top;
-
-        // Nouvelle position en s'éloignant de la souris
-        let newX = currentX + (normalizedX * moveDistance);
-        let newY = currentY + (normalizedY * moveDistance);
-
-        // TRES grande marge de sécurité (presque 1/4 du cadre)
-        const margin = 120;
-
-        // Si trop proche des bords, téléporte au centre ou position sûre
-        const safeZoneMinX = margin;
-        const safeZoneMaxX = cardRect.width - btnRect.width - margin;
-        const safeZoneMinY = margin;
-        const safeZoneMaxY = cardRect.height - btnRect.height - margin;
-
-        // Vérifie si la nouvelle position est dans la zone de danger
-        if (newX < safeZoneMinX || newX > safeZoneMaxX || newY < safeZoneMinY || newY > safeZoneMaxY) {
-            // Téléporte vers une position aléatoire au centre de la carte
-            const centerZoneWidth = cardRect.width * 0.5;
-            const centerZoneHeight = cardRect.height * 0.5;
-            newX = (cardRect.width - btnRect.width - centerZoneWidth) / 2 + Math.random() * (centerZoneWidth - btnRect.width);
-            newY = (cardRect.height - btnRect.height - centerZoneHeight) / 2 + Math.random() * (centerZoneHeight - btnRect.height);
-        }
-
-        noBtn.style.left = `${newX}px`;
-        noBtn.style.top = `${newY}px`;
-    }
+    ]);
 }
 
-// Mouse move event for desktop
-document.addEventListener('mousemove', (e) => {
-    moveNoButton(e.clientX, e.clientY);
+async function askPackingQuestion() {
+    await say("Question très sérieuse maintenant.");
+    await say("Pour disparaître deux nuits au bord de l’eau, tu prends quoi en premier ?");
+    ask("Un seul choix, pas de triche", [
+        {
+            label: "Un maillot",
+            action: async () => {
+                await say("Logique. Au moins, tu suis le décor.");
+                await beginRevealLeadIn();
+            }
+        },
+        {
+            label: "Mon chargeur",
+            action: async () => {
+                await say("Le chargeur avant le maillot… j’aurais dû m’en douter.");
+                await beginRevealLeadIn();
+            }
+        },
+        {
+            label: "Je veux savoir où",
+            action: async () => {
+                await say("Toujours l’interrogatoire avant l’aventure. D’accord.");
+                await beginRevealLeadIn();
+            }
+        },
+        {
+            label: "Je ne disparais pas comme ça 😭",
+            action: async () => {
+                await say("Et tu as raison. Donc je vais arrêter de tourner autour du pot.");
+                await beginRevealLeadIn();
+            }
+        }
+    ]);
+}
+
+async function beginRevealLeadIn() {
+    await say("Plus sérieusement…");
+    await say("Je ne voulais pas juste te donner un objet qui finit dans un tiroir.");
+    await say("Je voulais t’offrir une vraie pause. Rien à organiser, rien à gérer. Juste profiter.", { emphasis: true });
+    await say("Oui, j’ai beaucoup trop réfléchi. Tu pourras te moquer après.");
+    ask("Tu veux voir ?", [
+        {
+            label: "Montre-moi alors",
+            primary: true,
+            action: revealTrip
+        },
+        {
+            label: "Je sens le piège",
+            action: async () => {
+                await say("Le seul piège, c’est que j’ai vraiment pensé à tout ça.");
+                await revealTrip();
+            }
+        }
+    ]);
+}
+
+async function revealTrip() {
+    await say("Alors voilà, Morgane.", { emphasis: true });
+    setLocked(true);
+    await wait(prefersReducedMotion ? 40 : 450);
+    messages.appendChild(revealTemplate.content.cloneNode(true));
+    vibrate([50, 35, 80]);
+    scrollToLatest();
+    await wait(prefersReducedMotion ? 50 : 1000);
+    await say("C’est réservé. Du 14 au 16 août. Deux nuits au Lamantin Beach.");
+    await say("Pour la chambre, je préfère être clair avant que tu sortes ton regard d’inspectrice : la réservation actuelle est pour une chambre. Si tu préfères qu’on en ait deux, tu me le dis et je m’en occupe. Ton confort passe avant la surprise.");
+    await say("Maintenant que le dossier est complet… est-ce que tu viens ?", { emphasis: true });
+    askFinalChoice();
+}
+
+function askFinalChoice() {
+    ask("Cette fois, c’est ta vraie réponse", [
+        {
+            label: "Oui, je suis partante 🤍",
+            primary: true,
+            action: async () => {
+                finalChoice = "Oui, je suis partante pour le Lamantin Beach du 14 au 16 août 🤍";
+                await say("Message reçu. Je vais essayer de rester calme environ huit secondes.");
+                await say("Après ça, je t’envoie tout le programme.");
+                showFinalPanel("C’est donc un oui.", "Le séjour est réservé. Il ne reste plus qu’à envoyer ta réponse à Mohamed.");
+            }
+        },
+        {
+            label: "Oui, mais deux chambres",
+            action: async () => {
+                finalChoice = "Oui, je suis partante, mais je préfère qu’on ait deux chambres.";
+                await say("C’est noté. Deux chambres, aucune discussion. Je m’en occupe.");
+                showFinalPanel("Partante, avec deux chambres.", "Ta limite est claire et elle sera respectée. Tu peux envoyer la réponse telle quelle.");
+            }
+        },
+        {
+            label: "J’ai besoin de détails",
+            action: async () => {
+                finalChoice = "J’ai besoin de quelques détails avant de répondre.";
+                await say("Je savais que l’interrogatoire allait arriver.");
+                await say("Et tu as raison : demande-moi tout ce que tu veux.");
+                showTextReply();
+            }
+        },
+        {
+            label: "Je ne suis pas sûre",
+            action: async () => {
+                finalChoice = "Je ne suis pas encore sûre pour le séjour du 14 au 16 août.";
+                await say("Aucun stress. C’est une vraie invitation, pas un piège avec chronomètre.");
+                await say("Dis-moi simplement ce qu’il te faut pour décider.");
+                showTextReply();
+            }
+        },
+        {
+            label: "Je ne pourrai pas",
+            action: async () => {
+                finalChoice = "Je ne pourrai pas venir au séjour du 14 au 16 août.";
+                await say("D’accord, aucun souci. Merci de me l’avoir dit franchement.");
+                await say("Et promis : zéro relance bizarre.");
+                showFinalPanel("Réponse enregistrée sur cette page.", "Tu peux prévenir Mohamed en un geste, sans avoir à reformuler.");
+            }
+        }
+    ]);
+}
+
+function showTextReply() {
+    clearReplies();
+    replyPrompt.textContent = "Ajoute ce que tu veux lui dire";
+    textReplyForm.hidden = false;
+    textReply.value = "";
+    textReply.focus();
+    setLocked(false);
+    scrollToLatest();
+}
+
+textReplyForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const value = textReply.value.trim();
+    if (!value || interactionLocked) return;
+
+    finalNote = value;
+    setLocked(true);
+    addMessage("morgane", value);
+    textReplyForm.hidden = true;
+    await say("Bien reçu. Là, au moins, je sais exactement quoi te répondre.");
+    showFinalPanel("À toi d’envoyer.", "Ta réponse et ta question sont prêtes pour Mohamed.");
 });
 
-// Touch event for mobile
-noBtn.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    if (!isNoBtnActive) return;
-
-    // Déplacer le bouton dans .card pour qu'il soit relatif à la carte entière
-    if (noBtn.parentElement !== card) {
-        noBtn.classList.add('fleeing');
-        card.appendChild(noBtn);
-    }
-
-    const cardRect = card.getBoundingClientRect();
-    const btnRect = noBtn.getBoundingClientRect();
-
-    // TRES grande marge pour éviter les bords (120px minimum)
-    const margin = 120;
-
-    // Zone centrale sûre (50% du cadre au centre)
-    const centerZoneWidth = cardRect.width * 0.5;
-    const centerZoneHeight = cardRect.height * 0.5;
-    const centerStartX = (cardRect.width - centerZoneWidth) / 2;
-    const centerStartY = (cardRect.height - centerZoneHeight) / 2;
-
-    // Déplace dans la zone centrale uniquement
-    const newX = centerStartX + Math.random() * (centerZoneWidth - btnRect.width);
-    const newY = centerStartY + Math.random() * (centerZoneHeight - btnRect.height);
-
-    noBtn.style.left = `${newX}px`;
-    noBtn.style.top = `${newY}px`;
-});
-
-// Click event for "No" button (affiche emoji impatient)
-noBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-
-    // Messages taquins quand elle essaie de fuir
-    const cuteMessages = [
-        'Fais pas la timide, clique 😭',
-        'T\'inquiète, c\'est pas une demande en mariage 😂',
-        'Viens voir, tu vas pas regretter 😏',
-        'Tu veux vraiment me faire galérer comme ça ? 😭'
+function buildWhatsAppMessage() {
+    const lines = [
+        `Coucou ${CONFIG.sender}, j’ai terminé ton site 👀`,
+        "",
+        finalChoice || `Je te réponds pour le séjour ${CONFIG.dates} au ${CONFIG.destination}.`
     ];
 
-    const randomMessage = cuteMessages[Math.floor(Math.random() * cuteMessages.length)];
-    questionText.textContent = randomMessage;
-    questionText.style.fontSize = '28px';
-
-    // Cache les boutons et le hint
-    buttonsContainer.classList.add('hide');
-    hintText.classList.add('hide');
-});
-
-// Click event for "Yes" button
-yesBtn.addEventListener('click', () => {
-    isNoBtnActive = false;
-
-    // Hide buttons and hint
-    buttonsContainer.classList.add('hide');
-    hintText.classList.add('hide');
-
-    // Change text - Message personnel et taquin
-    questionText.textContent = `C'est pour toi ${personName} 😌`;
-
-    // Démarre la musique automatiquement
-    if (!audioStarted) {
-        startAudio();
+    if (finalNote) {
+        lines.push("", `Ce que je voulais ajouter : ${finalNote}`);
     }
 
-    // Affiche le compte à rebours
-    countdown.classList.add('show');
-
-    // Compte à rebours de 24 à 0
-    let timeLeft = 24;
-    countdownNumber.textContent = timeLeft;
-
-    const countdownInterval = setInterval(() => {
-        timeLeft--;
-        countdownNumber.textContent = timeLeft;
-
-        // Animation spéciale pour les dernières secondes
-        if (timeLeft <= 5) {
-            countdownNumber.style.color = '#FF6B6B';
-            countdownNumber.style.animation = 'countdownPulse 0.5s ease-in-out infinite';
-        }
-
-        if (timeLeft === 0) {
-            clearInterval(countdownInterval);
-
-            // Cache le compte à rebours
-            countdown.style.opacity = '0';
-            countdown.style.transform = 'scale(0.8)';
-
-            setTimeout(() => {
-                countdown.classList.remove('show');
-
-                // Ajoute un message taquin
-                const subtitle = document.createElement('p');
-                subtitle.style.fontSize = '18px';
-                subtitle.style.color = '#764ba2';
-                subtitle.style.marginTop = '10px';
-                subtitle.style.fontWeight = '400';
-                subtitle.style.opacity = '0';
-                subtitle.textContent = 'Je vais pas trop parler, regarde juste 😏';
-                questionText.parentElement.insertBefore(subtitle, countdown);
-
-                // Anime l'apparition du sous-titre
-                setTimeout(() => {
-                    subtitle.style.transition = 'all 0.8s ease';
-                    subtitle.style.opacity = '1';
-                }, 100);
-
-                // Affiche l'image après le message
-                setTimeout(() => {
-                    successGif.classList.add('show');
-                }, 800);
-            }, 500);
-        }
-    }, 1000);
-});
-
-// ============= EXPLOSION WOW =============
-function startExplosion() {
-    explosionScreen.classList.add('show');
-
-    // Flash blanc aveuglant + VIBRATION + SHAKE pour iOS!
-    setTimeout(() => {
-        flashWhite.classList.add('active');
-        vibrate(200); // Vibration forte à l'explosion (Android)
-
-        // Shake l'écran pour simuler vibration sur iOS
-        explosionScreen.style.animation = 'shake 0.5s ease';
-    }, 100);
-
-    // "FATOU" explose
-    setTimeout(() => {
-        explosionName.classList.add('explode');
-        vibrate([100, 50, 100]); // Pattern de vibration (Android)
-    }, 300);
-
-    // Confettis!
-    setTimeout(() => {
-        createConfetti();
-    }, 500);
-
-    // Transition vers les messages cinématiques
-    setTimeout(() => {
-        explosionScreen.classList.remove('show');
-        startCinematicMessages();
-    }, 3000);
+    return lines.join("\n");
 }
 
-// Confettis animés
-function createConfetti() {
-    const canvas = confettiCanvas;
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+function showFinalPanel(title, copy) {
+    clearReplies();
+    replyArea.hidden = true;
 
-    const particles = [];
-    const colors = ['#FFD700', '#FFA500', '#FF6B6B', '#FF69B4', '#00CED1'];
-
-    for (let i = 0; i < 150; i++) {
-        particles.push({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height - canvas.height,
-            vx: (Math.random() - 0.5) * 3,
-            vy: Math.random() * 3 + 2,
-            color: colors[Math.floor(Math.random() * colors.length)],
-            size: Math.random() * 8 + 4,
-            rotation: Math.random() * 360,
-            rotationSpeed: (Math.random() - 0.5) * 10
-        });
-    }
-
-    function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        particles.forEach((p, index) => {
-            p.x += p.vx;
-            p.y += p.vy;
-            p.rotation += p.rotationSpeed;
-
-            ctx.save();
-            ctx.translate(p.x, p.y);
-            ctx.rotate((p.rotation * Math.PI) / 180);
-            ctx.fillStyle = p.color;
-            ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
-            ctx.restore();
-
-            if (p.y > canvas.height) {
-                particles.splice(index, 1);
-            }
-        });
-
-        if (particles.length > 0) {
-            requestAnimationFrame(animate);
-        }
-    }
-
-    animate();
-}
-
-// ============= MESSAGES CINÉMATIQUES =============
-const cinematicMessages = [
-    "Fatou...",
-    "Un an et demi déjà...",
-    "On va pas faire comme si t'avais été sage tout le long 😭",
-    "T'as fait tes petits coups...",
-    "J'ai rien oublié, au cas où 👀",
-    "Mais bon...",
-    "Avec toi, il se passe toujours quelque chose.",
-    "T'as ton délire, ton caractère...",
-    "Et bizarrement, c'est aussi pour ça que je t'apprécie.",
-    "En vrai, t'es devenue importante pour moi.",
-    "Prends pas trop la confiance après cette phrase 😭",
-    "Je voulais juste que tu le saches.",
-    "Voilà, c'est dit. 💫"
-];
-
-let currentMessageIndex = 0;
-
-function startCinematicMessages() {
-    cinematicScreen.classList.add('show');
-    showNextMessage();
-}
-
-function showNextMessage() {
-    if (currentMessageIndex >= cinematicMessages.length) {
-        // Tous les messages sont affichés, passer aux bulles
-        setTimeout(() => {
-            cinematicScreen.classList.remove('show');
-            startBubblesGame();
-        }, 2000);
-        return;
-    }
-
-    const message = cinematicMessages[currentMessageIndex];
-    cinematicMessage.textContent = '';
-    cinematicMessage.classList.add('typing');
-
-    // Effet machine à écrire
-    let charIndex = 0;
-    const typingInterval = setInterval(() => {
-        if (charIndex < message.length) {
-            cinematicMessage.textContent += message[charIndex];
-            charIndex++;
-        } else {
-            clearInterval(typingInterval);
-            currentMessageIndex++;
-
-            // Pause avant le message suivant
-            setTimeout(() => {
-                cinematicMessage.classList.remove('typing');
-                setTimeout(showNextMessage, 300);
-            }, 1500);
-        }
-    }, 50);
-}
-
-// ============= MINI-JEU BULLES =============
-const bubbleCompliments = [
-    { icon: "😂", text: "Tu me fais rire, même quand tu forces un peu" },
-    { icon: "😤", text: "T'as ton caractère... personne peut nier ça" },
-    { icon: "👀", text: "Tes petits coups, je les ai en mémoire" },
-    { icon: "🎢", text: "Avec toi, y a jamais moyen de s'ennuyer" },
-    { icon: "💛", text: "T'as un bon cœur, faut quand même le dire" },
-    { icon: "✨", text: "Tu sais mettre l'ambiance, même sans prévenir" },
-    { icon: "🫶", text: "Un an et demi, ça commence à compter" },
-    { icon: "💫", text: "Tu comptes pour moi... mais calme-toi 😭" }
-];
-
-let discoveredCount = 0;
-
-function startBubblesGame() {
-    bubblesScreen.classList.add('show');
-
-    // Créer les bulles
-    bubbleCompliments.forEach((compliment, index) => {
-        const bubble = document.createElement('div');
-        bubble.className = 'bubble';
-        bubble.innerHTML = `
-            <span class="bubble-icon">${compliment.icon}</span>
-            <span class="bubble-text">${compliment.text}</span>
-        `;
-
-        bubble.addEventListener('click', () => {
-            if (!bubble.classList.contains('clicked')) {
-                bubble.classList.add('clicked');
-                discoveredCount++;
-                bubblesCounter.textContent = `${discoveredCount}/8 découvertes`;
-
-                // Son + vibration + animation pulse
-                playClickSound();
-                vibrate(50); // Android
-
-                // Animation pulse pour feedback visuel (iOS/tous)
-                bubble.style.animation = 'bubblePulse 0.3s ease';
-
-                // Toutes les bulles découvertes
-                if (discoveredCount === 8) {
-                    vibrate([100, 50, 100, 50, 100]); // Android
-
-                    // Shake screen pour iOS
-                    bubblesScreen.style.animation = 'shake 0.6s ease';
-
-                    setTimeout(showFinalMessage, 2000);
-                }
-            }
-        });
-
-        bubblesContainer.appendChild(bubble);
+    const panel = document.createElement("section");
+    panel.className = "final-panel";
+    panel.innerHTML = `
+        <p class="final-panel__eyebrow">DERNIÈRE ÉTAPE</p>
+        <h2></h2>
+        <p class="final-panel__copy"></p>
+        <button class="send-button" type="button">
+            <span>Envoyer ma réponse à Mohamed</span>
+            <span aria-hidden="true">→</span>
+        </button>
+        <p class="send-help">WhatsApp s’ouvrira avec le message déjà écrit. Rien ne part sans ton dernier clic.</p>
+    `;
+    panel.querySelector("h2").textContent = title;
+    panel.querySelector(".final-panel__copy").textContent = copy;
+    panel.querySelector(".send-button").addEventListener("click", () => {
+        const encodedMessage = encodeURIComponent(buildWhatsAppMessage());
+        const cleanNumber = CONFIG.whatsappNumber.replace(/\D/g, "");
+        const base = cleanNumber
+            ? `https://wa.me/${cleanNumber}`
+            : "https://wa.me/";
+        window.location.href = `${base}?text=${encodedMessage}`;
     });
+
+    messages.appendChild(panel);
+    presenceText.textContent = "attend ta réponse";
+    scrollToLatest();
 }
 
-function showFinalMessage() {
-    bubblesScreen.classList.remove('show');
-
-    // Message final, léger mais sincère
-    cinematicScreen.classList.add('show');
-    cinematicMessage.textContent = '';
-    cinematicMessage.classList.add('typing');
-
-    const finalMessage = "Bon Fatou... je vais pas faire un grand discours non plus 😭 mais en vrai, je tiens à toi.";
-    let charIndex = 0;
-
-    const typingInterval = setInterval(() => {
-        if (charIndex < finalMessage.length) {
-            cinematicMessage.textContent += finalMessage[charIndex];
-            charIndex++;
-        } else {
-            clearInterval(typingInterval);
-
-            // Signature en 3 étapes puis fermeture
-            setTimeout(() => {
-                currentSignatureStep = 0; // Reset le compteur
-                showSignature();
-            }, 2000);
-        }
-    }, 50);
-}
-
-// Signature en 5 étapes
-const signatureSteps = [
-    "Tu comptais vraiment pas skip tout ça hein? 😏",
-    "Et non, prends pas trop la confiance 😂",
-    "Vas-y, appelle-moi vite.",
-    "On va regarder TON panier Shein ensemble.",
-    "Je te le prends jusqu'à 100 € 💗 Mais stp, mets pas toute l'appli dedans 😭"
-];
-
-let currentSignatureStep = 0;
-
-function showSignature() {
-    if (currentSignatureStep >= signatureSteps.length) {
-        // Tous les messages affichés, montrer la fermeture
-        setTimeout(showFinalClosure, 2000); // Réduit à 2 secondes
-        return;
-    }
-
-    const message = signatureSteps[currentSignatureStep];
-    cinematicMessage.textContent = '';
-
-    // Effet machine à écrire
-    let charIndex = 0;
-    const typingInterval = setInterval(() => {
-        if (charIndex < message.length) {
-            cinematicMessage.textContent += message[charIndex];
-            charIndex++;
-        } else {
-            clearInterval(typingInterval);
-            currentSignatureStep++;
-
-            // Pause avant le prochain message ou la fermeture
-            setTimeout(() => {
-                showSignature(); // Appelle toujours, la fonction gère la fin
-            }, currentSignatureStep === 1 ? 1500 : 2500); // "Non j'rigole" reste moins longtemps
-        }
-    }, 50);
-}
-
-// Fermeture finale avec fade to black
-function showFinalClosure() {
-    // Fade to black
-    cinematicScreen.style.transition = 'background 3s ease';
-    cinematicScreen.style.background = 'black';
-
-    // Fade out le message actuel
-    cinematicMessage.style.transition = 'opacity 2s ease';
-    cinematicMessage.style.opacity = '0';
-
-    // Après 2 secondes, afficher la signature finale
-    setTimeout(() => {
-        cinematicMessage.textContent = '';
-        cinematicMessage.style.opacity = '1';
-        cinematicMessage.style.fontSize = '24px';
-        cinematicMessage.style.textAlign = 'right';
-        cinematicMessage.style.position = 'absolute';
-        cinematicMessage.style.bottom = '40px';
-        cinematicMessage.style.right = '40px';
-        cinematicMessage.style.fontStyle = 'italic';
-        cinematicMessage.style.transition = 'opacity 2s ease';
-
-        // Écrire "Mohamed ✨" simple et classe
-        const finalSignature = "Mohamed ✨";
-        let charIndex = 0;
-        const typingInterval = setInterval(() => {
-            if (charIndex < finalSignature.length) {
-                cinematicMessage.textContent += finalSignature[charIndex];
-                charIndex++;
-            } else {
-                clearInterval(typingInterval);
-
-                // Fade out après 3 secondes
-                setTimeout(() => {
-                    cinematicMessage.style.opacity = '0';
-                }, 3000);
-            }
-        }, 100);
-    }, 2000);
-}
+startButton.addEventListener("click", startConversation, { once: true });

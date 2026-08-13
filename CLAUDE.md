@@ -1,84 +1,52 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+## Project overview
 
-## Project Overview
+This repository contains a private, interactive invitation for Morgane. It is a static vanilla HTML/CSS/JavaScript experience with no build step or backend.
 
-This is an interactive birthday webpage for Aisha with a playful twist: the "Pas encore !" (Not yet!) button actively avoids the user's cursor, while the "Oui, montre-moi !" (Yes, show me!) button triggers a birthday celebration with a surprise image. The project is built with vanilla HTML, CSS, and JavaScript (no build tools or frameworks).
+The page presents a conversational story from Mohamed, reveals a confirmed stay at Lamantin Beach from August 14 to August 16, 2026, and lets Morgane choose a genuine response. The last action opens WhatsApp with her answer prefilled; she must still press Send herself.
 
-## Architecture
+## Core files
 
-### Core Files
-- `index.html` - Main HTML structure with birthday question, buttons, and celebration image container
-- `script.js` - All interactive behavior including:
-  - Personalization constants at top (`personName` = "Aisha", `gifUrl`)
-  - Audio player using HTML5 Audio API with mobile compatibility
-  - "Pas encore !" button fleeing behavior (mousemove for desktop, touchstart for mobile)
-  - Success state when "Oui, montre-moi !" is clicked
-- `style.css` - Complete styling with purple/gold birthday theme, animations, and mobile responsive design
+- `index.html` — semantic page shell, conversation containers, and the trip-card template.
+- `style.css` — premium dark coastal visual system, responsive layout, animations, and reduced-motion support.
+- `script.js` — configuration, branching conversation engine, music control, trip reveal, free-text response, and WhatsApp handoff.
 
-### Key Implementation Details
+## Personalization
 
-**Audio System** (script.js:19-82)
-- Uses HTML5 `<audio>` element (currently with Ed Sheeran's "Perfect" - can be replaced with birthday song)
-- Requires user interaction to start (browser autoplay policy)
-- Starts at 20 seconds to skip intro
-- Gold gradient activation button appears top-right and fades after click
-- Mobile touch events handled separately from desktop clicks
+Edit the `CONFIG` object at the beginning of `script.js`:
 
-**Button Fleeing Behavior** (script.js:84-183)
-- Desktop: mousemove event triggers repositioning when cursor approaches within 120px threshold
-- Mobile: touchstart event teleports button to random safe position in center zone
-- Button becomes absolutely positioned relative to `.card` when fleeing starts
-- Safety margins (120px) prevent button from escaping card boundaries
-- If position calculation pushes near edges, button teleports to center zone (50% of card area)
+- `recipient` — invitation recipient.
+- `sender` — invitation sender.
+- `dates` — human-readable dates used in the outgoing message.
+- `destination` — hotel name.
+- `musicFile` — optional local soundtrack.
+- `whatsappNumber` — sender's international number without `+`, spaces, or punctuation. If empty, WhatsApp opens and asks the recipient to choose a contact.
 
-**State Management**
-- `isNoBtnActive` flag disables fleeing after "Yes" is clicked
-- `audioStarted` flag prevents duplicate audio initialization
-- CSS classes toggle visibility: `.hide`, `.show`, `.fleeing`
+The visible date and destination details in `index.html` must be updated separately if the booking changes.
 
-## Customization
+## Running locally
 
-To personalize this page, modify the constants at the top of `script.js`:
-- `personName` - Name of the birthday person (currently "Aisha")
-- `gifUrl` - Path to celebration image (currently "IMG_3151.jpg")
-
-Replace these media files:
-- `image.png` - Main image displayed on card (can be any birthday-related image)
-- `IMG_3151.jpg` - Celebration image shown after clicking "Oui, montre-moi !"
-- `ed-sheeran-perfect-official-music-video.mp3` - Background music (can be replaced with "Happy Birthday" song)
-
-## Running the Project
-
-This is a static website with no build step. Simply open `index.html` in a web browser:
+Serve the directory through a local static server so audio and browser behavior match production:
 
 ```bash
-# Using Python's built-in server
 python3 -m http.server 8000
-
-# Using Node's http-server (if installed)
-npx http-server
-
-# Or just open the file directly
-open index.html
 ```
 
-Note: Audio autoplay requires user interaction due to browser policies. Users must click the sound button.
+Then open `http://localhost:8000`.
 
-## Color Scheme
+## Product constraints
 
-The birthday theme uses:
-- Background: Purple gradient (`#667eea` → `#764ba2` → `#f093fb`)
-- Primary button (Yes): Gold gradient (`#FFD700` → `#FFA500`)
-- Card: White with slight transparency
-- Glow effects: Golden (`rgba(255, 215, 0, ...)`)
+- This is a static site. It cannot silently collect or transmit a response.
+- WhatsApp only receives a prefilled message after Morgane explicitly clicks the final button and then confirms Send in WhatsApp.
+- Do not include booking references, payment details, or other secrets in client-side files.
+- Keep all final choices real and clickable. Do not make a refusal button flee or pressure the recipient.
+- Keep the room arrangement truthful. The current copy says one room is booked and explicitly offers to arrange two if Morgane prefers.
 
-## Mobile Considerations
+## Accessibility and responsive behavior
 
-The project includes specific mobile optimizations:
-- Touch event handlers with `preventDefault()` to avoid ghost clicks
-- `passive: false` on sound button touchstart to ensure preventDefault works
-- `-webkit-tap-highlight-color: transparent` to remove touch highlight
-- Responsive design breakpoint at 600px
-- Mobile "Pas encore !" button uses teleportation rather than cursor tracking (no hover state)
+- The document language is French and mobile zoom remains enabled.
+- Interactive elements use native buttons and a textarea.
+- Focus states are visible.
+- `prefers-reduced-motion` disables decorative motion.
+- The conversation scrolls independently and the reply area stays available above mobile safe areas.

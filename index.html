@@ -1,84 +1,109 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Pour Fatou 💫</title>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#071b1d">
+    <meta name="description" content="Un message privé pour Morgane.">
+    <meta name="robots" content="noindex, nofollow, noarchive">
+    <title>Pour Morgane</title>
+    <link rel="stylesheet" href="style.css?v=morgane-august-1">
 </head>
 <body>
-    <!-- Particules flottantes permanentes -->
-    <div class="floating-particles" id="floatingParticles"></div>
-
-    <!-- Page d'intro bloquée -->
-    <div class="intro-screen" id="introScreen">
-        <div class="intro-content">
-            <h1 class="intro-title">Fatou...</h1>
-            <p class="intro-message">J'ai un truc à te dire... prends pas trop la confiance 😭</p>
-            <button class="intro-btn" id="introBtn">Clique pour commencer ✨</button>
-        </div>
+    <div class="ambient" aria-hidden="true">
+        <span class="ambient__glow ambient__glow--one"></span>
+        <span class="ambient__glow ambient__glow--two"></span>
+        <span class="ambient__line"></span>
     </div>
 
-    <!-- Écran de compte à rebours bloqué -->
-    <div class="loading-screen" id="loadingScreen">
-        <div class="loading-content">
-            <h1 class="loading-name">Fatou... 💝</h1>
-            <p class="loading-message">Prépare-toi, j'ai fait un effort là 😂</p>
-            <div class="loading-countdown" id="loadingCountdown">24</div>
-            <p class="loading-subtext">Tu peux pas skip, assume jusqu'au bout 🤭✨</p>
-        </div>
-    </div>
-
-    <!-- Explosion visuelle WOW -->
-    <div class="explosion-screen" id="explosionScreen">
-        <div class="flash-white" id="flashWhite"></div>
-        <div class="explosion-name" id="explosionName">FATOU</div>
-        <canvas id="confettiCanvas"></canvas>
-    </div>
-
-    <!-- Messages cinématiques -->
-    <div class="cinematic-screen" id="cinematicScreen">
-        <p class="cinematic-message" id="cinematicMessage"></p>
-    </div>
-
-    <!-- Mini-jeu bulles interactives -->
-    <div class="bubbles-screen" id="bubblesScreen">
-        <h2 class="bubbles-title">Clique sur les étoiles, mais fais pas trop la curieuse 😏</h2>
-        <div class="bubbles-container" id="bubblesContainer"></div>
-        <p class="bubbles-counter" id="bubblesCounter">0/8 découvertes</p>
-    </div>
-
-    <!-- Bouton activer son (caché maintenant car auto) -->
-    <button id="sound-btn" style="display: none; position: fixed; top: 20px; right: 20px; z-index: 10000; background: linear-gradient(135deg, #FFD700, #FFA500); color: white; border: none; padding: 12px 24px; border-radius: 50px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(255,215,0,0.4);">
-        🎵 Activer la musique
-    </button>
-    <div class="container">
-        <div class="card">
-            <div class="emoji">
-                <img src="image.png" alt="Cute cat">
-            </div>
-            <h1 class="question" id="questionText"></h1>
-            <div class="buttons" id="buttonsContainer">
-                <button class="btn-no" id="noBtn">Attends... 🙈</button>
-                <button class="btn-yes" id="yesBtn">Montre-moi ! 💝</button>
-            </div>
-            <p class="hint" id="hintText">Petit indice : essaye le bouton de gauche d'abord 🤭</p>
-
-            <!-- Compte à rebours -->
-            <div class="countdown" id="countdown">
-                <div class="countdown-text">Prépare-toi... 💫</div>
-                <div class="countdown-number" id="countdownNumber">24</div>
-                <div class="countdown-subtext">secondes avant la magie ✨</div>
+    <main class="experience" id="experience">
+        <header class="topbar">
+            <div class="identity" aria-label="Conversation avec Mohamed">
+                <span class="identity__avatar" aria-hidden="true">M</span>
+                <span class="identity__copy">
+                    <strong>Mohamed</strong>
+                    <span id="presenceText">a quelque chose à te dire</span>
+                </span>
             </div>
 
-            <div class="success" id="successGif">
-                <img src="" alt="Celebration" id="gifImage">
+            <button class="sound-control" id="soundControl" type="button" aria-pressed="false" aria-label="Activer la musique">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M9 18V5l11-2v13M9 9l11-2M6 21c1.7 0 3-1 3-2.3S7.7 16.5 6 16.5s-3 1-3 2.2S4.3 21 6 21Zm11-2c1.7 0 3-1 3-2.3s-1.3-2.2-3-2.2-3 1-3 2.2 1.3 2.3 3 2.3Z"/>
+                </svg>
+                <span id="soundLabel">Avec musique</span>
+            </button>
+        </header>
+
+        <section class="intro" id="intro" aria-labelledby="introTitle">
+            <p class="intro__eyebrow">MESSAGE PRIVÉ · POUR MORGANE</p>
+            <h1 id="introTitle">Morgane,</h1>
+            <p class="intro__lead">j’avais prévu de faire un truc simple.</p>
+            <p class="intro__aside">J’ai visiblement échoué.</p>
+            <button class="primary-button" id="startButton" type="button">
+                Vas-y, parle
+                <span aria-hidden="true">→</span>
+            </button>
+            <p class="intro__note">Promis, aucun compte à rebours de 24 secondes.</p>
+        </section>
+
+        <section class="conversation" id="conversation" aria-label="Conversation" hidden>
+            <div class="conversation__scroll" id="conversationScroll" tabindex="-1">
+                <div class="date-marker" aria-hidden="true"><span>Aujourd’hui</span></div>
+                <div class="messages" id="messages" aria-live="polite" aria-relevant="additions"></div>
+                <div class="typing" id="typingIndicator" aria-label="Mohamed écrit" hidden>
+                    <span></span><span></span><span></span>
+                </div>
             </div>
-        </div>
-    </div>
-    <!-- Le numéro de version évite qu'un ancien script reste en cache après un déploiement. -->
-    <script src="script.js?v=fatou-v2"></script>
+
+            <div class="reply-area" id="replyArea">
+                <p class="reply-area__prompt" id="replyPrompt">Choisis ta réponse</p>
+                <div class="reply-options" id="replyOptions"></div>
+                <form class="text-reply" id="textReplyForm" hidden>
+                    <label for="textReply">Écris ce que tu veux lui demander</label>
+                    <div class="text-reply__row">
+                        <textarea id="textReply" rows="2" maxlength="300" placeholder="Transport, programme, chambre…" required></textarea>
+                        <button type="submit" aria-label="Valider ma réponse">
+                            <span aria-hidden="true">→</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <template id="messageTemplate">
+        <article class="message">
+            <span class="message__author"></span>
+            <div class="message__bubble"></div>
+        </article>
+    </template>
+
+    <template id="revealTemplate">
+        <article class="trip-card" aria-label="Détails du séjour">
+            <div class="trip-card__topline">
+                <span>UNE PARENTHÈSE À SALY</span>
+                <span>CONFIRMÉ</span>
+            </div>
+            <p class="trip-card__destination">Lamantin Beach</p>
+            <p class="trip-card__subtitle">Resort · Spa · Bord de mer</p>
+            <div class="trip-card__details">
+                <div>
+                    <span>ARRIVÉE</span>
+                    <strong>14 AOÛT</strong>
+                </div>
+                <div>
+                    <span>DÉPART</span>
+                    <strong>16 AOÛT</strong>
+                </div>
+                <div>
+                    <span>DURÉE</span>
+                    <strong>2 NUITS</strong>
+                </div>
+            </div>
+            <p class="trip-card__status"><span></span> Le séjour est réservé</p>
+        </article>
+    </template>
+
+    <script src="script.js?v=morgane-august-1"></script>
 </body>
 </html>
