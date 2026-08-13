@@ -309,7 +309,7 @@ async function revealTrip() {
     await say("Surpriseee 🥳🎉");
     await say("Du 14 au 16 août : deux nuits au Lamantin Beach 🌊☀️");
     await say("Et oui, c’est déjà réservé 😌");
-    await say("Deux nuits, deux chambres… oui madame, j’ai vraiment pensé à tout 😂🤍");
+    await say("Deux nuits… oui madame, j’ai vraiment pensé à tout 😂🤍");
     await say("Bon… maintenant que tu sais tout, est-ce que madame valide le programme ? 👀😂", { emphasis: true });
     askFinalChoice();
 }
