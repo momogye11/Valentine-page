@@ -24,6 +24,7 @@ const textReplyForm = document.getElementById("textReplyForm");
 const textReply = document.getElementById("textReply");
 const soundControl = document.getElementById("soundControl");
 const soundLabel = document.getElementById("soundLabel");
+const confettiCanvas = document.getElementById("confettiCanvas");
 
 const audio = new Audio(CONFIG.musicFile);
 audio.loop = true;
@@ -34,6 +35,7 @@ let isMusicPlaying = false;
 let interactionLocked = false;
 let finalChoice = null;
 let finalNote = "";
+let activeConfettiFrame = null;
 
 const wait = (duration) => new Promise((resolve) => window.setTimeout(resolve, duration));
 
@@ -50,6 +52,74 @@ function vibrate(pattern = 35) {
     if (!prefersReducedMotion && navigator.vibrate) {
         navigator.vibrate(pattern);
     }
+}
+
+function launchConfetti(options = {}) {
+    if (prefersReducedMotion || !confettiCanvas) return;
+
+    const context = confettiCanvas.getContext("2d");
+    if (!context) return;
+
+    const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    confettiCanvas.width = width * pixelRatio;
+    confettiCanvas.height = height * pixelRatio;
+    context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+
+    const colors = ["#f4dfba", "#df8064", "#ffffff", "#7fc4b3", "#f0b84c", "#e89ab0"];
+    const amount = options.amount || 150;
+    if (activeConfettiFrame !== null) {
+        cancelAnimationFrame(activeConfettiFrame);
+    }
+
+    const particles = Array.from({ length: amount }, () => ({
+        x: width * (0.1 + Math.random() * 0.8),
+        y: -20 - Math.random() * height * 0.32,
+        vx: (Math.random() - 0.5) * 270,
+        vy: 150 + Math.random() * 280,
+        gravity: 130 + Math.random() * 150,
+        size: 5 + Math.random() * 8,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        rotation: Math.random() * Math.PI,
+        spin: (Math.random() - 0.5) * 10,
+        wave: Math.random() * Math.PI * 2
+    }));
+
+    const startedAt = performance.now();
+    const duration = options.duration || 3200;
+    let previousFrame = startedAt;
+
+    function draw(now) {
+        const delta = Math.min((now - previousFrame) / 1000, 0.034);
+        previousFrame = now;
+        context.clearRect(0, 0, width, height);
+
+        particles.forEach((particle) => {
+            particle.vy += particle.gravity * delta;
+            particle.vx *= Math.pow(0.62, delta);
+            particle.x += (particle.vx + Math.sin(particle.wave) * 28) * delta;
+            particle.y += particle.vy * delta;
+            particle.wave += 4.2 * delta;
+            particle.rotation += particle.spin * delta;
+
+            context.save();
+            context.translate(particle.x, particle.y);
+            context.rotate(particle.rotation);
+            context.fillStyle = particle.color;
+            context.fillRect(-particle.size / 2, -particle.size / 4, particle.size, particle.size / 2);
+            context.restore();
+        });
+
+        if (now - startedAt < duration) {
+            activeConfettiFrame = requestAnimationFrame(draw);
+        } else {
+            context.clearRect(0, 0, width, height);
+            activeConfettiFrame = null;
+        }
+    }
+
+    activeConfettiFrame = requestAnimationFrame(draw);
 }
 
 async function toggleMusic() {
@@ -151,26 +221,27 @@ async function startConversation() {
     conversation.hidden = false;
     conversationScroll.focus({ preventScroll: true });
 
-    await say("Bon. Avant toute chose : le week-end du 14 août, tu comptais être raisonnable ?");
-    ask("Réponds franchement", [
+    await say("Morgane… j’ai une petite question 👀");
+    await say("Le week-end du 14 août, t’avais prévu d’être sage ? 😂");
+    ask("Allez, réponds franchement 😌", [
         {
-            label: "Oui, pourquoi ?",
+            label: "Oui… pourquoi ? 🤨",
             action: async () => {
-                await say("Alors il va falloir annuler cette ambition.");
+                await say("Ah 😭 Bon… il va peut-être falloir revoir le programme 😂");
                 await askPackingQuestion();
             }
         },
         {
-            label: "Pas du tout",
+            label: "Pas du tout 😌",
             action: async () => {
-                await say("Parfait. On vient de gagner beaucoup de temps.");
+                await say("Parfait 😂 On va très bien s’entendre.");
                 await askPackingQuestion();
             }
         },
         {
-            label: "Ça dépend de toi",
+            label: "Ça dépend de toi 👀",
             action: async () => {
-                await say("Très bonne réponse. Beaucoup trop bonne, même.");
+                await say("Ça dépend de moi ? Très mauvaise idée… j’adore 😂");
                 await askPackingQuestion();
             }
         }
@@ -178,34 +249,34 @@ async function startConversation() {
 }
 
 async function askPackingQuestion() {
-    await say("Question très sérieuse maintenant.");
-    await say("Pour disparaître deux nuits au bord de l’eau, tu prends quoi en premier ?");
-    ask("Un seul choix, pas de triche", [
+    await say("Bon, deuxième question 😌");
+    await say("Si je t’embarque deux nuits au bord de la mer, tu mets quoi en premier dans ta valise ? 🌊");
+    ask("Un seul choix hein, pas de triche 😂", [
         {
-            label: "Un maillot",
+            label: "Mon maillot direct 😂",
             action: async () => {
-                await say("Logique. Au moins, tu suis le décor.");
+                await say("Je vois que madame est déjà prête 😭🌊");
                 await beginRevealLeadIn();
             }
         },
         {
-            label: "Mon chargeur",
+            label: "Mon chargeur évidemment 😭",
             action: async () => {
-                await say("Le chargeur avant le maillot… j’aurais dû m’en douter.");
+                await say("Même en escapade, la batterie passe avant tout 😭😂");
                 await beginRevealLeadIn();
             }
         },
         {
-            label: "Je veux savoir où",
+            label: "D’abord tu m’expliques 🤨",
             action: async () => {
-                await say("Toujours l’interrogatoire avant l’aventure. D’accord.");
+                await say("Ah voilà… le mode inspectrice est activé 😂");
                 await beginRevealLeadIn();
             }
         },
         {
-            label: "Je ne disparais pas comme ça 😭",
+            label: "Qui a dit que je venais ? 😂",
             action: async () => {
-                await say("Et tu as raison. Donc je vais arrêter de tourner autour du pot.");
+                await say("Personne… pour l’instant 😌 Laisse-moi finir 😂");
                 await beginRevealLeadIn();
             }
         }
@@ -213,20 +284,20 @@ async function askPackingQuestion() {
 }
 
 async function beginRevealLeadIn() {
-    await say("Plus sérieusement…");
-    await say("Je ne voulais pas juste te donner un objet qui finit dans un tiroir.");
-    await say("Je voulais t’offrir une vraie pause. Rien à organiser, rien à gérer. Juste profiter.", { emphasis: true });
-    await say("Oui, j’ai beaucoup trop réfléchi. Tu pourras te moquer après.");
-    ask("Tu veux voir ?", [
+    await say("Bon, en vrai… j’avais envie de te faire une surprise 🤍");
+    await say("Pas un cadeau qui finit au fond d’un tiroir 😭");
+    await say("Plutôt une vraie pause : tu viens, tu poses tes affaires et tu profites 🌴☀️", { emphasis: true });
+    await say("Et oui… j’ai vraiment tout organisé 😂");
+    ask("Tu veux voir ? 👀", [
         {
-            label: "Montre-moi alors",
+            label: "Oui, montre-moi 😭",
             primary: true,
             action: revealTrip
         },
         {
-            label: "Je sens le piège",
+            label: "J’ai peur de toi là 😂",
             action: async () => {
-                await say("Le seul piège, c’est que j’ai vraiment pensé à tout ça.");
+                await say("Tu peux 😂 Mais promis, la surprise vaut le coup 👀");
                 await revealTrip();
             }
         }
@@ -234,64 +305,72 @@ async function beginRevealLeadIn() {
 }
 
 async function revealTrip() {
-    await say("Alors voilà, Morgane.", { emphasis: true });
+    await say("Ok… regarde bien 👀", { emphasis: true });
     setLocked(true);
     await wait(prefersReducedMotion ? 40 : 450);
     messages.appendChild(revealTemplate.content.cloneNode(true));
+    launchConfetti();
     vibrate([50, 35, 80]);
     scrollToLatest();
     await wait(prefersReducedMotion ? 50 : 1000);
-    await say("C’est réservé. Du 14 au 16 août. Deux nuits au Lamantin Beach.");
-    await say("Pour la chambre, je préfère être clair avant que tu sortes ton regard d’inspectrice : la réservation actuelle est pour une chambre. Si tu préfères qu’on en ait deux, tu me le dis et je m’en occupe. Ton confort passe avant la surprise.");
-    await say("Maintenant que le dossier est complet… est-ce que tu viens ?", { emphasis: true });
+    await say("Surpriseee 🥳🎉");
+    await say("Du 14 au 16 août : deux nuits au Lamantin Beach 🌊☀️");
+    await say("Et oui, c’est déjà réservé 😌");
+    await say("Petit détail avant que tu passes en mode FBI 😂");
+    await say("Pour l’instant, la réservation est pour une chambre.");
+    await say("Si tu préfères qu’on en prenne deux, tu me le dis et je m’en occupe. Aucun souci, je veux que tu sois à l’aise 🤍");
+    await say("Bon… tu viens avec moi ou je dois sortir mes meilleurs arguments ? 😂", { emphasis: true });
     askFinalChoice();
 }
 
 function askFinalChoice() {
-    ask("Cette fois, c’est ta vraie réponse", [
+    ask("Alors madame ? 👀", [
         {
-            label: "Oui, je suis partante 🤍",
+            label: "Oui, je viens 😭🤍",
             primary: true,
             action: async () => {
-                finalChoice = "Oui, je suis partante pour le Lamantin Beach du 14 au 16 août 🤍";
-                await say("Message reçu. Je vais essayer de rester calme environ huit secondes.");
-                await say("Après ça, je t’envoie tout le programme.");
-                showFinalPanel("C’est donc un oui.", "Le séjour est réservé. Il ne reste plus qu’à envoyer ta réponse à Mohamed.");
+                finalChoice = "Oui, je viens au Lamantin Beach du 14 au 16 août 😭🤍";
+                await say("Attends… c’est vraiment oui là ? 😭😂");
+                await say("Ok, je reste calme… enfin j’essaie 🥳");
+                await say("Je t’envoie tout le programme 🤍");
+                launchConfetti({ amount: 90, duration: 2400 });
+                showFinalPanel("Bon bah… c’est oui 😭🤍", "Envoie-moi ta réponse avant que tu changes d’avis 😂");
             }
         },
         {
-            label: "Oui, mais deux chambres",
+            label: "Oui, mais deux chambres 🤨",
             action: async () => {
                 finalChoice = "Oui, je suis partante, mais je préfère qu’on ait deux chambres.";
-                await say("C’est noté. Deux chambres, aucune discussion. Je m’en occupe.");
-                showFinalPanel("Partante, avec deux chambres.", "Ta limite est claire et elle sera respectée. Tu peux envoyer la réponse telle quelle.");
+                await say("Ça marche 🤝 Deux chambres, c’est noté.");
+                await say("Je m’en occupe. Le principal, c’est que tu sois tranquille 🤍");
+                showFinalPanel("Partante, avec deux chambres 🤝", "Tout est clair. Tu peux m’envoyer ça directement.");
             }
         },
         {
-            label: "J’ai besoin de détails",
+            label: "Je veux les détails 👀",
             action: async () => {
                 finalChoice = "J’ai besoin de quelques détails avant de répondre.";
-                await say("Je savais que l’interrogatoire allait arriver.");
-                await say("Et tu as raison : demande-moi tout ce que tu veux.");
+                await say("Je savais que le mode FBI allait revenir 😂🕵🏽‍♀️");
+                await say("Vas-y, pose-moi toutes tes questions 👀");
                 showTextReply();
             }
         },
         {
-            label: "Je ne suis pas sûre",
+            label: "Laisse-moi réfléchir 🤍",
             action: async () => {
                 finalChoice = "Je ne suis pas encore sûre pour le séjour du 14 au 16 août.";
-                await say("Aucun stress. C’est une vraie invitation, pas un piège avec chronomètre.");
-                await say("Dis-moi simplement ce qu’il te faut pour décider.");
+                await say("Ça marche, prends ton temps 🤍");
+                await say("Dis-moi juste ce qui te fait hésiter. Zéro pression.");
                 showTextReply();
             }
         },
         {
-            label: "Je ne pourrai pas",
+            label: "Je ne peux pas 😕",
             action: async () => {
                 finalChoice = "Je ne pourrai pas venir au séjour du 14 au 16 août.";
-                await say("D’accord, aucun souci. Merci de me l’avoir dit franchement.");
-                await say("Et promis : zéro relance bizarre.");
-                showFinalPanel("Réponse enregistrée sur cette page.", "Tu peux prévenir Mohamed en un geste, sans avoir à reformuler.");
+                await say("Ok, je comprends 🤍");
+                await say("Merci de me le dire franchement. Promis, pas de procès 😂");
+                showFinalPanel("C’est noté 🤍", "Tu peux m’envoyer ta réponse sans avoir à tout réécrire.");
             }
         }
     ]);
@@ -299,7 +378,7 @@ function askFinalChoice() {
 
 function showTextReply() {
     clearReplies();
-    replyPrompt.textContent = "Ajoute ce que tu veux lui dire";
+    replyPrompt.textContent = "Écris-moi ce que tu veux savoir 👇";
     textReplyForm.hidden = false;
     textReply.value = "";
     textReply.focus();
@@ -316,13 +395,13 @@ textReplyForm.addEventListener("submit", async (event) => {
     setLocked(true);
     addMessage("morgane", value);
     textReplyForm.hidden = true;
-    await say("Bien reçu. Là, au moins, je sais exactement quoi te répondre.");
-    showFinalPanel("À toi d’envoyer.", "Ta réponse et ta question sont prêtes pour Mohamed.");
+    await say("Parfait, j’ai compris 👀 Envoie-moi ça et je te réponds.");
+    showFinalPanel("À toi d’envoyer 😌", "Ta réponse est prête pour Mohamed.");
 });
 
 function buildWhatsAppMessage() {
     const lines = [
-        `Coucou ${CONFIG.sender}, j’ai terminé ton site 👀`,
+        `Coucou ${CONFIG.sender} 👀`,
         "",
         finalChoice || `Je te réponds pour le séjour ${CONFIG.dates} au ${CONFIG.destination}.`
     ];
