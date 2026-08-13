@@ -486,6 +486,8 @@ async function revealTrip() {
     await say("Du 14 au 16 août : deux nuits au Lamantin Beach 🌊☀️");
     await say("Et oui, c’est déjà réservé 😌");
     await say("Deux nuits… oui madame, j’ai vraiment pensé à tout 😂🤍");
+    await say("Ah oui… il y a aussi une fête au programme 🥳");
+    await say("Les tickets sont déjà pris et inclus dans la surprise. Madame n’a rien à gérer 😂🎟️");
     await say("Bon… maintenant que tu sais tout, est-ce que madame valide le programme ? 👀😂", { emphasis: true });
     askFinalChoice();
 }
@@ -517,7 +519,7 @@ function askFinalChoice() {
 }
 
 async function acceptTrip() {
-    finalChoice = "Oui, je viens au Lamantin Beach du 14 au 16 août 😭🤍";
+    finalChoice = "Oui, je viens au Lamantin Beach du 14 au 16 août, avec les tickets pour la fête 😭🤍";
     trackEvent("final_response", {
         stepId: "outcome",
         choiceId: "accepted",
@@ -567,7 +569,7 @@ function showDetailMenu(prompt = "Autre question, madame l’inspectrice ? 😂"
             label: detailLabel("program", "On fait quoi là-bas ? 👀"),
             action: async () => {
                 viewedDetailTopics.add("program");
-                await say("Piscine, plage, bien manger et surtout souffler 😌🌊☀️");
+                await say("Piscine, plage, bien manger, la petite fête… et surtout souffler 😌🌊☀️");
                 await say("Et si madame veut dormir jusqu’à midi, je ne juge pas… trop 😂");
                 showDetailMenu();
             }
@@ -583,12 +585,22 @@ function showDetailMenu(prompt = "Autre question, madame l’inspectrice ? 😂"
             }
         },
         {
+            id: "party_tickets",
+            label: detailLabel("party_tickets", "La fête aussi ? 🥳🎟️"),
+            action: async () => {
+                viewedDetailTopics.add("party_tickets");
+                await say("Oui madame, il y a aussi une petite fête prévue pendant le séjour 🥳👀");
+                await say("Et les tickets sont déjà pris. J’ai encore anticipé 😂🎟️");
+                showDetailMenu();
+            }
+        },
+        {
             id: "secret",
             label: detailLabel("secret", "Avoue, tu caches quoi ? 🤨😂"),
             action: async () => {
                 viewedDetailTopics.add("secret");
-                await say("Rien de louche, promis 😂 Le gros secret, c’était surtout le séjour 👀");
-                await say("Du 14 au 16, Lamantin Beach, deux chambres. Madame a le dossier complet ✅");
+                await say("Rien de louche, promis 😂 Le séjour ET la petite fête, c’était déjà beaucoup 👀");
+                await say("Du 14 au 16, deux chambres et tickets inclus. Madame a le dossier complet ✅");
                 showDetailMenu();
             }
         },
@@ -698,7 +710,7 @@ async function handleFirstDecline() {
         return;
     }
     declineRetryOffered = true;
-    await say("Attends… même avec piscine, soleil ET deux chambres ? 😭😂");
+    await say("Attends… même avec piscine, soleil, deux chambres ET la fête ? 😭😂");
     await say("Bon, j’aurai tenté de vendre mon programme jusqu’au bout 😌");
     await say("Mais en vrai, si tu peux pas, je comprends 🤍 Zéro pression.");
     ask("decline_retry", "Je tente une toute dernière fois ? 😂", [
@@ -718,7 +730,7 @@ async function handleFirstDecline() {
 
 async function makeLastPlayfulAttempt() {
     await say("Ahhh 😭 Bon, écoute bien mon dernier argument 😂");
-    await say("Deux nuits, deux chambres, piscine, soleil… et toi, tu n’organises absolument rien 😌🌴");
+    await say("Deux nuits, deux chambres, piscine, soleil, fête… et toi, tu n’organises absolument rien 😌🌴");
     await say("Voilà. Fin de ma publicité 😂🤍");
     ask("retry_final", "Alors ? 👀", [
         {
