@@ -309,9 +309,7 @@ async function revealTrip() {
     await say("Surpriseee 🥳🎉");
     await say("Du 14 au 16 août : deux nuits au Lamantin Beach 🌊☀️");
     await say("Et oui, c’est déjà réservé 😌");
-    await say("Petit détail avant que tu passes en mode FBI 😂");
-    await say("Pour l’instant, la réservation est pour une chambre.");
-    await say("Si tu préfères qu’on en prenne deux, tu me le dis et je m’en occupe. Aucun souci, je veux que tu sois à l’aise 🤍");
+    await say("Deux nuits, deux chambres… oui madame, j’ai vraiment pensé à tout 😂🤍");
     await say("Bon… tu viens avec moi ou je dois sortir mes meilleurs arguments ? 😂", { emphasis: true });
     askFinalChoice();
 }
@@ -330,19 +328,6 @@ function askFinalChoice() {
                 showFinalPanel(
                     "Bon bah… c’est oui 😭🤍",
                     "Appelle-moi directement avant que tu changes d’avis 😂📞",
-                    "call"
-                );
-            }
-        },
-        {
-            label: "Oui, mais deux chambres 🤨",
-            action: async () => {
-                finalChoice = "Oui, je suis partante, mais je préfère qu’on ait deux chambres.";
-                await say("Ça marche 🤝 Deux chambres, c’est noté.");
-                await say("Je m’en occupe. Le principal, c’est que tu sois tranquille 🤍");
-                showFinalPanel(
-                    "Partante, avec deux chambres 🤝",
-                    "Appelle-moi directement, on règle tout ça ensemble 📞",
                     "call"
                 );
             }

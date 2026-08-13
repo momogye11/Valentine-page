@@ -42,7 +42,7 @@ Then open `http://localhost:8000`.
 - The dialer or Messages app only opens after Morgane explicitly clicks the final button; the site cannot place a call or send an SMS silently.
 - Do not include booking references, payment details, or other secrets in client-side files.
 - Keep all final choices real and clickable. Do not make a refusal button flee or pressure the recipient.
-- Keep the room arrangement truthful. The current copy says one room is booked and explicitly offers to arrange two if Morgane prefers.
+- Keep the room arrangement truthful. The current booking and reveal both specify two rooms.
 - Music is attempted on page load and starts reliably on the first user gesture when browser autoplay policy blocks immediate sound.
 
 ## Accessibility and responsive behavior
